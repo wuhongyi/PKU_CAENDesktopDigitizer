@@ -4,9 +4,9 @@
 # Author: Hongyi Wu(吴鸿毅)
 # Email: wuhongyi@qq.com 
 # Created: 六 2月 22 19:39:08 2014 (+0800)
-# Last-Updated: 五 11月 25 20:01:45 2016 (+0800)
+# Last-Updated: 五 11月 25 21:32:15 2016 (+0800)
 #           By: Hongyi Wu(吴鸿毅)
-#     Update #: 111
+#     Update #: 112
 # URL: http://wuhongyi.cn 
 
 #----------------------------------------------------------------------------
@@ -15,11 +15,17 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 set(CODE_DIR /home/wuhongyi/CodeProject )   #设置工程文件路径
 #set(CMAKE_C_COMPILER "/usr/local/bin/gcc")  #调用自己安装在local的gcc
 #set(CMAKE_CXX_COMPILER "/usr/local/bin/g++") #调用自己安装在local的g++
-set(PROJ_NAME wu)
+set(PROJ_NAME pkuDigitizer)
 project(${PROJ_NAME})
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wno-deprecated") #支持最新c++11
-#c++0x是新的C++意思。而-Wno-deprecated是表示 no-deprecated这类警告忽略。
 SET(CMAKE_BUILD_TYPE Debug) #编译调试版本
+
+##C99  ROOT不支持C++11采用以下两行
+#set(CMAKE_CXX_FLAGS " -fPIC -W -Wall -s")
+#set(CMAKE_C_FLAGS " -fPIC -W -Wall -s")
+##C++11  ROOT支持C++11采用以下两行
+set(CMAKE_CXX_FLAGS "-std=c++11  -fPIC -W -Wall -s")
+set(CMAKE_C_FLAGS "-std=c++11  -fPIC   -W -Wall -s")
+
 #----------------------------------------------------------------------------
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}//cmake) #设置 FindROOT.cmake 文件路径
 # Find ROOT (required package)
@@ -44,7 +50,7 @@ add_library(MainDict SHARED MainDict.cxx)#生成动态链接库
 #----------------------------------------------------------------------------
 add_executable(${PROJ_NAME} main.cc ${sources} ${headers}) 
 
-target_link_libraries(${PROJ_NAME} MainDict ${libs} ${ROOT_LIBRARIES} )
+target_link_libraries(${PROJ_NAME} MainDict ${libs} ${ROOT_LIBRARIES} -pthread CAENDigitizer m dl -rdynamic ncurses c)
 
 #----------------------------------------------------------------------------
 #将所需数据文件复制到bin文件夹

@@ -4,13 +4,19 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 五 11月 25 20:05:01 2016 (+0800)
+// Last-Updated: 五 11月 25 21:11:53 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 4
+//     Update #: 5
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
 #define _MAINFRAME_H_
+
+#include "Global.hh"
+
+#include <CAENDigitizer.h>
+#include <CAENDigitizerType.h>
+
 
 #include "RVersion.h"//版本判断
 #include "TApplication.h"
@@ -130,13 +136,16 @@ private:
   void MakeFoldPanelPar(TGCompositeFrame *TabPanel);
 
 
-
-
+  int initDigitizer();
+  void deleteDigitizer();
 
 
 
 private:
+  Digitizer* dig;
   Board *board;
+
+
 
 
   ClassDef(MainFrame,1)

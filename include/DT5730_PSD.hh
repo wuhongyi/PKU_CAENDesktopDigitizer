@@ -1,10 +1,10 @@
-// DT5730.hh --- 
+// DT5730_PSD.hh --- 
 // 
 // Description: 
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
-// Created: 五 11月 25 19:47:42 2016 (+0800)
-// Last-Updated: 五 11月 25 21:24:30 2016 (+0800)
+// Created: 五 11月 25 20:44:38 2016 (+0800)
+// Last-Updated: 五 11月 25 21:16:57 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
 //     Update #: 2
 // URL: http://wuhongyi.cn 
@@ -14,15 +14,16 @@
 #include "Board.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class DT5730 : public Board
+class DT5730_PSD : public Board
 {
 public:
-  DT5730(Digitizer* dig);
-  virtual ~DT5730();
+  DT5730_PSD(Digitizer* dig);
+  virtual ~DT5730_PSD();
+
 
 
 
 };
 
 // 
-// DT5730.hh ends here
+// DT5730_PSD.hh ends here

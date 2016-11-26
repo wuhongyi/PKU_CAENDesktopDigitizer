@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 11月 26 16:40:01 2016 (+0800)
+// Last-Updated: 六 11月 26 21:44:24 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 68
+//     Update #: 85
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -131,11 +131,12 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 		{
 		  //error
 		  // StateMsg->SetText("Connect error ......");
+		  BoardNameMsg->SetText("");
 		}
 	      else
 		{
-		  StateMsg->SetText(board->GetName());
-		  
+		  BoardNameMsg->SetText(board->GetName());
+		  StateMsg->SetText("Boot success !");
 		  connectButton->SetEnabled(0);
 		  DeleteButton->SetEnabled(1);
 		}
@@ -146,6 +147,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      connectButton->SetEnabled(1);
 	      DeleteButton->SetEnabled(0);
 	      StateMsg->SetText("Please enter Connect");
+	      BoardNameMsg->SetText("");
 	      break;
 	      
 	    }
@@ -841,10 +843,26 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   DeleteButton->Associate(this);
   DeleteButton->SetEnabled(0);
 
+
+  BoardNameMsg = new TGTextEntry(initboaed,
+				 new TGTextBuffer(14), -1,
+				 BoardNameMsg->GetDefaultGC()(),
+				 BoardNameMsg->GetDefaultFontStruct(),
+				 kRaisedFrame | kDoubleBorder,
+				 GetWhitePixel());
+  initboaed->AddFrame(BoardNameMsg, new TGLayoutHints(kLHintsLeft | kLHintsLeft, 10, 0, 0, 0));
+  BoardNameMsg->SetFont("-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-iso8859-1", false);
+  BoardNameMsg->SetTextColor(0x00FF00, false);
+  BoardNameMsg->SetText("");
+  // BoardNameMsg->Resize(100, 12);
+  BoardNameMsg->SetEnabled(kFALSE);
+  BoardNameMsg->SetFrameDrawn(kTRUE);//kFALSE
+  
+  
   StateMsg = new TGTextEntry(initboaed,
-			     new TGTextBuffer(100), 10000,
+			     new TGTextBuffer(100), -1,
 			     StateMsg->GetDefaultGC()(),
-			     StateMsg->GetDefaultFontStruct (),
+			     StateMsg->GetDefaultFontStruct(),
 			     kRaisedFrame | kDoubleBorder,
 			     GetWhitePixel());
   initboaed->AddFrame(StateMsg, new TGLayoutHints(kLHintsExpandX | kLHintsLeft, 10, 0, 0, 0));
@@ -959,6 +977,7 @@ void MainFrame::SetDataFileName()
       out.close();
 
       // StartStopButton->SetEnabled(1);
+      // StartStopButton->SetText("Start");
     }
   else
     {
@@ -1008,12 +1027,14 @@ int MainFrame::initDigitizer()
     }
   
   ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);
-  if (ret) return ret;
-
+  if (ret)
+    {
+      StateMsg->SetText("Get Board Info Error ...");
+      return ret;
+    }
   printf("Connected to CAEN Digitizer Model %s\n", dig->boardInfo->ModelName);
   printf("ROC FPGA Release is %s\n", dig->boardInfo->ROC_FirmwareRel);
   printf("AMC FPGA Release is %s\n", dig->boardInfo->AMC_FirmwareRel);
-
   printf("Model is %d\n", dig->boardInfo->Model);
   printf("Channels is %d\n", dig->boardInfo->Channels);
   printf("FormFactor is %d\n", dig->boardInfo->FormFactor);
@@ -1049,9 +1070,13 @@ int MainFrame::initDigitizer()
       
     case CAEN_DGTZ_DT5730:
       if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
-      
       break;
 
+    case CAEN_DGTZ_DT5742:
+      if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742_Standard");
+      break;
+      
+      
     default:
       // printf("not support this board now ...");
       StateMsg->SetText("Not support this board now ...");
@@ -1066,23 +1091,94 @@ int MainFrame::initDigitizer()
     }
 
 
+  if(board->ProgramDigitizer())
+    {
+      // error
+      // printf("Program Digitizer error\n");
+      StateMsg->SetText("Program Digitizer Error ...");
+      return 100;
+    }
 
-  board->ProgramDigitizer();
+  if(MajorNumber == STANDARD_FW_CODE)
+    {
+      ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);
+      if (ret)
+	{
+	  StateMsg->SetText("Get Board Info Second Error ...");
+	  return ret;
+	}
+      printf("===================================================\n");
+      printf("Connected to CAEN Digitizer Model %s\n", dig->boardInfo->ModelName);
+      printf("ROC FPGA Release is %s\n", dig->boardInfo->ROC_FirmwareRel);
+      printf("AMC FPGA Release is %s\n", dig->boardInfo->AMC_FirmwareRel);
+      printf("Model is %d\n", dig->boardInfo->Model);
+      printf("Channels is %d\n", dig->boardInfo->Channels);
+      printf("FormFactor is %d\n", dig->boardInfo->FormFactor);
+      printf("FamilyCode is %d\n", dig->boardInfo->FamilyCode);
+      printf("SerialNumber is %d\n", dig->boardInfo->SerialNumber);
+      printf("PCB_Revision is %d\n", dig->boardInfo->PCB_Revision);
+      printf("ADC_NBits is %d\n", dig->boardInfo->ADC_NBits);
+      printf("CommHandle is %d\n", dig->boardInfo->CommHandle);
+      printf("VMEHandle is %d\n", dig->boardInfo->VMEHandle);
+      printf("License is %s\n", dig->boardInfo->License);
+
+      if(GetMoreBoardInfo(dig->boardHandle, dig->boardInfo))
+	{
+
+	}
+
+      
+    }
   
-
+  if(board->AllocateMemory())
+    {
+      // error
+      // printf("Allocate Memory error\n");
+      StateMsg->SetText("Allocate Memory Error ...");
+      return 100;
+    }
   
 
 }
 
 void MainFrame::deleteDigitizer()
 {
-  if(board != NULL) delete board;
-  
+  if(board != NULL)
+    {
+      delete board;
+      board = NULL;
+    }
+      
   CAEN_DGTZ_SWStopAcquisition(0);
   CAEN_DGTZ_CloseDigitizer(0);  
   
 }
 
+int MainFrame::GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo)
+{
+  int ret = 0;
+  CAEN_DGTZ_DRS4Frequency_t freq;
+
+  switch(BoardInfo->FamilyCode)
+    {
+	      
+
+    default:
+      break;
+    }
+	  
+  return ret;
+}
 
 // 
 // MainFrame.cc ends here
+
+
+
+
+
+
+
+
+
+

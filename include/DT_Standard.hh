@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:27:40 2016 (+0800)
-// Last-Updated: 六 11月 26 13:14:52 2016 (+0800)
+// Last-Updated: 六 11月 26 19:23:12 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 4
 // URL: http://wuhongyi.cn 
 
 #ifndef _DT_STANDARD_H_
@@ -24,7 +24,8 @@ public:
   virtual ~DT_Standard();
 
   virtual int ProgramDigitizer();
-
+  virtual int AllocateMemory();
+  
 };
 
 #endif /* _DT_STANDARD_H_ */

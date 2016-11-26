@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 六 11月 26 16:30:59 2016 (+0800)
+// Last-Updated: 六 11月 26 21:44:05 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 16
+//     Update #: 20
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -148,10 +148,13 @@ private:
   void deleteDigitizer();
 
 
+  int GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo);
+
 private:
   TGComboBox *connectStyle;
   TGTextButton *connectButton;
   TGTextButton *DeleteButton;
+  TGTextEntry *BoardNameMsg;
   TGTextEntry *StateMsg;
 
   TGTextEntry *filepathtext;
@@ -160,7 +163,7 @@ private:
   TGTextButton *CompleteButton;
 
   TGTextButton *StartStopButton;
-  TGCheckButton *OnlineCheckButton;
+  TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;
 
   

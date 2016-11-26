@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 六 11月 26 13:17:27 2016 (+0800)
+// Last-Updated: 六 11月 26 21:10:01 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 8
+//     Update #: 12
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -27,6 +27,8 @@ Board::Board(Digitizer* dig,const char *name)
   
   Nch = dig->boardInfo->Channels;
   NBits = dig->boardInfo->ADC_NBits;
+  FamilyCode = dig->boardInfo->FamilyCode;
+  
   switch(dig->boardInfo->FamilyCode)
     {
     case CAEN_DGTZ_XX724_FAMILY_CODE:
@@ -42,14 +44,11 @@ Board::Board(Digitizer* dig,const char *name)
     }
 
 
-
-
-
-
-
-  
-
-
+  Event16 = NULL;
+  Event8 = NULL;
+  Event742 = NULL;
+  readoutBuffer = NULL;
+  ReloadCfgStatus = 0x7FFFFFFF;// Init to the bigger positive number
   
 }
 

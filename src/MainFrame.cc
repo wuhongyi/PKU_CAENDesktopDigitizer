@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 五 11月 25 21:48:15 2016 (+0800)
+// Last-Updated: 六 11月 26 09:46:53 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 10
+//     Update #: 13
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -75,7 +75,10 @@ int MainFrame::initDigitizer()
 {
   int ret; 
   int majorNumber;
-
+  
+  CAEN_DGTZ_SWStopAcquisition(0);
+  CAEN_DGTZ_CloseDigitizer(0);
+  
   ret = CAEN_DGTZ_OpenDigitizer(dig->linkType, dig->linkNum, dig->conetNode, dig->baseAddress, &dig->boardHandle);
   if (ret)
     {
@@ -101,7 +104,8 @@ int MainFrame::initDigitizer()
   printf("VMEHandle is %d\n", dig->boardInfo->VMEHandle);
   printf("License is %s\n", dig->boardInfo->License);
 
-  
+  CAEN_DGTZ_SWStopAcquisition(0);
+  CAEN_DGTZ_CloseDigitizer(0);  
 }
 
 void MainFrame::deleteDigitizer()

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 11月 26 15:17:42 2016 (+0800)
+// Last-Updated: 六 11月 26 15:41:04 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 49
+//     Update #: 51
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -125,7 +125,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      if(initDigitizer())
 		{
 		  //error
-		  StateMsg->SetText("Connect error ......");
+		  // StateMsg->SetText("Connect error ......");
 		}
 	      else
 		{
@@ -140,6 +140,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      deleteDigitizer();
 	      connectButton->SetEnabled(1);
 	      DeleteButton->SetEnabled(0);
+	      StateMsg->SetText("Please enter Connect");
 	      break;
 	      
 	    }
@@ -871,7 +872,8 @@ int MainFrame::initDigitizer()
   ret = CAEN_DGTZ_OpenDigitizer(dig->linkType, dig->linkNum, dig->conetNode, dig->baseAddress, &dig->boardHandle);
   if (ret)
     {
-      printf("Can't open digitizer\n");
+      // printf("Can't open digitizer\n");
+      StateMsg->SetText("Can't open digitizer");
       return ret;
     }
   
@@ -902,7 +904,8 @@ int MainFrame::initDigitizer()
   ret |= CAEN_DGTZ_Reset(dig->boardHandle);
   if (ret != 0)
     {
-      printf("Error: Unable to reset digitizer.\nPlease reset digitizer manually then restart the program\n");
+      // printf("Error: Unable to reset digitizer.\nPlease reset digitizer manually then restart the program\n");
+      StateMsg->SetText("Please reset digitizer manually then restart the program");
       return -ret;
     }
 
@@ -920,13 +923,15 @@ int MainFrame::initDigitizer()
       break;
 
     default:
-      printf("not support this board now ...");
+      // printf("not support this board now ...");
+      StateMsg->SetText("Not support this board now ...");
       break;
     }
 
   if(board == NULL)
     {
-      printf("not support this board now ...");
+      // printf("not support this board now ...");
+      StateMsg->SetText("Not support this board now ...");
       return 100;
     }
 

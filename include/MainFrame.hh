@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 六 11月 26 15:00:17 2016 (+0800)
+// Last-Updated: 六 11月 26 16:30:59 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 10
+//     Update #: 16
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -128,10 +128,17 @@ public:
   MainFrame(const TGWindow * p);
   virtual ~MainFrame();
 
+  void SetDataFileName();
+  void StartStopRun();
+  void SetOnlineData();
+  void SetWriteData();
+  
   virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
 
 private:
   void CloseWindow(); //close main window
+  bool IsDirectoryExists(const char *path);
+
   
   void MakeFoldPanelInit(TGCompositeFrame *TabPanel);
   void MakeFoldPanelPar(TGCompositeFrame *TabPanel);
@@ -145,17 +152,26 @@ private:
   TGComboBox *connectStyle;
   TGTextButton *connectButton;
   TGTextButton *DeleteButton;
-  TGTextButton *CompleteButton;
   TGTextEntry *StateMsg;
 
+  TGTextEntry *filepathtext;
+  TGTextEntry *filenametext;
+  TGNumberEntry *filerunnum;
+  TGTextButton *CompleteButton;
 
+  TGTextButton *StartStopButton;
+  TGCheckButton *OnlineCheckButton;
+  TGTextButton *WtiteDataButton;
 
+  
 private:
   Digitizer* dig;
   Board *board;
 
 
-
+  char Filename[1024];
+  int runnum;
+  char tmp[256];
 
   ClassDef(MainFrame,0)
 };

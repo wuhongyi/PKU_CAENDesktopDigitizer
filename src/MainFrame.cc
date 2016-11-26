@@ -4,15 +4,20 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 11月 26 15:41:04 2016 (+0800)
+// Last-Updated: 六 11月 26 16:36:25 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 51
+//     Update #: 67
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
 #include "DT_PSD.hh"
 #include "DT_Standard.hh"
 
+#include <fstream>
+#include <iostream>
+
+#include <unistd.h>
+#include <sys/stat.h>//stat(const char *file_name,struct stat *buf)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ClassImp(MainFrame)
@@ -849,7 +854,132 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   // StateMsg->Resize(100, 12);
   StateMsg->SetEnabled(kFALSE);
   StateMsg->SetFrameDrawn(kFALSE);
+
+
+  TGGroupFrame *filesetgroup = new TGGroupFrame(TabPanel,"File");
+  TabPanel->AddFrame(filesetgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+
+  TGHorizontalFrame *fileset = new TGHorizontalFrame(filesetgroup);
+  filesetgroup->AddFrame(fileset,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+
+  TGLabel *filepathlabel = new TGLabel(fileset,"File Path: ");
+  fileset->AddFrame(filepathlabel,new TGLayoutHints(kLHintsLeft | kLHintsTop, 10, 3, 5, 0));
+  filepathtext = new TGTextEntry(fileset,new TGTextBuffer(100));
+  fileset->AddFrame(filepathtext,new TGLayoutHints(kLHintsExpandX | kLHintsTop, 10,3,4,0));
+
   
+  TGLabel *filenamelabel = new TGLabel(fileset,"File Name: ");
+  fileset->AddFrame(filenamelabel,new TGLayoutHints(kLHintsLeft | kLHintsTop, 10,3,5,0));
+  filenametext = new TGTextEntry(fileset, new TGTextBuffer(20));
+  fileset->AddFrame(filenametext,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,4,0));
+
+  TGLabel *filerunlabel = new TGLabel(fileset,"Run Num: ");
+  fileset->AddFrame(filerunlabel,new TGLayoutHints(kLHintsLeft| kLHintsTop,10,3,5,0));
+
+  filerunnum = new TGNumberEntry(fileset,0,5,RUNNUMBER,TGNumberFormat::kNESInteger,TGNumberFormat::kNEANonNegative);
+  fileset->AddFrame(filerunnum,new TGLayoutHints(kLHintsLeft | kLHintsTop,0,3,4,0));
+  // filerunnum->SetButtonToNum(0);
+  // filerunnum->Associate(this);
+
+  CompleteButton = new TGTextButton(fileset,"Complete");
+  fileset->AddFrame(CompleteButton,new TGLayoutHints(kLHintsLeft | kLHintsTop,0,3,4,0));
+  CompleteButton->Connect("Pressed()","MainFrame",this,"SetDataFileName()");
+
+  
+
+  TGGroupFrame *controlgroup = new TGGroupFrame(TabPanel,"Control");
+  TabPanel->AddFrame(controlgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+
+  TGHorizontalFrame *cgrouphframe = new TGHorizontalFrame(controlgroup);
+  controlgroup->AddFrame(cgrouphframe,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,4,3,3));
+
+  StartStopButton = new TGTextButton(cgrouphframe,"&Start/Stop");
+  cgrouphframe->AddFrame(StartStopButton,new TGLayoutHints(kLHintsLeft | kLHintsTop));
+  StartStopButton->Connect("Pressed()","MainFrame",this,"StartStopRun()");
+  StartStopButton->SetEnabled(0);
+
+  OnlineCheckButton = new TGCheckButton(cgrouphframe,"&Online data");
+  cgrouphframe->AddFrame( OnlineCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,3,3));
+  OnlineCheckButton->SetTextColor(0x000080);
+  OnlineCheckButton->SetState(kButtonDown);
+  OnlineCheckButton->Connect("Clicked()","MainFrame",this,"SetOnlineData()");
+
+
+  WtiteDataButton = new TGTextButton(cgrouphframe,"&WriteData");
+  cgrouphframe->AddFrame(WtiteDataButton,new TGLayoutHints(kLHintsLeft | kLHintsTop));
+  WtiteDataButton->Connect("Pressed()","MainFrame",this,"SetWriteData()");
+  WtiteDataButton->SetEnabled(0);
+
+
+
+
+
+
+  
+
+  std::ifstream in("../parset/Run.config");
+  if(!in.is_open()) return;
+  in.getline(tmp,200);
+  filepathtext->Insert(tmp);
+  in.getline(tmp,200);
+  filenametext->Insert(tmp);
+  in.close();
+
+  std::ifstream inrunnumber("../parset/RunNumber");
+  if(!inrunnumber.is_open()) return;
+  inrunnumber.getline(tmp,200);
+  filerunnum->SetText(tmp);
+  inrunnumber.close();
+  
+}
+
+void MainFrame::SetWriteData()
+{
+
+}
+
+void MainFrame::SetOnlineData()
+{
+
+}
+
+void MainFrame::SetDataFileName()
+{
+  const char *path=filepathtext->GetText();
+  const char *filen=filenametext->GetText();
+  runnum=(int)filerunnum->GetIntNumber();
+
+  sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
+
+  if(IsDirectoryExists(filepathtext->GetText()))
+    {
+      std::ofstream out("../parset/Run.config");
+      out<<filepathtext->GetText()<<std::endl;
+      out<<filenametext->GetText()<<std::endl;
+      out.close();
+
+      // StartStopButton->SetEnabled(1);
+    }
+  else
+    {
+      std::cout<<"The output file directory does not exist"<<std::endl;
+    }
+}
+
+void MainFrame::StartStopRun()
+{
+
+  
+}
+
+
+bool MainFrame::IsDirectoryExists(const char *path)
+{
+  struct stat fileStat;
+  if ((stat(path, &fileStat) == 0) && S_ISDIR(fileStat.st_mode))
+    return true;
+  else
+    return false;
 }
 
 void MainFrame::MakeFoldPanelPar(TGCompositeFrame *TabPanel)

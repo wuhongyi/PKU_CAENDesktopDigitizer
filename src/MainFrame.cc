@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 11月 26 16:36:25 2016 (+0800)
+// Last-Updated: 六 11月 26 16:40:01 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 67
+//     Update #: 68
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -56,7 +56,7 @@ MainFrame::MainFrame(const TGWindow * p)
   Resize(GetDefaultSize());
   MapWindow();
 
-  Print();
+  // Print();
 }
 
 MainFrame::~MainFrame()

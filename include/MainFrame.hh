@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 五 11月 25 21:11:53 2016 (+0800)
+// Last-Updated: 六 11月 26 15:00:17 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 5
+//     Update #: 10
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -131,6 +131,7 @@ public:
   virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
 
 private:
+  void CloseWindow(); //close main window
   
   void MakeFoldPanelInit(TGCompositeFrame *TabPanel);
   void MakeFoldPanelPar(TGCompositeFrame *TabPanel);
@@ -138,6 +139,14 @@ private:
 
   int initDigitizer();
   void deleteDigitizer();
+
+
+private:
+  TGComboBox *connectStyle;
+  TGTextButton *connectButton;
+  TGTextButton *DeleteButton;
+  TGTextButton *CompleteButton;
+  TGTextEntry *StateMsg;
 
 
 
@@ -148,7 +157,7 @@ private:
 
 
 
-  ClassDef(MainFrame,1)
+  ClassDef(MainFrame,0)
 };
 
 #endif /* _MAINFRAME_H_ */

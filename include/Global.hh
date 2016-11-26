@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 21:05:40 2016 (+0800)
-// Last-Updated: 五 11月 25 21:19:58 2016 (+0800)
+// Last-Updated: 六 11月 26 15:00:17 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 2
+//     Update #: 4
 // URL: http://wuhongyi.cn 
 
 #ifndef _GLOBAL_H_
@@ -26,6 +26,15 @@ typedef struct {
   int boardHandle;
   
 } Digitizer;
+
+
+enum ButtonIDs
+  {
+    CONNECTBUTTON,
+    DELETEBUTTON,
+    COMPLETEBUTTON
+
+  };
 
 #endif /* _GLOBAL_H_ */
 

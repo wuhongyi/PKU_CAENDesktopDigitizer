@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 六 11月 26 21:10:01 2016 (+0800)
+// Last-Updated: 日 11月 27 18:37:44 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 24
+//     Update #: 26
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -45,7 +45,8 @@ protected:
   int ReloadCfgStatus;
   CAEN_DGTZ_DPP_PHA_Event_t *dppphaevents[MAX_DPP_PHA_CHANNEL_SIZE];
   CAEN_DGTZ_DPP_PSD_Event_t *dpppsdevents[MAX_DPP_PSD_CHANNEL_SIZE];
-
+  // MAX_DPP_CHANNEL_SIZE
+  
   CAEN_DGTZ_DPP_PHA_Waveforms_t *dppphawaveforms;
   CAEN_DGTZ_DPP_PSD_Waveforms_t *dpppsdwaveforms;
 
@@ -69,13 +70,3 @@ protected:
 #endif /* _BOARD_H_ */
 // 
 // Board.hh ends here
-
-
-
-
-
-
-
-
-
-

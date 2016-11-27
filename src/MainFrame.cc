@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 11月 26 21:44:24 2016 (+0800)
+// Last-Updated: 日 11月 27 10:29:48 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 85
+//     Update #: 89
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1052,6 +1052,22 @@ int MainFrame::initDigitizer()
     printf("This digitizer has a DPP firmware\n");
   }
 
+  // Get Number of Channels, Number of bits, Number of Groups of the board
+  if(MajorNumber == STANDARD_FW_CODE)
+    {
+      if(GetMoreBoardInfo(dig->boardHandle, dig->boardInfo))
+	{
+
+	}
+
+    }
+
+
+
+
+
+
+  
   ret |= CAEN_DGTZ_Reset(dig->boardHandle);
   if (ret != 0)
     {
@@ -1065,15 +1081,33 @@ int MainFrame::initDigitizer()
   switch(dig->boardInfo->Model)
     {
     case CAEN_DGTZ_DT5724:
-      if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724_Standard");
+      if(strcmp(dig->boardInfo->ModelName, "DT5724") == 0)
+	{
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724_STD");
+	}
+      
+      if(strcmp(dig->boardInfo->ModelName, "DT5724A") == 0)
+	{
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724A_STD");
+	}
       break;
       
     case CAEN_DGTZ_DT5730:
-      if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
+      if(strcmp(dig->boardInfo->ModelName, "DT5730") == 0)
+	{
+	  if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
+	}
       break;
 
     case CAEN_DGTZ_DT5742:
-      if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742_Standard");
+      if(strcmp(dig->boardInfo->ModelName, "DT5742") == 0)
+	{
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742_STD");
+	}
+      if(strcmp(dig->boardInfo->ModelName, "DT5742B") == 0)
+	{
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742B_STD");
+	}
       break;
       
       
@@ -1099,6 +1133,8 @@ int MainFrame::initDigitizer()
       return 100;
     }
 
+  // Read again the board infos, just in case some of them were changed by the programming
+  // (like, for example, the TSample and the number of channels if DES mode is changed)
   if(MajorNumber == STANDARD_FW_CODE)
     {
       ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);

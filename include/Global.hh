@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 21:05:40 2016 (+0800)
-// Last-Updated: 日 11月 27 10:07:03 2016 (+0800)
+// Last-Updated: 二 11月 29 20:28:49 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 9
+//     Update #: 10
 // URL: http://wuhongyi.cn 
 
 #ifndef _GLOBAL_H_
@@ -62,7 +62,8 @@ enum ButtonIDs
 
 enum NumberEntryIDs
   {
-    RUNNUMBER
+    RUNNUMBER,
+    RECORDLENGTH
   };
 
 

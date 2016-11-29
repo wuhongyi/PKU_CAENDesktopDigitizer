@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 日 11月 27 18:37:44 2016 (+0800)
+// Last-Updated: 二 11月 29 21:12:27 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 19
+//     Update #: 21
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -92,9 +92,16 @@ int DT_PSD::AllocateMemory()
 {
   int ret = 0;
 
-    
-  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &readoutBuffer, &bufferSize); // WARNING: This malloc must be done after the digitizer programming 
+  if(readoutBuffer != NULL)
+    {
+      CAEN_DGTZ_FreeReadoutBuffer(&readoutBuffer);
+      readoutBuffer = NULL;
+      CAEN_DGTZ_FreeDPPEvents(handle, (void **)dpppsdevents);
+      CAEN_DGTZ_FreeDPPWaveforms(handle,dpppsdwaveforms);
+    }
 
+ 
+  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &readoutBuffer, &bufferSize); // WARNING: This malloc must be done after the digitizer programming 
   ret |= CAEN_DGTZ_MallocDPPEvents(handle, (void **)dpppsdevents, &size); 
   // Allocate memory for the waveforms 
   ret |= CAEN_DGTZ_MallocDPPWaveforms(handle, (void **)&dpppsdwaveforms, &size); 

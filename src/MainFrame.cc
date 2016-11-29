@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 日 11月 27 10:29:48 2016 (+0800)
+// Last-Updated: 二 11月 29 21:10:56 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 89
+//     Update #: 119
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -130,8 +130,8 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      if(initDigitizer())
 		{
 		  //error
-		  // StateMsg->SetText("Connect error ......");
-		  BoardNameMsg->SetText("");
+		  StateMsg->SetText("Connect error ......");
+		  BoardNameMsg->SetText("DTXXXX");
 		}
 	      else
 		{
@@ -139,6 +139,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 		  StateMsg->SetText("Boot success !");
 		  connectButton->SetEnabled(0);
 		  DeleteButton->SetEnabled(1);
+		  ProgramButton->SetEnabled(1);
 		}
 	      break;
 
@@ -148,6 +149,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      DeleteButton->SetEnabled(0);
 	      StateMsg->SetText("Please enter Connect");
 	      BoardNameMsg->SetText("");
+	      ProgramButton->SetEnabled(1);
 	      break;
 	      
 	    }
@@ -874,6 +876,9 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   StateMsg->SetFrameDrawn(kFALSE);
 
 
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  
   TGGroupFrame *filesetgroup = new TGGroupFrame(TabPanel,"File");
   TabPanel->AddFrame(filesetgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
 
@@ -903,11 +908,49 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   fileset->AddFrame(CompleteButton,new TGLayoutHints(kLHintsLeft | kLHintsTop,0,3,4,0));
   CompleteButton->Connect("Pressed()","MainFrame",this,"SetDataFileName()");
 
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
-
   TGGroupFrame *controlgroup = new TGGroupFrame(TabPanel,"Control");
   TabPanel->AddFrame(controlgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
 
+  TGHorizontalFrame *channelgrouphframe = new TGHorizontalFrame(controlgroup);
+  controlgroup->AddFrame(channelgrouphframe,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,4,3,3));
+
+  TGLabel *enabledchannellabel = new TGLabel(channelgrouphframe,"Enable Ch: ");
+  channelgrouphframe->AddFrame(enabledchannellabel,new TGLayoutHints(kLHintsLeft| kLHintsTop,5,3,3,0));
+  enabledchannellabel->SetTextColor(0xB22222);
+  
+  for (int i = 0; i < 16; ++i)
+    {
+      sprintf(tmp,"%02d",i);
+      ChannelsCheckButton[i] = new TGCheckButton(channelgrouphframe,tmp);
+      channelgrouphframe->AddFrame(ChannelsCheckButton[i],new TGLayoutHints(kLHintsLeft|kLHintsTop,5,4,3,3));
+      ChannelsCheckButton[i]->SetTextColor(0xA020F0);
+      ChannelsCheckButton[i]->SetState(kButtonUp);
+      ChannelsCheckButton[i]->Connect("Toggled(Bool_t)","MainFrame",this,"MarkChennelOrRecordLengthChange()");
+    }
+
+  TGLabel *recordlengthlabel = new TGLabel(channelgrouphframe,"Record Length: ");
+  channelgrouphframe->AddFrame(recordlengthlabel,new TGLayoutHints(kLHintsLeft| kLHintsTop,10,3,3,0));
+
+  RecordLength = new TGNumberEntry(channelgrouphframe,1024,5,RECORDLENGTH,TGNumberFormat::kNESInteger,TGNumberFormat::kNEAPositive);//TGNumberFormat::kNEAPositive TGNumberFormat::kNEANonNegative
+  channelgrouphframe->AddFrame(RecordLength,new TGLayoutHints(kLHintsLeft | kLHintsTop,0,3,3,0));
+  RecordLength->GetNumberEntry()->Connect("TextChanged(char*)","MainFrame",this,"MarkChennelOrRecordLengthChange()");
+  
+
+  ProgramButton = new TGTextButton(channelgrouphframe,"&ProgramDigitizer");
+  channelgrouphframe->AddFrame(ProgramButton,new TGLayoutHints(kLHintsLeft | kLHintsTop,20,3,3,0));
+  ProgramButton->Connect("Pressed()","MainFrame",this,"ProgramDigitizer()");
+  ProgramButton->SetEnabled(0);
+
+  AllocateButton = new TGTextButton(channelgrouphframe,"&AllocateMemory");
+  channelgrouphframe->AddFrame(AllocateButton,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,0));
+  AllocateButton->Connect("Pressed()","MainFrame",this,"AllocateMemory()");
+  AllocateButton->SetEnabled(0);
+
+  
+  // --------
+  
   TGHorizontalFrame *cgrouphframe = new TGHorizontalFrame(controlgroup);
   controlgroup->AddFrame(cgrouphframe,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,4,3,3));
 
@@ -917,7 +960,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   StartStopButton->SetEnabled(0);
 
   OnlineCheckButton = new TGCheckButton(cgrouphframe,"&Online data");
-  cgrouphframe->AddFrame( OnlineCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,3,3));
+  cgrouphframe->AddFrame(OnlineCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,3,3));
   OnlineCheckButton->SetTextColor(0x000080);
   OnlineCheckButton->SetState(kButtonDown);
   OnlineCheckButton->Connect("Clicked()","MainFrame",this,"SetOnlineData()");
@@ -932,8 +975,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 
 
 
-
-  
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   std::ifstream in("../parset/Run.config");
   if(!in.is_open()) return;
@@ -1057,14 +1099,10 @@ int MainFrame::initDigitizer()
     {
       if(GetMoreBoardInfo(dig->boardHandle, dig->boardInfo))
 	{
-
+	  // TODO
 	}
 
     }
-
-
-
-
 
 
   
@@ -1124,57 +1162,8 @@ int MainFrame::initDigitizer()
       return 100;
     }
 
-
-  if(board->ProgramDigitizer())
-    {
-      // error
-      // printf("Program Digitizer error\n");
-      StateMsg->SetText("Program Digitizer Error ...");
-      return 100;
-    }
-
-  // Read again the board infos, just in case some of them were changed by the programming
-  // (like, for example, the TSample and the number of channels if DES mode is changed)
-  if(MajorNumber == STANDARD_FW_CODE)
-    {
-      ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);
-      if (ret)
-	{
-	  StateMsg->SetText("Get Board Info Second Error ...");
-	  return ret;
-	}
-      printf("===================================================\n");
-      printf("Connected to CAEN Digitizer Model %s\n", dig->boardInfo->ModelName);
-      printf("ROC FPGA Release is %s\n", dig->boardInfo->ROC_FirmwareRel);
-      printf("AMC FPGA Release is %s\n", dig->boardInfo->AMC_FirmwareRel);
-      printf("Model is %d\n", dig->boardInfo->Model);
-      printf("Channels is %d\n", dig->boardInfo->Channels);
-      printf("FormFactor is %d\n", dig->boardInfo->FormFactor);
-      printf("FamilyCode is %d\n", dig->boardInfo->FamilyCode);
-      printf("SerialNumber is %d\n", dig->boardInfo->SerialNumber);
-      printf("PCB_Revision is %d\n", dig->boardInfo->PCB_Revision);
-      printf("ADC_NBits is %d\n", dig->boardInfo->ADC_NBits);
-      printf("CommHandle is %d\n", dig->boardInfo->CommHandle);
-      printf("VMEHandle is %d\n", dig->boardInfo->VMEHandle);
-      printf("License is %s\n", dig->boardInfo->License);
-
-      if(GetMoreBoardInfo(dig->boardHandle, dig->boardInfo))
-	{
-
-	}
-
-      
-    }
-  
-  if(board->AllocateMemory())
-    {
-      // error
-      // printf("Allocate Memory error\n");
-      StateMsg->SetText("Allocate Memory Error ...");
-      return 100;
-    }
-  
-
+  ProgramButton->SetEnabled(1);
+  return ret;
 }
 
 void MainFrame::deleteDigitizer()
@@ -1205,6 +1194,90 @@ int MainFrame::GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo)
 	  
   return ret;
 }
+
+void MainFrame::MarkChennelOrRecordLengthChange()
+{
+  std::cout<<"@@@@@@@@@@@@"<<std::endl;
+
+  if(!connectButton->IsEnabled()) ProgramButton->SetEnabled(1);
+  AllocateButton->SetEnabled(0);
+}
+
+void MainFrame::ProgramDigitizer()
+{
+  std::cout<<"!!!!!!!!!!!"<<std::endl;
+
+  int ret = 0;
+  int MajorNumber;
+  
+  if(board->ProgramDigitizer())
+    {
+      // error
+      // printf("Program Digitizer error\n");
+      StateMsg->SetText("Program Digitizer Error ...");
+    }
+  else
+    {
+      StateMsg->SetText("Program Digitizer OK ...");
+    }
+
+  sscanf(dig->boardInfo->AMC_FirmwareRel, "%d", &MajorNumber);
+
+  // Read again the board infos, just in case some of them were changed by the programming
+  // (like, for example, the TSample and the number of channels if DES mode is changed)
+  if(MajorNumber == STANDARD_FW_CODE)
+    {
+      ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);
+      if (ret)
+	{
+	  StateMsg->SetText("Get Board Info Second Error ...");
+	}
+      printf("===================================================\n");
+      printf("Connected to CAEN Digitizer Model %s\n", dig->boardInfo->ModelName);
+      printf("ROC FPGA Release is %s\n", dig->boardInfo->ROC_FirmwareRel);
+      printf("AMC FPGA Release is %s\n", dig->boardInfo->AMC_FirmwareRel);
+      printf("Model is %d\n", dig->boardInfo->Model);
+      printf("Channels is %d\n", dig->boardInfo->Channels);
+      printf("FormFactor is %d\n", dig->boardInfo->FormFactor);
+      printf("FamilyCode is %d\n", dig->boardInfo->FamilyCode);
+      printf("SerialNumber is %d\n", dig->boardInfo->SerialNumber);
+      printf("PCB_Revision is %d\n", dig->boardInfo->PCB_Revision);
+      printf("ADC_NBits is %d\n", dig->boardInfo->ADC_NBits);
+      printf("CommHandle is %d\n", dig->boardInfo->CommHandle);
+      printf("VMEHandle is %d\n", dig->boardInfo->VMEHandle);
+      printf("License is %s\n", dig->boardInfo->License);
+
+      if(GetMoreBoardInfo(dig->boardHandle, dig->boardInfo))
+	{
+
+	}
+
+      
+    }
+  ProgramButton->SetEnabled(0);
+  AllocateButton->SetEnabled(1);
+}
+
+
+void MainFrame::AllocateMemory()
+{
+  std::cout<<"$$$$$$$$$$$$$"<<std::endl;
+
+  if(board->AllocateMemory())
+    {
+      // error
+      // printf("Allocate Memory error\n");
+      StateMsg->SetText("Allocate Memory Error ...");
+    }
+  else
+    {
+      StateMsg->SetText("Allocate Memory OK ...");
+    }
+
+  AllocateButton->SetEnabled(0);
+  StartStopButton->SetEnabled(1);
+}
+
 
 // 
 // MainFrame.cc ends here

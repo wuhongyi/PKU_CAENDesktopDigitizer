@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 六 11月 26 21:44:05 2016 (+0800)
+// Last-Updated: 二 11月 29 19:54:41 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 20
+//     Update #: 22
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -132,6 +132,11 @@ public:
   void StartStopRun();
   void SetOnlineData();
   void SetWriteData();
+  void MarkChennelOrRecordLengthChange();
+  void ProgramDigitizer();
+  void AllocateMemory();
+
+  
   
   virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
 
@@ -157,11 +162,18 @@ private:
   TGTextEntry *BoardNameMsg;
   TGTextEntry *StateMsg;
 
+  
   TGTextEntry *filepathtext;
   TGTextEntry *filenametext;
   TGNumberEntry *filerunnum;
   TGTextButton *CompleteButton;
 
+
+  TGCheckButton *ChannelsCheckButton[16];
+  TGNumberEntry *RecordLength;
+  TGTextButton *ProgramButton;
+  TGTextButton *AllocateButton;
+  
   TGTextButton *StartStopButton;
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;

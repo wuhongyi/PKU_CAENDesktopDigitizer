@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 日 11月 27 18:37:44 2016 (+0800)
+// Last-Updated: 二 11月 29 21:49:51 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 26
+//     Update #: 29
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -22,6 +22,18 @@ public:
   virtual ~Board();
 
   char *GetName() {return Name;}
+
+  void SetDPPAcquisitionMode(CAEN_DGTZ_DPP_AcqMode_t mode,CAEN_DGTZ_DPP_SaveParam_t par) {par_dppacqmode = mode;par_dppsaveparam = par;}
+  void SetDPPEventAggregation(int threshold, int maxsize) {par_dppeventaggregationthreshold = threshold;par_dppeventaggregationmaxsize = maxsize;}
+
+  
+  void SetAcquisitionMode(CAEN_DGTZ_AcqMode_t mode) {par_acqmode = mode;}
+  void SetRecordLength(int l) {par_recordlength = l;}
+  void SetIOLevel(CAEN_DGTZ_IOLevel_t io) {par_iolevel = io;}
+  void SetExtTriggerInputMode(CAEN_DGTZ_TriggerMode_t mode) {par_triggermode = mode;}
+  void SetChannelEnableMask(uint32_t mask) {par_enablemask = mask;}
+  void SetRunSynchronizationMode(CAEN_DGTZ_RunSyncMode_t mode) {par_runsyncmode = mode;}
+
   
   // return  0 = Success; negative numbers are error codes
   virtual int ProgramDigitizer() = 0;
@@ -29,9 +41,28 @@ public:
   
 private:
 
+protected:
+  CAEN_DGTZ_DPP_AcqMode_t par_dppacqmode;// CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope CAEN_DGTZ_DPP_ACQ_MODE_List CAEN_DGTZ_DPP_ACQ_MODE_Mixed
   
-private:
+  CAEN_DGTZ_DPP_SaveParam_t par_dppsaveparam;
+  // CAEN_DGTZ_DPP_SAVE_PARAM_EnergyOnly Only energy (DPP-PHA) or charge (DPP-PSD/DPP-CI v2) is returned 
+  // CAEN_DGTZ_DPP_SAVE_PARAM_TimeOnly   Only time is returned 
+  // CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime  Both energy/charge and time are returned
+  // CAEN_DGTZ_DPP_SAVE_PARAM_ChargeAndTime   eprecated On DPP-PSD and DPP-CI use CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime
+  // CAEN_DGTZ_DPP_SAVE_PARAM_None   No histogram data is returned
 
+  int par_dppeventaggregationthreshold;
+  int par_dppeventaggregationmaxsize;
+  
+
+  CAEN_DGTZ_RunSyncMode_t par_runsyncmode;// CAEN_DGTZ_RUN_SYNC_Disabled  CAEN_DGTZ_RUN_SYNC_TrgOutTrgInDaisyChain  CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain  CAEN_DGTZ_RUN_SYNC_SinFanout  CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain
+  CAEN_DGTZ_TriggerMode_t par_triggermode;// CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
+  CAEN_DGTZ_IOLevel_t par_iolevel;// CAEN_DGTZ_IOLevel_NIM  CAEN_DGTZ_IOLevel_TTL
+  CAEN_DGTZ_AcqMode_t par_acqmode;// CAEN_DGTZ_SW_CONTROLLED  CAEN_DGTZ_S_IN_CONTROLLED  CAEN_DGTZ_FIRST_TRG_CONTROLLED
+
+  uint32_t par_enablemask;
+  uint32_t par_recordlength;
+  
 protected:
   CAEN_DGTZ_DPP_PHA_Params_t dppphaParams;
   CAEN_DGTZ_DPP_PSD_Params_t dpppsdParams;

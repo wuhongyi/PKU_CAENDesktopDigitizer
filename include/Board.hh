@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 二 11月 29 21:49:51 2016 (+0800)
+// Last-Updated: 三 11月 30 21:29:41 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 29
+//     Update #: 38
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -22,15 +22,18 @@ public:
   virtual ~Board();
 
   char *GetName() {return Name;}
-
+  int GetHandle() {return handle;}
+  int GetChannels() {return Nch;}
+    
   void SetDPPAcquisitionMode(CAEN_DGTZ_DPP_AcqMode_t mode,CAEN_DGTZ_DPP_SaveParam_t par) {par_dppacqmode = mode;par_dppsaveparam = par;}
   void SetDPPEventAggregation(int threshold, int maxsize) {par_dppeventaggregationthreshold = threshold;par_dppeventaggregationmaxsize = maxsize;}
 
   
   void SetAcquisitionMode(CAEN_DGTZ_AcqMode_t mode) {par_acqmode = mode;}
   void SetRecordLength(int l) {par_recordlength = l;}
+  void GetRecordLength(int *l) {*l = par_recordlength;}
   void SetIOLevel(CAEN_DGTZ_IOLevel_t io) {par_iolevel = io;}
-  void SetExtTriggerInputMode(CAEN_DGTZ_TriggerMode_t mode) {par_triggermode = mode;}
+  void SetExtTriggerInputMode(CAEN_DGTZ_TriggerMode_t mode) {par_exttriggerinputmode = mode;}
   void SetChannelEnableMask(uint32_t mask) {par_enablemask = mask;}
   void SetRunSynchronizationMode(CAEN_DGTZ_RunSyncMode_t mode) {par_runsyncmode = mode;}
 
@@ -56,7 +59,7 @@ protected:
   
 
   CAEN_DGTZ_RunSyncMode_t par_runsyncmode;// CAEN_DGTZ_RUN_SYNC_Disabled  CAEN_DGTZ_RUN_SYNC_TrgOutTrgInDaisyChain  CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain  CAEN_DGTZ_RUN_SYNC_SinFanout  CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain
-  CAEN_DGTZ_TriggerMode_t par_triggermode;// CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
+  CAEN_DGTZ_TriggerMode_t par_exttriggerinputmode;// CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
   CAEN_DGTZ_IOLevel_t par_iolevel;// CAEN_DGTZ_IOLevel_NIM  CAEN_DGTZ_IOLevel_TTL
   CAEN_DGTZ_AcqMode_t par_acqmode;// CAEN_DGTZ_SW_CONTROLLED  CAEN_DGTZ_S_IN_CONTROLLED  CAEN_DGTZ_FIRST_TRG_CONTROLLED
 

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 二 11月 29 21:10:56 2016 (+0800)
+// Last-Updated: 三 11月 30 16:05:16 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 119
+//     Update #: 146
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -45,8 +45,8 @@ MainFrame::MainFrame(const TGWindow * p)
   TGCompositeFrame *Tab1 = TabPanel->AddTab("Init");
   MakeFoldPanelInit(Tab1);
 
-  TGCompositeFrame *Tab2 = TabPanel->AddTab("Par");
-  MakeFoldPanelPar(Tab2);
+  // TGCompositeFrame *Tab2 = TabPanel->AddTab("Par");
+  // MakeFoldPanelPar(Tab2);
 
 
   // What to clean up in dtor
@@ -149,7 +149,11 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	      DeleteButton->SetEnabled(0);
 	      StateMsg->SetText("Please enter Connect");
 	      BoardNameMsg->SetText("");
-	      ProgramButton->SetEnabled(1);
+	      ProgramButton->SetEnabled(0);
+	      for (int i = 0; i < MAX_CHANNEL; ++i)
+		{
+		  ChannelsCheckButton[i]->SetEnabled(0);
+		}
 	      break;
 	      
 	    }
@@ -917,17 +921,18 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   controlgroup->AddFrame(channelgrouphframe,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,4,3,3));
 
   TGLabel *enabledchannellabel = new TGLabel(channelgrouphframe,"Enable Ch: ");
-  channelgrouphframe->AddFrame(enabledchannellabel,new TGLayoutHints(kLHintsLeft| kLHintsTop,5,3,3,0));
+  channelgrouphframe->AddFrame(enabledchannellabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
   enabledchannellabel->SetTextColor(0xB22222);
   
-  for (int i = 0; i < 16; ++i)
+  for (int i = 0; i < MAX_CHANNEL; ++i)
     {
       sprintf(tmp,"%02d",i);
       ChannelsCheckButton[i] = new TGCheckButton(channelgrouphframe,tmp);
-      channelgrouphframe->AddFrame(ChannelsCheckButton[i],new TGLayoutHints(kLHintsLeft|kLHintsTop,5,4,3,3));
+      channelgrouphframe->AddFrame(ChannelsCheckButton[i],new TGLayoutHints(kLHintsLeft | kLHintsTop,5,4,3,3));
       ChannelsCheckButton[i]->SetTextColor(0xA020F0);
       ChannelsCheckButton[i]->SetState(kButtonUp);
       ChannelsCheckButton[i]->Connect("Toggled(Bool_t)","MainFrame",this,"MarkChennelOrRecordLengthChange()");
+      ChannelsCheckButton[i]->SetEnabled(0);
     }
 
   TGLabel *recordlengthlabel = new TGLabel(channelgrouphframe,"Record Length: ");
@@ -954,6 +959,12 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   TGHorizontalFrame *cgrouphframe = new TGHorizontalFrame(controlgroup);
   controlgroup->AddFrame(cgrouphframe,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,4,3,3));
 
+  AdjustParButton = new TGTextButton(cgrouphframe,"&AdjustParFrame");
+  cgrouphframe->AddFrame(AdjustParButton,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,40,0,0));
+  AdjustParButton->Connect("Pressed()","MainFrame",this,"AdjustParameters()");
+  AdjustParButton->SetEnabled(0);
+  AdjustParButton->SetToolTipText("Click will pop up the parameter adjustment interface.");
+  
   StartStopButton = new TGTextButton(cgrouphframe,"&Start/Stop");
   cgrouphframe->AddFrame(StartStopButton,new TGLayoutHints(kLHintsLeft | kLHintsTop));
   StartStopButton->Connect("Pressed()","MainFrame",this,"StartStopRun()");
@@ -970,10 +981,6 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   cgrouphframe->AddFrame(WtiteDataButton,new TGLayoutHints(kLHintsLeft | kLHintsTop));
   WtiteDataButton->Connect("Pressed()","MainFrame",this,"SetWriteData()");
   WtiteDataButton->SetEnabled(0);
-
-
-
-
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -1122,11 +1129,13 @@ int MainFrame::initDigitizer()
       if(strcmp(dig->boardInfo->ModelName, "DT5724") == 0)
 	{
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724_STD");
+	  for (int i = 0; i < 4; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       
       if(strcmp(dig->boardInfo->ModelName, "DT5724A") == 0)
 	{
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724A_STD");
+	  for (int i = 0; i < 2; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
       
@@ -1134,6 +1143,7 @@ int MainFrame::initDigitizer()
       if(strcmp(dig->boardInfo->ModelName, "DT5730") == 0)
 	{
 	  if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
+	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
 
@@ -1141,10 +1151,12 @@ int MainFrame::initDigitizer()
       if(strcmp(dig->boardInfo->ModelName, "DT5742") == 0)
 	{
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742_STD");
+	  for (int i = 0; i < 16; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       if(strcmp(dig->boardInfo->ModelName, "DT5742B") == 0)
 	{
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5742B_STD");
+	  for (int i = 0; i < 16; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
       
@@ -1163,6 +1175,7 @@ int MainFrame::initDigitizer()
     }
 
   ProgramButton->SetEnabled(1);
+  AdjustParButton->SetEnabled(1);
   return ret;
 }
 
@@ -1176,7 +1189,7 @@ void MainFrame::deleteDigitizer()
       
   CAEN_DGTZ_SWStopAcquisition(0);
   CAEN_DGTZ_CloseDigitizer(0);  
-  
+  AdjustParButton->SetEnabled(0);
 }
 
 int MainFrame::GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo)
@@ -1197,18 +1210,32 @@ int MainFrame::GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo)
 
 void MainFrame::MarkChennelOrRecordLengthChange()
 {
-  std::cout<<"@@@@@@@@@@@@"<<std::endl;
-
   if(!connectButton->IsEnabled()) ProgramButton->SetEnabled(1);
   AllocateButton->SetEnabled(0);
 }
 
 void MainFrame::ProgramDigitizer()
 {
-  std::cout<<"!!!!!!!!!!!"<<std::endl;
-
   int ret = 0;
   int MajorNumber;
+  unsigned int enablemask = 0;
+  int recordlength = 0;
+  
+  board->SetDPPAcquisitionMode(CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
+  board->SetAcquisitionMode(CAEN_DGTZ_SW_CONTROLLED);
+  // std::cout<<"RecLen: "<<RecordLength->GetIntNumber()<<std::endl;
+  board->SetRecordLength(RecordLength->GetIntNumber());
+  
+  board->SetIOLevel(CAEN_DGTZ_IOLevel_TTL);
+  board->SetExtTriggerInputMode(CAEN_DGTZ_TRGMODE_ACQ_ONLY);
+  for (int i = 0; i < MAX_CHANNEL; ++i)
+    {
+      if(ChannelsCheckButton[i]->IsEnabled() && ChannelsCheckButton[i]->IsOn()) enablemask = SetBit_32((unsigned short)i,enablemask);
+    }
+  // std::cout<<"Mask: "<<enablemask<<std::endl;
+  board->SetChannelEnableMask(enablemask);
+  board->SetDPPEventAggregation(0,0);
+  board->SetRunSynchronizationMode(CAEN_DGTZ_RUN_SYNC_Disabled);
   
   if(board->ProgramDigitizer())
     {
@@ -1221,6 +1248,10 @@ void MainFrame::ProgramDigitizer()
       StateMsg->SetText("Program Digitizer OK ...");
     }
 
+  board->GetRecordLength(&recordlength);
+  // std::cout<<"## RecLen: "<<recordlength<<std::endl;
+  RecordLength->SetIntNumber(recordlength);
+  
   sscanf(dig->boardInfo->AMC_FirmwareRel, "%d", &MajorNumber);
 
   // Read again the board infos, just in case some of them were changed by the programming
@@ -1261,8 +1292,6 @@ void MainFrame::ProgramDigitizer()
 
 void MainFrame::AllocateMemory()
 {
-  std::cout<<"$$$$$$$$$$$$$"<<std::endl;
-
   if(board->AllocateMemory())
     {
       // error
@@ -1278,16 +1307,11 @@ void MainFrame::AllocateMemory()
   StartStopButton->SetEnabled(1);
 }
 
+void MainFrame::AdjustParameters()
+{
+  new ParSetTable(fClient->GetRoot(), this,board);
+}
+
 
 // 
 // MainFrame.cc ends here
-
-
-
-
-
-
-
-
-
-

@@ -4,15 +4,16 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 二 11月 29 21:12:27 2016 (+0800)
+// Last-Updated: 三 11月 30 12:20:28 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 21
+//     Update #: 30
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
 
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DT_PSD::DT_PSD(Digitizer* dig,const char *name)
@@ -46,39 +47,25 @@ int DT_PSD::ProgramDigitizer()
   ret |= CAEN_DGTZ_WriteRegister(handle, 0x8004, 0x00000004);// Enable indiv trgin
 
   
-  // CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope CAEN_DGTZ_DPP_ACQ_MODE_List CAEN_DGTZ_DPP_ACQ_MODE_Mixed
-  // CAEN_DGTZ_DPP_SAVE_PARAM_EnergyOnly Only energy (DPP-PHA) or charge (DPP-PSD/DPP-CI v2) is returned 
-  // CAEN_DGTZ_DPP_SAVE_PARAM_TimeOnly   Only time is returned 
-  // CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime  Both energy/charge and time are returned
-  // CAEN_DGTZ_DPP_SAVE_PARAM_ChargeAndTime   eprecated On DPP-PSD and DPP-CI use CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime
-  // CAEN_DGTZ_DPP_SAVE_PARAM_None   No histogram data is returned
-  ret |= CAEN_DGTZ_SetDPPAcquisitionMode(handle, CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_ChargeAndTime);
+  ret |= CAEN_DGTZ_SetDPPAcquisitionMode(handle, par_dppacqmode, par_dppsaveparam);
   
-  // CAEN_DGTZ_SW_CONTROLLED  CAEN_DGTZ_S_IN_CONTROLLED  CAEN_DGTZ_FIRST_TRG_CONTROLLED
-  ret |= CAEN_DGTZ_SetAcquisitionMode(handle, CAEN_DGTZ_SW_CONTROLLED);
+  ret |= CAEN_DGTZ_SetAcquisitionMode(handle, par_acqmode);
   
-  uint32_t RecordLength;
-  RecordLength = 5000;
-  ret |= CAEN_DGTZ_SetRecordLength(handle, RecordLength);
-
-
-  // CAEN_DGTZ_IOLevel_NIM / CAEN_DGTZ_IOLevel_TTL
-  ret |= CAEN_DGTZ_SetIOLevel(handle, CAEN_DGTZ_IOLevel_TTL);
-
-
-  // CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
-  ret |= CAEN_DGTZ_SetExtTriggerInputMode(handle, CAEN_DGTZ_TRGMODE_ACQ_ONLY);
-
-  ret |= CAEN_DGTZ_SetChannelEnableMask(handle, 0xff);
+  ret |= CAEN_DGTZ_SetRecordLength(handle, par_recordlength);
+  ret |= CAEN_DGTZ_GetRecordLength(handle, &par_recordlength,0);//总是拿ch=0
   
-  ret |= CAEN_DGTZ_SetDPPEventAggregation(handle, 0, 0);
+  ret |= CAEN_DGTZ_SetIOLevel(handle, par_iolevel);
 
+  ret |= CAEN_DGTZ_SetExtTriggerInputMode(handle, par_exttriggerinputmode);
 
-  // CAEN_DGTZ_RUN_SYNC_Disabled  CAEN_DGTZ_RUN_SYNC_TrgOutTrgInDaisyChain  CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain  CAEN_DGTZ_RUN_SYNC_SinFanout  CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain
-  ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, CAEN_DGTZ_RUN_SYNC_Disabled);
+  ret |= CAEN_DGTZ_SetChannelEnableMask(handle, par_enablemask);
+  
+  ret |= CAEN_DGTZ_SetDPPEventAggregation(handle, par_dppeventaggregationthreshold, par_dppeventaggregationmaxsize);
+
+  ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, par_runsyncmode);
 
   
-  ret |= CAEN_DGTZ_SetDPPParameters(handle, 0/*channel*/, &dpppsdParams);
+  // ret |= CAEN_DGTZ_SetDPPParameters(handle, 0/*channel*/, &dpppsdParams);
 
 
 
@@ -101,13 +88,14 @@ int DT_PSD::AllocateMemory()
     }
 
  
-  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &readoutBuffer, &bufferSize); // WARNING: This malloc must be done after the digitizer programming 
+  ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &readoutBuffer, &bufferSize); // WARNING: This malloc must be done after the digitizer programming
+  // std::cout<<"BufferSize: "<<bufferSize<<"  "<<sizeof(readoutBuffer)<<std::endl;
   ret |= CAEN_DGTZ_MallocDPPEvents(handle, (void **)dpppsdevents, &size); 
-  // Allocate memory for the waveforms 
-  ret |= CAEN_DGTZ_MallocDPPWaveforms(handle, (void **)&dpppsdwaveforms, &size); 
-
-
-
+  // std::cout<<"EventSize: "<<size<<"  "<<sizeof(dpppsdevents)<<std::endl;
+  ret |= CAEN_DGTZ_MallocDPPWaveforms(handle, (void **)&dpppsdwaveforms, &size);// Allocate memory for the waveforms 
+  // std::cout<<"Waveforms: "<<size<<"  "<<sizeof(dpppsdwaveforms)<<std::endl;
+  
+  
   
   return ret;
 }

@@ -4,19 +4,19 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 二 11月 29 19:54:41 2016 (+0800)
+// Last-Updated: 三 11月 30 13:31:51 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 22
+//     Update #: 27
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
 #define _MAINFRAME_H_
 
 #include "Global.hh"
+#include "ParSetTable.hh"
 
 #include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
-
 
 #include "RVersion.h"//版本判断
 #include "TApplication.h"
@@ -129,6 +129,7 @@ public:
   virtual ~MainFrame();
 
   void SetDataFileName();
+  void AdjustParameters();
   void StartStopRun();
   void SetOnlineData();
   void SetWriteData();
@@ -156,6 +157,7 @@ private:
   int GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo);
 
 private:
+  // Init
   TGComboBox *connectStyle;
   TGTextButton *connectButton;
   TGTextButton *DeleteButton;
@@ -169,21 +171,21 @@ private:
   TGTextButton *CompleteButton;
 
 
-  TGCheckButton *ChannelsCheckButton[16];
+  TGCheckButton *ChannelsCheckButton[MAX_CHANNEL];
   TGNumberEntry *RecordLength;
   TGTextButton *ProgramButton;
   TGTextButton *AllocateButton;
-  
+
+  TGTextButton *AdjustParButton;
   TGTextButton *StartStopButton;
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;
-
   
 private:
   Digitizer* dig;
   Board *board;
 
-
+  
   char Filename[1024];
   int runnum;
   char tmp[256];

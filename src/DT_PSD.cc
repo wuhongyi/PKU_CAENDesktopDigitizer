@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 三 11月 30 12:20:28 2016 (+0800)
+// Last-Updated: 四 12月  1 09:39:27 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 30
+//     Update #: 33
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -28,11 +28,10 @@ DT_PSD::~DT_PSD()
     {
       CAEN_DGTZ_FreeReadoutBuffer(&readoutBuffer);
       readoutBuffer = NULL;
+      CAEN_DGTZ_FreeDPPEvents(handle, (void **)dpppsdevents);
+      CAEN_DGTZ_FreeDPPWaveforms(handle,dpppsdwaveforms);
     }
 
-  CAEN_DGTZ_FreeDPPEvents(handle, (void **)dpppsdevents);
-  CAEN_DGTZ_FreeDPPWaveforms(handle,dpppsdwaveforms);
-  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -81,10 +80,10 @@ int DT_PSD::AllocateMemory()
 
   if(readoutBuffer != NULL)
     {
-      CAEN_DGTZ_FreeReadoutBuffer(&readoutBuffer);
+      ret = CAEN_DGTZ_FreeReadoutBuffer(&readoutBuffer);
       readoutBuffer = NULL;
-      CAEN_DGTZ_FreeDPPEvents(handle, (void **)dpppsdevents);
-      CAEN_DGTZ_FreeDPPWaveforms(handle,dpppsdwaveforms);
+      ret = CAEN_DGTZ_FreeDPPEvents(handle, (void **)dpppsdevents);
+      ret = CAEN_DGTZ_FreeDPPWaveforms(handle,dpppsdwaveforms);
     }
 
  
@@ -95,7 +94,7 @@ int DT_PSD::AllocateMemory()
   ret |= CAEN_DGTZ_MallocDPPWaveforms(handle, (void **)&dpppsdwaveforms, &size);// Allocate memory for the waveforms 
   // std::cout<<"Waveforms: "<<size<<"  "<<sizeof(dpppsdwaveforms)<<std::endl;
   
-  
+  if(ret) printf("Warning: errors malloc space the digitizer. ");
   
   return ret;
 }

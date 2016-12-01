@@ -4,15 +4,16 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 六 11月 26 19:44:46 2016 (+0800)
+// Last-Updated: 四 12月  1 09:39:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 9
+//     Update #: 12
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
 
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DT_Standard::DT_Standard(Digitizer* dig,const char *name)
@@ -49,51 +50,94 @@ int DT_Standard::ProgramDigitizer()
   printf("Program Standard\n");
   int ret = 0;
 
-  uint32_t RecordLength;
-  RecordLength = 2000;
+  ret |= CAEN_DGTZ_SetAcquisitionMode(handle, par_acqmode);
+  
+  ret |= CAEN_DGTZ_SetRecordLength(handle, par_recordlength);
+  ret |= CAEN_DGTZ_GetRecordLength(handle, &par_recordlength);
 
-  uint32_t PostTrigger;
-  PostTrigger = 200;
+  // ret |= CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
+  // ret |= CAEN_DGTZ_GetPostTriggerSize(handle, &PostTrigger);
+  // ret |= CAEN_DGTZ_SetPostTriggerSize(handle, WDcfg.PostTrigger);
+  // if(BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
+  //   uint32_t pt;
+  //   ret |= CAEN_DGTZ_GetPostTriggerSize(handle, &pt);
+  //   WDcfg.PostTrigger = pt;
+  // }
   
 
-  ret |= CAEN_DGTZ_SetRecordLength(handle, RecordLength);
-  ret |= CAEN_DGTZ_GetRecordLength(handle, &RecordLength);
+  ret |= CAEN_DGTZ_SetIOLevel(handle, par_iolevel);
 
-  ret |= CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
-  ret |= CAEN_DGTZ_GetPostTriggerSize(handle, &PostTrigger);
+  ret |= CAEN_DGTZ_SetExtTriggerInputMode(handle, par_exttriggerinputmode);
 
-  // CAEN_DGTZ_IOLevel_NIM / CAEN_DGTZ_IOLevel_TTL
-  ret |= CAEN_DGTZ_SetIOLevel(handle, CAEN_DGTZ_IOLevel_TTL);
+  ret |= CAEN_DGTZ_SetChannelEnableMask(handle, par_enablemask);
 
+  ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, par_runsyncmode);
 
+  uint32_t numAggr = 0;
+  CAEN_DGTZ_GetMaxNumAggregatesBLT(handle,&numAggr);
+  std::cout<<"Gets the max number of aggregates of each block transfer: "<<numAggr<<std::endl;
+  // CAEN_DGTZ_SetMaxNumAggregatesBLT(int handle, uint32_t numAggr);
+  
+  // // custom setting for X742 boards
+  // if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
+  //   ret |= CAEN_DGTZ_SetFastTriggerDigitizing(handle,WDcfg.FastTriggerEnabled);
+  //   ret |= CAEN_DGTZ_SetFastTriggerMode(handle,WDcfg.FastTriggerMode);
+  // }
+  // if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE)) {
+  //   ret |= CAEN_DGTZ_SetDESMode(handle, WDcfg.DesMode);
+  // }
 
+  // if (BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) {
+  //   ret |= CAEN_DGTZ_SetDecimationFactor(handle, WDcfg.DecimationFactor);
+  // }
 
-  return 0;
+  // ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, WDcfg.NumEvents);
+  
+  if(ret) printf("Warning: errors found while programming the digitizer. ");
+  return ret; 
 }
 
 int DT_Standard::AllocateMemory()
 {
   int ret = 0;
-
+  
+  if(readoutBuffer != NULL)
+    {
+      ret |= CAEN_DGTZ_FreeReadoutBuffer(&readoutBuffer);
+      readoutBuffer = NULL;
+      if(NBits == 8)
+	ret |= CAEN_DGTZ_FreeEvent(handle, (void**)&Event8);
+      else
+	{
+	  if(FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
+	    {
+	      ret |= CAEN_DGTZ_FreeEvent(handle, (void**)&Event16);
+	    }
+	  else
+	    {
+	      ret |= CAEN_DGTZ_FreeEvent(handle, (void**)&Event742);
+	    }
+	}
+    }
+  
   // Allocate memory for the event data and readout buffer
   if(NBits == 8)
-    ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event8);
+    ret |= CAEN_DGTZ_AllocateEvent(handle, (void**)&Event8);
   else
     {
       if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
 	{
-	  ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);
+	  ret |= CAEN_DGTZ_AllocateEvent(handle, (void**)&Event16);
 	}
       else
 	{
-	  ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&Event742);
+	  ret |= CAEN_DGTZ_AllocateEvent(handle, (void**)&Event742);
 	}
     }
 
   ret |= CAEN_DGTZ_MallocReadoutBuffer(handle, &readoutBuffer,&bufferSize); // WARNING: This malloc must be done after the digitizer programming 
 
-
-  
+  if(ret) printf("Warning: errors malloc space the digitizer. ");
   return ret;
 }
 

@@ -4,16 +4,16 @@
 ;; Author: Hongyi Wu(吴鸿毅)
 ;; Email: wuhongyi@qq.com 
 ;; Created: 六 11月 26 16:41:07 2016 (+0800)
-;; Last-Updated: 三 11月 30 21:41:03 2016 (+0800)
+;; Last-Updated: 三 11月 30 21:47:18 2016 (+0800)
 ;;           By: Hongyi Wu(吴鸿毅)
-;;     Update #: 5
+;;     Update #: 6
 ;; URL: http://wuhongyi.cn -->
 
 # README
 
 本程序专为 CAEN 桌面版 Digitizer 开发。
 
-将所有插件按照固件分为 Standard、PHA、PSD 三种类型（暂时没有CI固件插件），封装成三个类。可扩展成支持该固件的任何插件。
+将所有插件按照固件分为 Standard、PHA、PSD 三种类型（手中当前没有CI固件插件），封装成三个类。可扩展成支持该固件的任何插件。
 
 当前拟支持：
 

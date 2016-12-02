@@ -64,7 +64,7 @@ self_trig: true, // trigger on over-threshold
 trig_mode: 0, // behavior of the channel trigger
 
 //choose index [POSITIVE, NEGATIVE]
-pulse_polarity: 0, // expected pulse polarity
+pulse_polarity: 1, // expected pulse polarity
 
 //choose  0->40fC/LSB; 1->160fC/LSB; 2->640fC/LSB; 3->2,5pC/LSB 
 charge_sensitivity: 0, // specifies scale factor when integrating charge

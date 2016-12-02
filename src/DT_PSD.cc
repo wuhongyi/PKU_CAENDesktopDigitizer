@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 四 12月  1 09:39:27 2016 (+0800)
+// Last-Updated: 四 12月  1 13:36:18 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 33
+//     Update #: 34
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -66,7 +66,26 @@ int DT_PSD::ProgramDigitizer()
   
   // ret |= CAEN_DGTZ_SetDPPParameters(handle, 0/*channel*/, &dpppsdParams);
 
+  if ((FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
+    {
+      // x740 x742
 
+    }
+  else
+    {
+      if (FamilyCode != CAEN_DGTZ_XX730_FAMILY_CODE && FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE)
+	{
+		
+	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
+	}
+
+      if (FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
+	{
+	  // x725 x730
+	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
+	}
+	      
+    }
 
   // if(ret) printf("-- 1 --");
 

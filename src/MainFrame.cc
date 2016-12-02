@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 三 11月 30 16:05:16 2016 (+0800)
+// Last-Updated: 五 12月  2 09:39:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 146
+//     Update #: 153
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -27,7 +27,8 @@ MainFrame::MainFrame(const TGWindow * p)
 {
   dig = NULL;
   board = NULL;
-
+  startstop = false;
+  writedata = false;
   
   
   dig = (Digitizer*) calloc(1,sizeof(Digitizer));
@@ -45,8 +46,8 @@ MainFrame::MainFrame(const TGWindow * p)
   TGCompositeFrame *Tab1 = TabPanel->AddTab("Init");
   MakeFoldPanelInit(Tab1);
 
-  // TGCompositeFrame *Tab2 = TabPanel->AddTab("Par");
-  // MakeFoldPanelPar(Tab2);
+  TGCompositeFrame *Tab2 = TabPanel->AddTab("Online");
+  MakeFoldPanelOnline(Tab2);
 
 
   // What to clean up in dtor
@@ -1003,6 +1004,8 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 void MainFrame::SetWriteData()
 {
 
+
+  
 }
 
 void MainFrame::SetOnlineData()
@@ -1036,10 +1039,60 @@ void MainFrame::SetDataFileName()
 
 void MainFrame::StartStopRun()
 {
+  int ret = 0;
+  if(startstop)
+    {
+      // runing,to stop
+      StartStopButton->SetText((char*)"&Start");
+      startstop = false;
+    }
+  else
+    {
+      // stop, do runing
+      StartStopButton->SetText((char*)"&Stop");
+      startstop = true;
 
+      // Clear unclean data (without this changing RecordLength at RunTime Freezes the digitizer)
+      ret = CAEN_DGTZ_ClearData(board->GetHandle());
+      if(ret) printf("Error: CAEN_DGTZ_ClearData\n ");
+      ret = CAEN_DGTZ_SWStartAcquisition(board->GetHandle());
+      if(ret) printf("Error: CAEN_DGTZ_SWStartAcquisition\n ");
+      
+      RunReadData();
+    }
   
 }
 
+void MainFrame::RunReadData()
+{
+  int ret = 0;
+  std::cout<<"read loop ..."<<std::endl;
+
+  while(startstop)
+    {
+      // Read data
+      // Save data
+      // Send Online data
+      /* Read data from the board */
+      if(board->ReadLoop())
+	{
+	  
+
+	}
+      
+      gSystem->ProcessEvents();
+    }
+
+  ret = CAEN_DGTZ_SWStopAcquisition(board->GetHandle());
+  if(ret) printf("Error: CAEN_DGTZ_SWStopAcquisition\n ");
+  
+  std::cout<<"done !!!"<<std::endl;
+  
+  // if write data,close file
+
+
+  std::cout<<"finish !!!"<<std::endl;
+}
 
 bool MainFrame::IsDirectoryExists(const char *path)
 {
@@ -1050,12 +1103,6 @@ bool MainFrame::IsDirectoryExists(const char *path)
     return false;
 }
 
-void MainFrame::MakeFoldPanelPar(TGCompositeFrame *TabPanel)
-{
-
-
-  
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -1074,6 +1121,7 @@ int MainFrame::initDigitizer()
       StateMsg->SetText("Can't open digitizer");
       return ret;
     }
+  ret = CAEN_DGTZ_SWStopAcquisition(dig->boardHandle);
   
   ret = CAEN_DGTZ_GetInfo(dig->boardHandle, dig->boardInfo);
   if (ret)
@@ -1225,15 +1273,21 @@ void MainFrame::ProgramDigitizer()
   board->SetAcquisitionMode(CAEN_DGTZ_SW_CONTROLLED);
   // std::cout<<"RecLen: "<<RecordLength->GetIntNumber()<<std::endl;
   board->SetRecordLength(RecordLength->GetIntNumber());
-  
+
   board->SetIOLevel(CAEN_DGTZ_IOLevel_TTL);
   board->SetExtTriggerInputMode(CAEN_DGTZ_TRGMODE_ACQ_ONLY);
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
-      if(ChannelsCheckButton[i]->IsEnabled() && ChannelsCheckButton[i]->IsOn()) enablemask = SetBit_32((unsigned short)i,enablemask);
+      if(ChannelsCheckButton[i]->IsEnabled() && ChannelsCheckButton[i]->IsOn())
+	{
+	  enablemask = SetBit_32((unsigned short)i,enablemask);
+	  
+	}
     }
   // std::cout<<"Mask: "<<enablemask<<std::endl;
   board->SetChannelEnableMask(enablemask);
+  board->SetChannelSelfTrigger(CAEN_DGTZ_TRGMODE_ACQ_ONLY);
+  
   board->SetDPPEventAggregation(0,0);
   board->SetRunSynchronizationMode(CAEN_DGTZ_RUN_SYNC_Disabled);
   
@@ -1311,6 +1365,18 @@ void MainFrame::AdjustParameters()
 {
   new ParSetTable(fClient->GetRoot(), this,board);
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
+{
+
+
+  
+
+  
+}
+
 
 
 // 

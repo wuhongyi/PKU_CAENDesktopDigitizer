@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 三 11月 30 21:29:41 2016 (+0800)
+// Last-Updated: 四 12月  1 13:36:18 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 38
+//     Update #: 40
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -24,7 +24,12 @@ public:
   char *GetName() {return Name;}
   int GetHandle() {return handle;}
   int GetChannels() {return Nch;}
-    
+  int GetFamilyCode() {return FamilyCode;}
+
+  
+  bool ReadLoop();
+
+  
   void SetDPPAcquisitionMode(CAEN_DGTZ_DPP_AcqMode_t mode,CAEN_DGTZ_DPP_SaveParam_t par) {par_dppacqmode = mode;par_dppsaveparam = par;}
   void SetDPPEventAggregation(int threshold, int maxsize) {par_dppeventaggregationthreshold = threshold;par_dppeventaggregationmaxsize = maxsize;}
 
@@ -36,7 +41,8 @@ public:
   void SetExtTriggerInputMode(CAEN_DGTZ_TriggerMode_t mode) {par_exttriggerinputmode = mode;}
   void SetChannelEnableMask(uint32_t mask) {par_enablemask = mask;}
   void SetRunSynchronizationMode(CAEN_DGTZ_RunSyncMode_t mode) {par_runsyncmode = mode;}
-
+  void SetChannelSelfTrigger(CAEN_DGTZ_TriggerMode_t mode) {par_channelselftrigger = mode;}
+  
   
   // return  0 = Success; negative numbers are error codes
   virtual int ProgramDigitizer() = 0;
@@ -62,6 +68,7 @@ protected:
   CAEN_DGTZ_TriggerMode_t par_exttriggerinputmode;// CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
   CAEN_DGTZ_IOLevel_t par_iolevel;// CAEN_DGTZ_IOLevel_NIM  CAEN_DGTZ_IOLevel_TTL
   CAEN_DGTZ_AcqMode_t par_acqmode;// CAEN_DGTZ_SW_CONTROLLED  CAEN_DGTZ_S_IN_CONTROLLED  CAEN_DGTZ_FIRST_TRG_CONTROLLED
+  CAEN_DGTZ_TriggerMode_t par_channelselftrigger;// CAEN_DGTZ_TRGMODE_DISABLED  CAEN_DGTZ_TRGMODE_EXTOUT_ONLY  CAEN_DGTZ_TRGMODE_ACQ_ONLY  CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT
 
   uint32_t par_enablemask;
   uint32_t par_recordlength;

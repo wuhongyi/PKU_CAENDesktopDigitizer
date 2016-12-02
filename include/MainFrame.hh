@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 三 11月 30 13:31:51 2016 (+0800)
+// Last-Updated: 四 12月  1 20:33:10 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 27
+//     Update #: 30
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -147,12 +147,12 @@ private:
 
   
   void MakeFoldPanelInit(TGCompositeFrame *TabPanel);
-  void MakeFoldPanelPar(TGCompositeFrame *TabPanel);
+  void MakeFoldPanelOnline(TGCompositeFrame *TabPanel);
 
 
   int initDigitizer();
   void deleteDigitizer();
-
+  void RunReadData();
 
   int GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo);
 
@@ -185,6 +185,8 @@ private:
   Digitizer* dig;
   Board *board;
 
+  bool startstop;// 1-run 0-stop
+  bool writedata;// 1-write 0-not write
   
   char Filename[1024];
   int runnum;

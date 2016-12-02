@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:22 2016 (+0800)
-// Last-Updated: 三 11月 30 21:25:55 2016 (+0800)
+// Last-Updated: 四 12月  1 20:30:40 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 104
+//     Update #: 116
 // URL: http://wuhongyi.cn 
 
 #include "ParSetTable.hh"
@@ -19,10 +19,12 @@ ParSetTable::ParSetTable(const TGWindow *p,const TGWindow *main, Board *b)
   : TGTransientFrame(p,main)
 {
   SetCleanup(kDeepCleanup);
-  
+
+  int ret = 0;
   board = b;
   channelmask = 0;
-  CAEN_DGTZ_GetChannelEnableMask(board->GetHandle(),&channelmask);
+  ret = CAEN_DGTZ_GetChannelEnableMask(board->GetHandle(),&channelmask);
+  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelEnableMask"<<std::endl;
   // std::cout<<"@@ ChMask: "<<channelmask<<std::endl;
 
   
@@ -70,7 +72,7 @@ ParSetTable::ParSetTable(const TGWindow *p,const TGWindow *main, Board *b)
       sprintf(tmp,"DC Offset:");
       dcoffsetlabel[i] = new TGLabel(BaseParRows[i],tmp); 
       BaseParRows[i]->AddFrame(dcoffsetlabel[i],new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
-      DCOffset[i] = new TGNumberEntry(BaseParRows[i],0,2,-1,TGNumberFormat::kNESReal,TGNumberFormat::kNEAAnyNumber,TGNumberFormat::kNELLimitMinMax,-50,50);
+      DCOffset[i] = new TGNumberEntry(BaseParRows[i],0,3,-1,TGNumberFormat::kNESReal,TGNumberFormat::kNEAAnyNumber,TGNumberFormat::kNELLimitMinMax,-50,50);
       BaseParRows[i]->AddFrame(DCOffset[i],new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
 
       sprintf(tmp,"Threshold:");
@@ -181,7 +183,7 @@ void ParSetTable::CopyParameter()
 
 void ParSetTable::LoadParameter()
 {
-  CAEN_DGTZ_PulsePolarity_t pulsepolarity;// = CAEN_DGTZ_PulsePolarityPositive;
+  CAEN_DGTZ_PulsePolarity_t loadpulsepolarity;// = CAEN_DGTZ_PulsePolarityPositive;
   unsigned int dcoffset = 0;
   unsigned int threshold = 0;
   unsigned int pretrigger = 0;
@@ -192,17 +194,6 @@ void ParSetTable::LoadParameter()
     {
       if(i < board->GetChannels() && TstBit_32(i,channelmask))
 	{
-	  // Pulse Polarity
-	  ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&pulsepolarity);
-	  std::cout<<"load PS:"<<pulsepolarity<<std::endl;
-	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
-	  // PulsePolarityBox[i]->Select(int(pulsepolarity));
-	  if(pulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
-	    PulsePolarityBox[i]->Select(0);
-	  else
-	    PulsePolarityBox[i]->Select(1);
-
-	  
 	  // DC Offset
 	  ret = CAEN_DGTZ_GetChannelDCOffset(board->GetHandle(),i,&dcoffset);
 	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelDCOffset"<<std::endl;
@@ -215,7 +206,18 @@ void ParSetTable::LoadParameter()
 	  ret = CAEN_DGTZ_GetChannelTriggerThreshold(board->GetHandle(),i,&threshold);
 	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelTriggerThreshold"<<std::endl;
 	  Threshold[i]->SetIntNumber(int(threshold));
-	  
+
+	  // TODO
+	  // // Pulse Polarity
+	  // ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&loadpulsepolarity);
+	  // std::cout<<"load PS:"<<loadpulsepolarity<<std::endl;
+	  // if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
+	  // // PulsePolarityBox[i]->Select(int(pulsepolarity));
+	  // if(loadpulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
+	  //   PulsePolarityBox[i]->Select(0);
+	  // else
+	  //   PulsePolarityBox[i]->Select(1);
+
 	  if(strstr(board->GetName(),(char*)"STD") == NULL)
 	    {
 	      // 不存在

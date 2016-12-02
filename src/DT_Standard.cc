@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 四 12月  1 09:39:38 2016 (+0800)
+// Last-Updated: 四 12月  1 13:36:18 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 12
+//     Update #: 13
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -77,6 +77,14 @@ int DT_Standard::ProgramDigitizer()
   CAEN_DGTZ_GetMaxNumAggregatesBLT(handle,&numAggr);
   std::cout<<"Gets the max number of aggregates of each block transfer: "<<numAggr<<std::endl;
   // CAEN_DGTZ_SetMaxNumAggregatesBLT(int handle, uint32_t numAggr);
+
+
+
+
+
+
+
+
   
   // // custom setting for X742 boards
   // if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {

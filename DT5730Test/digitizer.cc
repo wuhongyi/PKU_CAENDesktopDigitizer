@@ -108,7 +108,7 @@ void SettingsFromDB(map<string,json::Value> &db, Settings &settings) {
                 settings.chans[i].eventsperagg = chan["events_per_aggregate"].cast<int>();
                 
                 settings.chans[i].trigmode = json_trig_mode[chan["trig_mode"].cast<int>()];
-                settings.chans[i].pulsepol = json_pulse_polarity[chan["pulse_polarity"].cast<int>()]; 
+                settings.chans[i].pulsepol = json_pulse_polarity[chan["pulse_polarity"].cast<int>()];
             }
         }   
     }
@@ -151,7 +151,14 @@ void ApplySettings(int handle, Settings &settings) {
             params.nsbl[i] = settings.chans[i].baseline;
             
             SAFE(CAEN_DGTZ_SetChannelSelfTrigger(handle,settings.chans[i].trigmode,1<<i));
+
+	    CAEN_DGTZ_PulsePolarity_t tmppulsepol;
+	    SAFE(CAEN_DGTZ_GetChannelPulsePolarity(handle,i,&tmppulsepol));
+	    std::cout<<"0 - PulsePolarity:"<<tmppulsepol<<std::endl;
             SAFE(CAEN_DGTZ_SetChannelPulsePolarity(handle,i,settings.chans[i].pulsepol));
+	    std::cout<<"1 - PulsePolarity:"<<settings.chans[i].pulsepol<<std::endl;
+	    SAFE(CAEN_DGTZ_GetChannelPulsePolarity(handle,i,&settings.chans[i].pulsepol));
+	    std::cout<<"2 - PulsePolarity:"<<settings.chans[i].pulsepol<<std::endl;
             SAFE(CAEN_DGTZ_SetChannelDCOffset(handle,i,settings.chans[i].offset));
             
         }

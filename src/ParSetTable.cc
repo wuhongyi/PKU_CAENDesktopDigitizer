@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:22 2016 (+0800)
-// Last-Updated: 四 12月  1 20:30:40 2016 (+0800)
+// Last-Updated: 五 12月  2 21:32:48 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 116
+//     Update #: 124
 // URL: http://wuhongyi.cn 
 
 #include "ParSetTable.hh"
@@ -146,7 +146,7 @@ ParSetTable::ParSetTable(const TGWindow *p,const TGWindow *main, Board *b)
       if(strstr(board->GetName(),(char*)"PHA") == NULL &&  strstr(board->GetName(),(char*)"PSD") == NULL)
 	{
 	  BaseParRows[i]->HideFrame(BaseParPHAPSDRows[i]);
-	  BaseAllParRows->HideFrame(BaseParSTDRaws);
+	  BaseAllParRows->ShowFrame(BaseParSTDRaws);
 	}
       else
 	{
@@ -189,6 +189,7 @@ void ParSetTable::LoadParameter()
   unsigned int pretrigger = 0;
   unsigned int posttrigger = 0;
   int ret = 0;
+
   
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
@@ -208,16 +209,17 @@ void ParSetTable::LoadParameter()
 	  Threshold[i]->SetIntNumber(int(threshold));
 
 	  // TODO
-	  // // Pulse Polarity
-	  // ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&loadpulsepolarity);
-	  // std::cout<<"load PS:"<<loadpulsepolarity<<std::endl;
-	  // if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
-	  // // PulsePolarityBox[i]->Select(int(pulsepolarity));
-	  // if(loadpulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
-	  //   PulsePolarityBox[i]->Select(0);
-	  // else
-	  //   PulsePolarityBox[i]->Select(1);
+	  // Pulse Polarity
+	  ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&loadpulsepolarity);
+	  std::cout<<"load PS:"<<loadpulsepolarity<<std::endl;
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
+	  // PulsePolarityBox[i]->Select(int(pulsepolarity));
+	  if(loadpulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
+	    PulsePolarityBox[i]->Select(0);
+	  else
+	    PulsePolarityBox[i]->Select(1);
 
+	  
 	  if(strstr(board->GetName(),(char*)"STD") == NULL)
 	    {
 	      // 不存在
@@ -233,6 +235,7 @@ void ParSetTable::LoadParameter()
 	      // TODO
 	      ret = CAEN_DGTZ_GetPostTriggerSize(board->GetHandle(),&posttrigger);
 	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetPostTriggerSize"<<std::endl;
+	      std::cout<<"load posttrigger:"<<posttrigger<<std::endl;
 	      PostTriggerSize->SetIntNumber(int(posttrigger));
 	      
 	    }
@@ -249,16 +252,31 @@ void ParSetTable::ApplyParameter()
   unsigned int pretrigger = 0;
   unsigned int posttrigger = 0;
   int ret = 0;
+
+  unsigned int testdata = 0;
+  
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
       if(i < board->GetChannels() && TstBit_32(i,channelmask))
 	{
 	  // Pulse Polarity
-	  std::cout<<"apply PS:"<<PulsePolarityBox[i]->GetSelected()<<std::endl;
+	  // ret = CAEN_DGTZ_ReadRegister(board->GetHandle(), 0x8000, &testdata);
+	  // std::cout<<"apply RR1:"<<TstBit_32(6,testdata)<<std::endl;
+	  // testdata = SetBit_32(6,testdata);
+	  // ret = CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x8000, testdata);
+	  // ret = CAEN_DGTZ_ReadRegister(board->GetHandle(), 0x8000, &testdata);
+	  // std::cout<<"apply RR2:"<<TstBit_32(6,testdata)<<std::endl;
+	  // std::cout<<"apply PS:"<<PulsePolarityBox[i]->GetSelected()<<std::endl;
 	  if(PulsePolarityBox[i]->GetSelected() == 0)
-	    ret = CAEN_DGTZ_SetChannelPulsePolarity(board->GetHandle(),i,CAEN_DGTZ_PulsePolarityPositive);
+	    {
+	      std::cout<<"apply   CAEN_DGTZ_PulsePolarityPositive"<<std::endl;
+	      ret = CAEN_DGTZ_SetChannelPulsePolarity(board->GetHandle(),i,CAEN_DGTZ_PulsePolarityPositive);
+	    }
 	  else
-	    ret = CAEN_DGTZ_SetChannelPulsePolarity(board->GetHandle(),i,CAEN_DGTZ_PulsePolarityNegative);
+	    {
+	      std::cout<<"apply   CAEN_DGTZ_PulsePolarityNegative"<<std::endl;
+	      ret = CAEN_DGTZ_SetChannelPulsePolarity(board->GetHandle(),i,CAEN_DGTZ_PulsePolarityNegative);
+	    }
 	  if(ret) std::cout<<"Error: CAEN_DGTZ_SetChannelPulsePolarity"<<std::endl;
 	  ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&pulsepolarity);
 	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
@@ -301,7 +319,7 @@ void ParSetTable::ApplyParameter()
 	    {
 	      // 存在
 	      // STD
-	      ret = CAEN_DGTZ_SetPostTriggerSize(board->GetHandle(),posttrigger);
+	      ret = CAEN_DGTZ_SetPostTriggerSize(board->GetHandle(),(unsigned int)PostTriggerSize->GetIntNumber());
 	      if(ret) std::cout<<"Error: CAEN_DGTZ_SetPostTriggerSize"<<std::endl;
 	      ret = CAEN_DGTZ_GetPostTriggerSize(board->GetHandle(),&posttrigger);
 	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetPostTriggerSize"<<std::endl;

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 五 12月  2 09:39:09 2016 (+0800)
+// Last-Updated: 五 12月  2 20:17:05 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 153
+//     Update #: 155
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1192,6 +1192,8 @@ int MainFrame::initDigitizer()
 	{
 	  if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
 	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5730_STD");
+	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
 
@@ -1268,8 +1270,12 @@ void MainFrame::ProgramDigitizer()
   int MajorNumber;
   unsigned int enablemask = 0;
   int recordlength = 0;
+
+  if(!(MajorNumber == STANDARD_FW_CODE))
+    {
+      board->SetDPPAcquisitionMode(CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
+    }
   
-  board->SetDPPAcquisitionMode(CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
   board->SetAcquisitionMode(CAEN_DGTZ_SW_CONTROLLED);
   // std::cout<<"RecLen: "<<RecordLength->GetIntNumber()<<std::endl;
   board->SetRecordLength(RecordLength->GetIntNumber());
@@ -1287,8 +1293,13 @@ void MainFrame::ProgramDigitizer()
   // std::cout<<"Mask: "<<enablemask<<std::endl;
   board->SetChannelEnableMask(enablemask);
   board->SetChannelSelfTrigger(CAEN_DGTZ_TRGMODE_ACQ_ONLY);
+
+
+  if(!(MajorNumber == STANDARD_FW_CODE))
+    {
+      board->SetDPPEventAggregation(0,0);
+    }
   
-  board->SetDPPEventAggregation(0,0);
   board->SetRunSynchronizationMode(CAEN_DGTZ_RUN_SYNC_Disabled);
   
   if(board->ProgramDigitizer())

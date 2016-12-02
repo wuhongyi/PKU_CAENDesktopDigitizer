@@ -1,0 +1,187 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x724 and DT5780 DPP-PHA FPGA firmware revision history.
+  These digitizer boards houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+
+===============================================================================
+Release 4.11_128.34
+===============================================================================
+New Features / Changes	: 
+
+		*	Changed trigger mode 1 (neighbour triggering): open a coincidence window 
+   			(size set by register tvaw @ 0x1n84) and consider all triggers falling
+   			inside (either local or coming from other channels) as a single trigger. 
+   			This prevents the pile up rejector to tag two consecutive triggers 
+   			(OR of the same event in different channnels) as piled-up.	
+
+Bug fix                 :
+			
+		* Time stamp reset from SIN/GPI: combinatory logic made an undesired memory clear
+		* Improved the fake event generation due to TT reset
+		* Coincidences between channels not working properly (error in the trigger validation signal)
+  
+  
+===============================================================================
+Release 4.5_128.30
+===============================================================================
+New Features / Changes	:
+		* Added Board Fake bit in the "Board Aggregate" header format
+		* Added an automatic control of the fan speed (Desktop only)
+		* Added automatic reload of PLL after a change of the clock source 
+		  (ext/int) (Desktop only)
+		
+	Bug fix                 :
+		* Fixed issue of slow readout with DPP FW
+		* Fixed issue in case of single channel register access during BLT
+		* Modified TRGOUT (Front Panel) logic generation.
+				  
+
+===============================================================================
+Release 4.2_128.29
+===============================================================================
+New Features / Changes	:
+
+		* modified management of "clear" signal to make it compatible with mother board rev 4.02
+
+Bug fix                 :
+
+		* bug fix in dead time calculation
+ 		* bug fix: managed saturation with decimation and digital gain
+		* bug fix: the trapezoid results folded for particular DPP parameters
+		* changed timing constraints to some internal signals in order to fix a 
+		  bug of communication error occurring at high temperature
+
+
+===============================================================================
+Release 4.1_128.26
+===============================================================================
+New Features / Changes	:
+
+		* implemenetd anti-coincidence (DPPCtrlReg[19:18] = 0x3)
+		* New management of the input range saturation: over-range pulses produce an event
+		  with energy=0x7FFF, then the trigger logic is inhibited for 2 decay time constants
+		  after the saturation recovery. Suppressed spurious events generated at the end 
+		  of the saturation
+		* Set energy=0 for fake the events that trace the time stamp roll-over	
+		* Set trgout width 3 samples shorter than tvaw in order to compensate for the trigger
+		  validation latency in coincidence mode (trgmode="10")
+
+Bug fix                 :
+
+		* bug fix in Gated Acquisition using Ext TRGIN as a gate (self-trigger inhibit)
+
+
+===============================================================================
+Release 4.0_128.24
+===============================================================================
+New Features / Changes	:
+
+      * Modified coincidences to conform to DPP-PSD/CI firmware: stretched trgouts feed
+	    AND/OR/MAJ logic in the mother board and generate individual trigger validations.
+      * Modified the size of the register 0x8020/0x1n20 (Record Length) to 16 bit.
+      * Added a new management of front panel LVDS I/Os; added Busy/Veto IN/Out
+        by default, the old LVDS I/O setting is kept for compatibility with previous versions.
+           
+Bug fix                 :
+  
+      * Fixed External Trigger Mask not working.
+      * Fixed occasional data readout error.
+	  
+===============================================================================
+Release 3.4_128.18
+===============================================================================
+WARNING: This release has been heavily revised and is not compliant to 
+previous releases.
+===============================================================================
+  
+New Features / Changes	:
+
+      * Discontinued memory test mode (ramp generator).
+      * Implemented individual input signal inversion.
+      * Added automatic acquisition veto when the analog signal is outside the 
+        input dynamic range (ADC over-range).
+      * Modified Virtual Probes options.
+      * Extended baseline options.
+      * Improved pile-up management.
+      * Implemented programmable trigger holdoff.
+      * Implemented Rise Time Discriminator.
+      * Modified memory management:  multi-event buffer (aggregates)
+        for readout optimization.
+      * Modified event data format.
+      * Discontinued Post Trigger register and added Pre Trigger register
+        (limited to 512 samples).
+      * Implemented data marker to monitor the time tag rollover.
+      * Implemented "disable autotrigger" option.
+      * Added dedicated register for signal vetoing: external trigger input 
+        can be completely disabled for any use.
+      * S-IN signal usage heavily modified.
+     
+  Bug fix     	            :
+  
+      * Fixed issues for start/stop acquisition.
+      * Fixed issue for optical link interrupts propagation on a daisy-chained
+        link.
+      * Minor bug fixing.
+
+===============================================================================
+Release 3.2_128.8
+===============================================================================
+
+  New Features / Changes	:
+
+      * New syncronous start for multiboard configuration with TRG-OUT/TRG-IN
+        configuration fully implemented. Added possibility to start acquisition
+        with a software trigger to the first board in the chain.
+     
+  Bug fix     	            :
+  
+      * Fixed issue on optical link state machine.
+
+===============================================================================
+Release 3.1_128.8
+===============================================================================
+     
+  Bug fix     	            :
+      
+      * (V1724 and VX1724 only) Fixed a major bug in VME interface that could
+        generate misalignement on event readout. 
+      * Fixed issue on acquisition start/stop: data readout could not 
+        restart after a stop/start acquisition sequence.
+
+===============================================================================
+Release 3.0_128.8
+===============================================================================
+  
+  New Features / Changes	:
+
+      * Optical link interface protocol upgraded to CONET2:
+        CONET2 is NOT back compatible with previous CONET1 protocol.
+        Check migration instructions on CAEN website or 
+        contact support.frontend@caen.it.
+      * Changed run mode configuration bit usage(bit[1:0] of 0x8100 register):
+        Mode "00" unchanged.
+        Other modes changed to support improved multiboard run synchronization.
+      * Downsampling feature discontinued.
+      
+  Bug fix     	            :
+
+      * Minor bug fixing 
+      
+===============================================================================
+Release 1.2_128.8
+===============================================================================
+
+  First release

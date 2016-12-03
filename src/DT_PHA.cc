@@ -1,28 +1,28 @@
-// DT_PSD.cc --- 
+// DT_PHA.cc --- 
 // 
 // Description: 
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
-// Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 六 12月  3 18:37:06 2016 (+0800)
+// Created: 六 12月  3 09:58:01 2016 (+0800)
+// Last-Updated: 六 12月  3 17:48:21 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 44
+//     Update #: 3
 // URL: http://wuhongyi.cn 
 
-#include "DT_PSD.hh"
+#include "DT_PHA.hh"
 
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DT_PSD::DT_PSD(Digitizer* dig,const char *name)
+DT_PHA::DT_PHA(Digitizer* dig,const char *name)
   : Board(dig,name)
 {
 
 }
 
-DT_PSD::~DT_PSD()
+DT_PHA::~DT_PHA()
 {
   if(readoutBuffer != NULL)
     {
@@ -36,9 +36,9 @@ DT_PSD::~DT_PSD()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int DT_PSD::ProgramDigitizer()
+int DT_PHA::ProgramDigitizer()
 {
-  printf("Program DPP-PSD\n");
+  printf("Program DPP-PHA\n");
   int ret = 0;
   
   // ret |= CAEN_DGTZ_WriteRegister(handle, 0x811C, 0xC003C);// serve per mandare SW trg individuali e per abilitare il ts reset
@@ -63,45 +63,8 @@ int DT_PSD::ProgramDigitizer()
 
   ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, par_runsyncmode);
 
-  for (int ch = 0; ch < Nch; ++ch)
-    {
-      dpppsdParams.thr[ch] = 300;// Trigger Threshold
-      // The following parameter is used to specifiy the number of samples for the baseline averaging:
-      // 	 0 -> absolute Bl
-      // 	 1 -> 4samp
-      // 	 2 -> 8samp
-      // 	 3 -> 16samp
-      // 	 4 -> 32samp
-      // 	 5 -> 64samp
-      // 	 6 -> 128samp
-      dpppsdParams.nsbl[ch] = 2;
-      dpppsdParams.lgate[ch] = 32;    // Long Gate Width (N*4ns)
-      dpppsdParams.sgate[ch] = 24;    // Short Gate Width (N*4ns)
-      dpppsdParams.pgate[ch] = 8;     // Pre Gate Width (N*4ns)
-      // Self Trigger Mode:
-      // 	 0 -> Disabled
-      // 	 1 -> Enabled
-      dpppsdParams.selft[ch] = 1;
-      // Trigger configuration:
-      // CAEN_DGTZ_DPP_TriggerConfig_Peak       -> trigger on peak. NOTE: Only for FW <= 13X.5
-      // CAEN_DGTZ_DPP_TriggerConfig_Threshold  -> trigger on threshold 
-      dpppsdParams.trgc[ch] = CAEN_DGTZ_DPP_TriggerConfig_Threshold;
-      // Trigger Validation Acquisition Window
-      dpppsdParams.tvaw[ch] = 50;
-      // Charge sensibility: 0->40fc/LSB; 1->160fc/LSB; 2->640fc/LSB; 3->2,5pc/LSB
-      dpppsdParams.csens[ch] = 0;
-    }
-  // Pile-Up rejection Mode
-  //    CAEN_DGTZ_DPP_PSD_PUR_DetectOnly -> Only Detect Pile-Up
-  //    CAEN_DGTZ_DPP_PSD_PUR_Enabled -> Reject Pile-Up
-  // DPPParams[b].purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
-  dpppsdParams.purgap = 100;  // Purity Gap
-  dpppsdParams.blthr = 3;     // Baseline Threshold
-  dpppsdParams.bltmo = 100;   // Baseline Timeout
-  dpppsdParams.trgho = 8;     // Trigger HoldOff
-
   
-  ret |= CAEN_DGTZ_SetDPPParameters(handle, par_enablemask, &dpppsdParams);
+  // ret |= CAEN_DGTZ_SetDPPParameters(handle, 0/*channel*/, &dpppsdParams);
 
   if ((FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
     {
@@ -130,7 +93,7 @@ int DT_PSD::ProgramDigitizer()
   return ret;
 }
 
-int DT_PSD::AllocateMemory()
+int DT_PHA::AllocateMemory()
 {
   int ret = 0;
 
@@ -156,14 +119,14 @@ int DT_PSD::AllocateMemory()
 }
 
 
-int DT_PSD::GetEvent()
+int DT_PHA::GetEvent()
 {
-  return CAEN_DGTZ_GetDPPEvents(handle, readoutBuffer, bufferSize, (void**)dpppsdevents, NumEvents);
+  return CAEN_DGTZ_GetDPPEvents(handle, readoutBuffer, bufferSize, (void**)dppphaevents, NumEvents);
    
 }
 
 
-int DT_PSD::GetWaveform()
+int DT_PHA::GetWaveform()
 {
   for(int ch = 0; ch < Nch; ch++)
     {
@@ -176,41 +139,12 @@ int DT_PSD::GetWaveform()
 	  // dpppsdevents[ch][ev].TimeTag;
 
 	  // Energy
-	  // dpppsdevents[ch][ev].ChargeLong;
-	  // dpppsdevents[ch][ev].ChargeShort;
-
-	  // CAEN_DGTZ_DecodeDPPWaveforms(handle, &dpppsdevents[ch][ev], dpppsdwaveforms);
-	  // int size;
-	  // int16_t *WaveLine;
-	  // uint8_t *DigitalWaveLine;	  
-	  // size = (int)(dpppsdwaveforms->Ns); // Number of samples
-	  // WaveLine = dpppsdwaveforms->Trace1; // First trace (for DPP-PSD it is ALWAYS the Input Signal)
-	  // WaveLine = dpppsdwaveforms->Trace2; // Second Trace (if single trace mode, it is a sequence of zeroes)
-
-
-	  // DigitalWaveLine = dpppsdwaveforms->DTrace1; // First Digital Trace (Gate Short)
-	  // DigitalWaveLine = dpppsdwaveforms->DTrace2; // Second Digital Trace (Gate Long)
-	  // DigitalWaveLine = dpppsdwaveforms->DTrace3; // Third Digital Trace (DIGITALPROBE1 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
-	  // DigitalWaveLine = dpppsdwaveforms->DTrace4; // Fourth Digital Trace (DIGITALPROBE2 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
-
 	  
+	  
+
 	}// loop on events
     }// loop on channels
 }
 
-
-
-
 // 
-// DT_PSD.cc ends here
-
-
-
-
-
-
-
-
-
-
-
+// DT_PHA.cc ends here

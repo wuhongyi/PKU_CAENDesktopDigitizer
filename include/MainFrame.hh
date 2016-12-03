@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 四 12月  1 20:33:10 2016 (+0800)
+// Last-Updated: 六 12月  3 13:30:37 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 30
+//     Update #: 32
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -120,6 +120,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#define LICENSE_REG 0x8158
+#define LICENSE_COUNTDOWN_MULT 84
+
 class Board;
 
 class MainFrame : public TGMainFrame
@@ -128,6 +131,8 @@ public:
   MainFrame(const TGWindow * p);
   virtual ~MainFrame();
 
+  void CheckLicense(Digitizer* dig);
+    
   void SetDataFileName();
   void AdjustParameters();
   void StartStopRun();
@@ -163,13 +168,11 @@ private:
   TGTextButton *DeleteButton;
   TGTextEntry *BoardNameMsg;
   TGTextEntry *StateMsg;
-
   
   TGTextEntry *filepathtext;
   TGTextEntry *filenametext;
   TGNumberEntry *filerunnum;
   TGTextButton *CompleteButton;
-
 
   TGCheckButton *ChannelsCheckButton[MAX_CHANNEL];
   TGNumberEntry *RecordLength;
@@ -180,6 +183,9 @@ private:
   TGTextButton *StartStopButton;
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;
+
+  // Online
+  TCanvas *OnlineCanvas;
   
 private:
   Digitizer* dig;

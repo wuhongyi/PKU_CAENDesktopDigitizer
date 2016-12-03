@@ -4,12 +4,13 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 五 12月  2 20:17:05 2016 (+0800)
+// Last-Updated: 六 12月  3 21:47:33 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 155
+//     Update #: 172
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
+#include "DT_PHA.hh"
 #include "DT_PSD.hh"
 #include "DT_Standard.hh"
 
@@ -18,6 +19,7 @@
 
 #include <unistd.h>
 #include <sys/stat.h>//stat(const char *file_name,struct stat *buf)
+#include <sys/time.h>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ClassImp(MainFrame)
@@ -68,6 +70,21 @@ MainFrame::~MainFrame()
   Cleanup();
   
 }
+
+void MainFrame::CheckLicense(Digitizer* dig)
+{
+  uint32_t countdown1, countdown2;
+  CAEN_DGTZ_ReadRegister(dig->boardHandle, LICENSE_REG, &countdown1);
+  usleep(100000);
+  CAEN_DGTZ_ReadRegister(dig->boardHandle, LICENSE_REG, &countdown2);
+  if (countdown1 != countdown2 || countdown2 == 0)
+    {
+      int minleft = countdown2 * LICENSE_COUNTDOWN_MULT / 60000;
+      char text[100];
+      printf("Warning: firmware is unlicensed. Remaining demo mode time: %d minutes\n", minleft);
+    }
+}
+
 
 void MainFrame::CloseWindow()
 {
@@ -1076,8 +1093,12 @@ void MainFrame::RunReadData()
       /* Read data from the board */
       if(board->ReadLoop())
 	{
-	  
+	  if(!board->GetEvent())
+	    {
 
+
+	      
+	    }	  
 	}
       
       gSystem->ProcessEvents();
@@ -1145,9 +1166,11 @@ int MainFrame::initDigitizer()
 
 
   sscanf(dig->boardInfo->AMC_FirmwareRel, "%d", &MajorNumber);
-  if (MajorNumber >= 128) {
-    printf("This digitizer has a DPP firmware\n");
-  }
+  if (MajorNumber >= 128)
+    {
+      printf("This digitizer has a DPP firmware\n");
+      CheckLicense(dig);
+    }
 
   // Get Number of Channels, Number of bits, Number of Groups of the board
   if(MajorNumber == STANDARD_FW_CODE)
@@ -1193,6 +1216,8 @@ int MainFrame::initDigitizer()
 	  if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5730_PSD");
 	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5730_STD");
+	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == V1730_DPP_PHA_CODE) board = new DT_PHA(dig,(char*)"DT5730_PHA");
 	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
@@ -1281,7 +1306,7 @@ void MainFrame::ProgramDigitizer()
   board->SetRecordLength(RecordLength->GetIntNumber());
 
   board->SetIOLevel(CAEN_DGTZ_IOLevel_TTL);
-  board->SetExtTriggerInputMode(CAEN_DGTZ_TRGMODE_ACQ_ONLY);
+  board->SetExtTriggerInputMode(CAEN_DGTZ_TRGMODE_DISABLED);// CAEN_DGTZ_TRGMODE_ACQ_ONLY
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
       if(ChannelsCheckButton[i]->IsEnabled() && ChannelsCheckButton[i]->IsOn())
@@ -1350,6 +1375,11 @@ void MainFrame::ProgramDigitizer()
 
       
     }
+
+  // const int allow_trigger_overlap_bit = 1<<1;
+  // printf("wu === 0x8004  %d \n",CAEN_DGTZ_WriteRegister(dig->boardHandle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, allow_trigger_overlap_bit));
+  
+  
   ProgramButton->SetEnabled(0);
   AllocateButton->SetEnabled(1);
 }
@@ -1381,7 +1411,14 @@ void MainFrame::AdjustParameters()
 
 void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
 {
-
+  TGCompositeFrame *CanvasFrame = new TGCompositeFrame(TabPanel, 60, 60, kHorizontalFrame);
+  TabPanel->AddFrame(CanvasFrame, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 1, 1, 1, 1));
+  
+  TRootEmbeddedCanvas *onlinecanvas = new TRootEmbeddedCanvas("OnlineCanvas", CanvasFrame, 100, 100);
+  CanvasFrame->AddFrame(onlinecanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 1, 1, 1, 1));
+  
+  OnlineCanvas = onlinecanvas->GetCanvas();
+  OnlineCanvas->SetBorderMode(0); //no red frame
 
   
 

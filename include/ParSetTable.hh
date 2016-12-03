@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:11 2016 (+0800)
-// Last-Updated: 三 11月 30 21:13:14 2016 (+0800)
+// Last-Updated: 六 12月  3 15:56:02 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 19
+//     Update #: 20
 // URL: http://wuhongyi.cn 
 
 #ifndef _PARSETTABLE_H_
@@ -104,14 +104,3 @@ private:
 #endif /* _PARSETTABLE_H_ */
 // 
 // ParSetTable.hh ends here
-
-
-
-
-
-
-
-
-
-
-

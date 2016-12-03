@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 四 12月  1 13:36:18 2016 (+0800)
+// Last-Updated: 六 12月  3 20:43:11 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 13
+//     Update #: 18
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -55,9 +55,7 @@ int DT_Standard::ProgramDigitizer()
   ret |= CAEN_DGTZ_SetRecordLength(handle, par_recordlength);
   ret |= CAEN_DGTZ_GetRecordLength(handle, &par_recordlength);
 
-  // ret |= CAEN_DGTZ_SetPostTriggerSize(handle, PostTrigger);
-  // ret |= CAEN_DGTZ_GetPostTriggerSize(handle, &PostTrigger);
-  // ret |= CAEN_DGTZ_SetPostTriggerSize(handle, WDcfg.PostTrigger);
+
   // if(BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
   //   uint32_t pt;
   //   ret |= CAEN_DGTZ_GetPostTriggerSize(handle, &pt);
@@ -99,7 +97,7 @@ int DT_Standard::ProgramDigitizer()
   //   ret |= CAEN_DGTZ_SetDecimationFactor(handle, WDcfg.DecimationFactor);
   // }
 
-  // ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, WDcfg.NumEvents);
+  ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, 2);
   
   if(ret) printf("Warning: errors found while programming the digitizer. ");
   return ret; 
@@ -149,6 +147,22 @@ int DT_Standard::AllocateMemory()
   return ret;
 }
 
+
+int DT_Standard::GetEvent()
+{
+  int ret = 0;
+  ret = CAEN_DGTZ_GetNumEvents(handle,readoutBuffer,bufferSize,&numEvents);
+  printf("NumEvent: %d\n",numEvents);
+
+  return ret;
+}
+
+
+int DT_Standard::GetWaveform()
+{
+
+
+}
 
 // 
 // DT_Standard.cc ends here

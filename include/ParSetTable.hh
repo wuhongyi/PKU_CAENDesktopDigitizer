@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:11 2016 (+0800)
-// Last-Updated: 六 12月  3 15:56:02 2016 (+0800)
+// Last-Updated: 日 12月  4 16:58:15 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 20
+//     Update #: 22
 // URL: http://wuhongyi.cn 
 
 #ifndef _PARSETTABLE_H_
@@ -82,6 +82,9 @@ private:
   TGLabel *posttriggersizelabel;
   TGNumberEntry *PostTriggerSize;
   TGLabel *enabledchannellabel[MAX_CHANNEL];
+  TGLabel *selftriggerlabel[MAX_CHANNEL];
+  TGComboBox *SelfTriggerBox[MAX_CHANNEL];
+  TGLabel *pulsepolaritylabel[MAX_CHANNEL];
   TGComboBox *PulsePolarityBox[MAX_CHANNEL];
   TGLabel *dcoffsetlabel[MAX_CHANNEL];
   TGNumberEntry *DCOffset[MAX_CHANNEL];

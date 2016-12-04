@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 六 12月  3 13:30:37 2016 (+0800)
+// Last-Updated: 日 12月  4 12:30:14 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 32
+//     Update #: 34
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -135,6 +135,7 @@ public:
     
   void SetDataFileName();
   void AdjustParameters();
+  void PrintRegisters();
   void StartStopRun();
   void SetOnlineData();
   void SetWriteData();
@@ -161,6 +162,11 @@ private:
 
   int GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo);
 
+  // Read DGTZ Registers 
+  // return  0=success; -1=error
+  void Read_DGTZ_Register(int handle,int MaxNChInBoard);
+
+  
 private:
   // Init
   TGComboBox *connectStyle;
@@ -180,6 +186,7 @@ private:
   TGTextButton *AllocateButton;
 
   TGTextButton *AdjustParButton;
+  TGTextButton *PrintRegistersButton;
   TGTextButton *StartStopButton;
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;

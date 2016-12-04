@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 六 12月  3 20:43:11 2016 (+0800)
+// Last-Updated: 日 12月  4 17:05:36 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 18
+//     Update #: 20
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -76,13 +76,6 @@ int DT_Standard::ProgramDigitizer()
   std::cout<<"Gets the max number of aggregates of each block transfer: "<<numAggr<<std::endl;
   // CAEN_DGTZ_SetMaxNumAggregatesBLT(int handle, uint32_t numAggr);
 
-
-
-
-
-
-
-
   
   // // custom setting for X742 boards
   // if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
@@ -97,7 +90,7 @@ int DT_Standard::ProgramDigitizer()
   //   ret |= CAEN_DGTZ_SetDecimationFactor(handle, WDcfg.DecimationFactor);
   // }
 
-  ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, 2);
+  ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, 1023);
   
   if(ret) printf("Warning: errors found while programming the digitizer. ");
   return ret; 

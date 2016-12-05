@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 一 12月  5 12:31:02 2016 (+0800)
+// Last-Updated: 一 12月  5 21:34:28 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 43
+//     Update #: 48
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -203,7 +203,12 @@ private:
 
   
   // Online
+  TGCheckButton *MonitorCheckButton;
+  TGComboBox *MonitorChannelBox;
   TCanvas *OnlineCanvas;
+  TGraph *SingleWaveform;
+  TH2I  *MultiWaveform;
+
   
 private:
   Digitizer* dig;

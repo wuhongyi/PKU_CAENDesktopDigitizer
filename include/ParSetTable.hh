@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:11 2016 (+0800)
-// Last-Updated: 日 12月  4 16:58:15 2016 (+0800)
+// Last-Updated: 一 12月  5 19:41:25 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 22
+//     Update #: 23
 // URL: http://wuhongyi.cn 
 
 #ifndef _PARSETTABLE_H_
@@ -65,6 +65,8 @@ public:
   void CopyParameter();
   void LoadParameter();
   void ApplyParameter();
+  void ApplySTDParameter();
+  void ApplyPSDParameter();
   void CancelParameterFrame();
 
 private:

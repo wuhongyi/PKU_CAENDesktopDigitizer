@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 六 12月  3 18:37:06 2016 (+0800)
+// Last-Updated: 一 12月  5 19:57:46 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 44
+//     Update #: 53
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -42,7 +42,7 @@ int DT_PSD::ProgramDigitizer()
   int ret = 0;
   
   // ret |= CAEN_DGTZ_WriteRegister(handle, 0x811C, 0xC003C);// serve per mandare SW trg individuali e per abilitare il ts reset
-  // ret |= CAEN_DGTZ_WriteRegister(handle, 0x8000, 0x01000110);// Channel Control Reg (indiv trg, seq readout)
+  // ret |= CAEN_DGTZ_WriteRegister(handle, 0x8000, 0x01000010);// Channel Control Reg (indiv trg, seq readout)
   // ret |= CAEN_DGTZ_WriteRegister(handle, 0x8004, 0x00000004);// Enable indiv trgin
 
   
@@ -63,66 +63,35 @@ int DT_PSD::ProgramDigitizer()
 
   ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, par_runsyncmode);
 
-  for (int ch = 0; ch < Nch; ++ch)
-    {
-      dpppsdParams.thr[ch] = 300;// Trigger Threshold
-      // The following parameter is used to specifiy the number of samples for the baseline averaging:
-      // 	 0 -> absolute Bl
-      // 	 1 -> 4samp
-      // 	 2 -> 8samp
-      // 	 3 -> 16samp
-      // 	 4 -> 32samp
-      // 	 5 -> 64samp
-      // 	 6 -> 128samp
-      dpppsdParams.nsbl[ch] = 2;
-      dpppsdParams.lgate[ch] = 32;    // Long Gate Width (N*4ns)
-      dpppsdParams.sgate[ch] = 24;    // Short Gate Width (N*4ns)
-      dpppsdParams.pgate[ch] = 8;     // Pre Gate Width (N*4ns)
-      // Self Trigger Mode:
-      // 	 0 -> Disabled
-      // 	 1 -> Enabled
-      dpppsdParams.selft[ch] = 1;
-      // Trigger configuration:
-      // CAEN_DGTZ_DPP_TriggerConfig_Peak       -> trigger on peak. NOTE: Only for FW <= 13X.5
-      // CAEN_DGTZ_DPP_TriggerConfig_Threshold  -> trigger on threshold 
-      dpppsdParams.trgc[ch] = CAEN_DGTZ_DPP_TriggerConfig_Threshold;
-      // Trigger Validation Acquisition Window
-      dpppsdParams.tvaw[ch] = 50;
-      // Charge sensibility: 0->40fc/LSB; 1->160fc/LSB; 2->640fc/LSB; 3->2,5pc/LSB
-      dpppsdParams.csens[ch] = 0;
-    }
-  // Pile-Up rejection Mode
-  //    CAEN_DGTZ_DPP_PSD_PUR_DetectOnly -> Only Detect Pile-Up
-  //    CAEN_DGTZ_DPP_PSD_PUR_Enabled -> Reject Pile-Up
-  // DPPParams[b].purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
-  dpppsdParams.purgap = 100;  // Purity Gap
-  dpppsdParams.blthr = 3;     // Baseline Threshold
-  dpppsdParams.bltmo = 100;   // Baseline Timeout
-  dpppsdParams.trgho = 8;     // Trigger HoldOff
+  
+  // if (FamilyCode == CAEN_DGTZ_XX720_FAMILY_CODE ||
+  //     FamilyCode == CAEN_DGTZ_XX790_FAMILY_CODE ||
+  //     FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
+  //     FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
+  //   ret |= CAEN_DGTZ_SetDPPTriggerMode(handle, CAEN_DGTZ_DPP_TriggerMode_Normal);
+
 
   
-  ret |= CAEN_DGTZ_SetDPPParameters(handle, par_enablemask, &dpppsdParams);
+  // if ((FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
+  //   {
+  //     // x740 x742
 
-  if ((FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
-    {
-      // x740 x742
-
-    }
-  else
-    {
-      if (FamilyCode != CAEN_DGTZ_XX730_FAMILY_CODE && FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE)
-	{
+  //   }
+  // else
+  //   {
+  //     if (FamilyCode != CAEN_DGTZ_XX730_FAMILY_CODE && FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE)
+  // 	{
 		
-	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
-	}
+  // 	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
+  // 	}
 
-      if (FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
-	{
-	  // x725 x730
-	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
-	}
+  //     if (FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
+  // 	{
+  // 	  // x725 x730
+  // 	  ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, par_channelselftrigger, par_enablemask);
+  // 	}
 	      
-    }
+  //   }
 
   // if(ret) printf("-- 1 --");
 
@@ -172,6 +141,9 @@ int DT_PSD::GetWaveform()
 
       for(int ev = 0; ev < NumEvents[ch]; ev++)
 	{
+	  Ne[ch]++;
+
+	  
 	  // Time Tag
 	  // dpppsdevents[ch][ev].TimeTag;
 

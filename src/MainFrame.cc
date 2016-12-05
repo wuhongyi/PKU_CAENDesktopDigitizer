@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 12月  5 12:50:01 2016 (+0800)
+// Last-Updated: 一 12月  5 21:34:28 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 218
+//     Update #: 233
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -31,8 +31,11 @@ MainFrame::MainFrame(const TGWindow * p)
   board = NULL;
   startstop = false;
   writedata = false;
-  
-  
+
+  SingleWaveform = NULL;
+  MultiWaveform = NULL;
+  OnlineCanvas = NULL;
+    
   dig = (Digitizer*) calloc(1,sizeof(Digitizer));
   dig->boardInfo = (CAEN_DGTZ_BoardInfo_t*) calloc(1,sizeof(CAEN_DGTZ_BoardInfo_t));
 
@@ -1437,6 +1440,9 @@ void MainFrame::ProgramDigitizer()
   unsigned int enablemask = 0;
   int recordlength = 0;
 
+  MonitorChannelBox->RemoveAll();
+  MonitorChannelBox->AddEntry("Select",-1);
+  
   if(!(MajorNumber == STANDARD_FW_CODE))
     {
       board->SetDPPAcquisitionMode(CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
@@ -1455,6 +1461,9 @@ void MainFrame::ProgramDigitizer()
 	{
 	  enablemask = SetBit_32((unsigned short)i,enablemask);
 	  statisticsgroup->ShowFrame(channelstatisticsframe[i]);
+
+	  sprintf(tmp,"Ch %02d",i);
+	  MonitorChannelBox->AddEntry(tmp, i);
 	}
     }
 
@@ -1520,7 +1529,19 @@ void MainFrame::ProgramDigitizer()
   // printf("wu === 0x8004  %d \n",CAEN_DGTZ_WriteRegister(dig->boardHandle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, allow_trigger_overlap_bit));
   
 
+  if(SingleWaveform != NULL)
+    {
+      delete SingleWaveform;
+      SingleWaveform = NULL;
+    }
+  if(MultiWaveform != NULL)
+    {
+      delete MultiWaveform;
+      MultiWaveform = NULL;
+    }
 
+  SingleWaveform = new TGraph();
+  MultiWaveform = new TH2I("MultiWaveform","",recordlength,0,recordlength,4096,0,1<<board->GetNBits());
   
   ProgramButton->SetEnabled(0);
   AllocateButton->SetEnabled(1);
@@ -1553,6 +1574,22 @@ void MainFrame::AdjustParameters()
 
 void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
 {
+  TGHorizontalFrame *monitorframe = new TGHorizontalFrame(TabPanel);
+  TabPanel->AddFrame(monitorframe, new TGLayoutHints(kLHintsExpandX | kLHintsTop,0/*left*/,0/*right*/,0/*top*/,0/*bottom*/));
+  
+  MonitorCheckButton = new TGCheckButton(monitorframe,"&Monitor");
+  monitorframe->AddFrame(MonitorCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,3,3));
+  MonitorCheckButton->SetTextColor(0xEE0000);
+  MonitorCheckButton->SetState(kButtonDown);
+  MonitorCheckButton->SetState(kButtonUp);
+  // MonitorCheckButton->Connect("Clicked()","MainFrame",this,"");
+
+  MonitorChannelBox = new TGComboBox(monitorframe);
+  monitorframe->AddFrame(MonitorChannelBox,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,03));
+  MonitorChannelBox->Resize(60, 20);
+  
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
   TGCompositeFrame *CanvasFrame = new TGCompositeFrame(TabPanel, 60, 60, kHorizontalFrame);
   TabPanel->AddFrame(CanvasFrame, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 1, 1, 1, 1));
   

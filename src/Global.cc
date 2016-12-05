@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 09:30:24 2016 (+0800)
-// Last-Updated: 日 12月  4 12:24:52 2016 (+0800)
+// Last-Updated: 一 12月  5 10:25:07 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 5
 // URL: http://wuhongyi.cn 
 
 #include "Global.hh"
@@ -65,7 +65,15 @@ int Decimal2Binary(uint32_t d, char *bstr)
 }
 
 
-
+long GetTime()
+{
+  long time_ms;
+  struct timeval t1;
+  struct timezone tz;
+  gettimeofday(&t1, &tz);
+  time_ms = (t1.tv_sec) * 1000 + t1.tv_usec / 1000;
+  return time_ms;
+}
 
 
 // 

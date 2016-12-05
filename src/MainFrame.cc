@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 日 12月  4 21:24:23 2016 (+0800)
+// Last-Updated: 一 12月  5 12:50:01 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 186
+//     Update #: 218
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -59,6 +59,12 @@ MainFrame::MainFrame(const TGWindow * p)
   Resize(GetDefaultSize());
   MapWindow();
 
+
+  for (int i = 0; i < MAX_CHANNEL; ++i)
+    {
+      statisticsgroup->HideFrame(channelstatisticsframe[i]);
+    }
+  
   // Print();
 }
 
@@ -954,7 +960,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
     }
 
   TGLabel *recordlengthlabel = new TGLabel(channelgrouphframe,"Record Length: ");
-  channelgrouphframe->AddFrame(recordlengthlabel,new TGLayoutHints(kLHintsLeft| kLHintsTop,10,3,3,0));
+  channelgrouphframe->AddFrame(recordlengthlabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,0));
 
   RecordLength = new TGNumberEntry(channelgrouphframe,1024,5,RECORDLENGTH,TGNumberFormat::kNESInteger,TGNumberFormat::kNEAPositive);//TGNumberFormat::kNEAPositive TGNumberFormat::kNEANonNegative
   channelgrouphframe->AddFrame(RecordLength,new TGLayoutHints(kLHintsLeft | kLHintsTop,0,3,3,0));
@@ -1008,6 +1014,62 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   WtiteDataButton->SetEnabled(0);
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  
+  statisticsgroup = new TGGroupFrame(TabPanel,"Statistics");
+  TabPanel->AddFrame(statisticsgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+
+  TGHorizontalFrame *readoutframe = new TGHorizontalFrame(statisticsgroup);
+  statisticsgroup->AddFrame(readoutframe, new TGLayoutHints(kLHintsExpandX | kLHintsTop,0/*left*/,0/*right*/,0/*top*/,0/*bottom*/));
+
+  TGLabel *readoutdatalabel = new TGLabel(readoutframe,"Data Rate: ");
+  readoutframe->AddFrame(readoutdatalabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,0));
+  
+  StatisticsDataMsg = new TGTextEntry(readoutframe,
+			     new TGTextBuffer(14), -1,
+			     StatisticsDataMsg->GetDefaultGC()(),
+			     StatisticsDataMsg->GetDefaultFontStruct(),
+			     kRaisedFrame | kDoubleBorder,
+			     GetWhitePixel());
+  readoutframe->AddFrame(StatisticsDataMsg, new TGLayoutHints(kLHintsTop | kLHintsLeft, 10, 0, 0, 0));
+  StatisticsDataMsg->SetAlignment(kTextCenterX);
+  StatisticsDataMsg->SetFont("-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-iso8859-1", false);
+  StatisticsDataMsg->SetTextColor(0xFF0000, false);
+  StatisticsDataMsg->SetText("");
+  StatisticsDataMsg->SetEnabled(kFALSE);
+  StatisticsDataMsg->SetFrameDrawn(kTRUE);
+
+  TGLabel *readoutdataratelabel = new TGLabel(readoutframe,"MB/s ");
+  readoutframe->AddFrame(readoutdataratelabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
+
+  for (int i = 0; i < MAX_CHANNEL; ++i)
+    {
+      channelstatisticsframe[i] = new TGHorizontalFrame(statisticsgroup);
+      statisticsgroup->AddFrame(channelstatisticsframe[i],new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+
+      sprintf(tmp,"Chan   %02d: ",i);
+      channelstatisticslabel[i] = new TGLabel(channelstatisticsframe[i],tmp);
+      channelstatisticsframe[i]->AddFrame(channelstatisticslabel[i],new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,0));
+
+      ChannelStatisticsDataMsg[i] = new TGTextEntry(channelstatisticsframe[i],
+					  new TGTextBuffer(14), -1,
+					  ChannelStatisticsDataMsg[i]->GetDefaultGC()(),
+					  ChannelStatisticsDataMsg[i]->GetDefaultFontStruct(),
+					  kRaisedFrame | kDoubleBorder,
+					  GetWhitePixel());
+      channelstatisticsframe[i]->AddFrame(ChannelStatisticsDataMsg[i], new TGLayoutHints(kLHintsTop | kLHintsLeft, 10, 0, 0, 0));
+      ChannelStatisticsDataMsg[i]->SetAlignment(kTextCenterX);
+      ChannelStatisticsDataMsg[i]->SetFont("-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-iso8859-1", false);
+      ChannelStatisticsDataMsg[i]->SetTextColor(0x0000AA, false);
+      ChannelStatisticsDataMsg[i]->SetText("");
+      ChannelStatisticsDataMsg[i]->SetEnabled(kFALSE);
+      ChannelStatisticsDataMsg[i]->SetFrameDrawn(kTRUE);
+
+      channelstatisticsratelabel[i] = new TGLabel(channelstatisticsframe[i],"Hz/s ");
+      channelstatisticsframe[i]->AddFrame(channelstatisticsratelabel[i],new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
+    }
+
+  
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   std::ifstream in("../parset/Run.config");
   if(!in.is_open()) return;
@@ -1034,7 +1096,17 @@ void MainFrame::SetWriteData()
 
 void MainFrame::SetOnlineData()
 {
-
+  if(!OnlineCheckButton->IsOn())
+    {
+      StatisticsDataMsg->SetText("");
+      for (int i = 0; i < board->GetChannels(); ++i)
+	{
+	  if(ChannelsCheckButton[i]->IsOn())
+	    {
+	      ChannelStatisticsDataMsg[i]->SetText("");
+	    }
+	}
+    }
 }
 
 void MainFrame::SetDataFileName()
@@ -1077,6 +1149,14 @@ void MainFrame::StartStopRun()
       startstop = false;
       DeleteButton->SetEnabled(1);
       WtiteDataButton->SetEnabled(0);
+      StatisticsDataMsg->SetText("");
+      for (int i = 0; i < board->GetChannels(); ++i)
+	{
+	  if(ChannelsCheckButton[i]->IsOn())
+	    {
+	      ChannelStatisticsDataMsg[i]->SetText("");
+	    }
+	}
     }
   else
     {
@@ -1085,6 +1165,8 @@ void MainFrame::StartStopRun()
       startstop = true;
       DeleteButton->SetEnabled(0);
       WtiteDataButton->SetEnabled(1);
+      board->SetStatisticsClear();
+      PrevRateTime = GetTime();
       
       // Clear unclean data (without this changing RecordLength at RunTime Freezes the digitizer)
       ret = CAEN_DGTZ_ClearData(board->GetHandle());
@@ -1102,6 +1184,7 @@ void MainFrame::RunReadData()
   int ret = 0;
   std::cout<<"read loop ..."<<std::endl;
 
+  
   while(startstop)
     {
       // Read data
@@ -1112,7 +1195,7 @@ void MainFrame::RunReadData()
 	{
 	  if(!board->GetEvent())
 	    {
-
+	      board->GetWaveform();
 
 	      
 	    }	  
@@ -1125,6 +1208,31 @@ void MainFrame::RunReadData()
 	  // if (lstatus & (0x1 << 19)) {
 	  //   ErrCode = ERR_OVERTEMP;
 	  
+	}
+
+      CurrentTime = GetTime();
+      ElapsedTime = CurrentTime - PrevRateTime;
+      if (ElapsedTime > 1000)
+	{
+	  if(OnlineCheckButton->IsOn())
+	    {
+	      sprintf(tmp,"%0.2f",(float)board->GetStatisticsNb()/((float)ElapsedTime*1048.576f));
+	      StatisticsDataMsg->SetText(tmp);
+	      Ne = board->GetStatisticsNe();
+	      for (int i = 0; i < board->GetChannels(); ++i)
+		{
+		  if(ChannelsCheckButton[i]->IsOn())
+		    {
+		      // printf("Ch %d  Count %0.2f\n",i,*(Ne+i)*1000.0f/(float)ElapsedTime);
+		      sprintf(tmp,"%0.0f",*(Ne+i)*1000.0f/(float)ElapsedTime);
+		      ChannelStatisticsDataMsg[i]->SetText(tmp);
+		    }
+	      
+		}
+	  
+	      board->SetStatisticsClear();
+	    }
+	  PrevRateTime = CurrentTime;
 	}
       
       gSystem->ProcessEvents();
@@ -1293,6 +1401,11 @@ void MainFrame::deleteDigitizer()
   AdjustParButton->SetEnabled(0);
   PrintRegistersButton->SetEnabled(0);
   StartStopButton->SetEnabled(0);
+  for (int i = 0; i < MAX_CHANNEL; ++i)
+    {
+      statisticsgroup->HideFrame(channelstatisticsframe[i]);
+    }
+  StatisticsDataMsg->SetText("");
 }
 
 int MainFrame::GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo)
@@ -1337,10 +1450,11 @@ void MainFrame::ProgramDigitizer()
   board->SetExtTriggerInputMode(CAEN_DGTZ_TRGMODE_ACQ_ONLY);// CAEN_DGTZ_TRGMODE_ACQ_ONLY CAEN_DGTZ_TRGMODE_DISABLED
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
+      statisticsgroup->HideFrame(channelstatisticsframe[i]);
       if(ChannelsCheckButton[i]->IsEnabled() && ChannelsCheckButton[i]->IsOn())
 	{
 	  enablemask = SetBit_32((unsigned short)i,enablemask);
-	  
+	  statisticsgroup->ShowFrame(channelstatisticsframe[i]);
 	}
     }
 
@@ -1405,6 +1519,8 @@ void MainFrame::ProgramDigitizer()
   // const int allow_trigger_overlap_bit = 1<<1;
   // printf("wu === 0x8004  %d \n",CAEN_DGTZ_WriteRegister(dig->boardHandle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, allow_trigger_overlap_bit));
   
+
+
   
   ProgramButton->SetEnabled(0);
   AllocateButton->SetEnabled(1);

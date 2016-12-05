@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 21:05:40 2016 (+0800)
-// Last-Updated: 日 12月  4 12:23:47 2016 (+0800)
+// Last-Updated: 一 12月  5 10:25:36 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 21
+//     Update #: 24
 // URL: http://wuhongyi.cn 
 
 #ifndef _GLOBAL_H_
@@ -35,6 +35,11 @@ unsigned int TstBit_32(unsigned short bit,unsigned int value );//获得value第b
 // return 出错返回-1，成功返回字符串长度
 int Decimal2Binary(uint32_t d, char *bstr);
 
+
+
+// Get time in milliseconds
+// return  time in msec
+long GetTime();
 
 typedef struct {
   CAEN_DGTZ_BoardInfo_t* boardInfo;

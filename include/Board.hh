@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 六 12月  3 18:49:18 2016 (+0800)
+// Last-Updated: 一 12月  5 12:30:35 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 44
+//     Update #: 54
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -29,6 +29,9 @@ public:
   
   bool ReadLoop();
 
+  void SetStatisticsClear();
+  int GetStatisticsNb() {return Nb;}
+  int *GetStatisticsNe() {return Ne;}
   
   void SetDPPAcquisitionMode(CAEN_DGTZ_DPP_AcqMode_t mode,CAEN_DGTZ_DPP_SaveParam_t par) {par_dppacqmode = mode;par_dppsaveparam = par;}
   void SetDPPEventAggregation(int threshold, int maxsize) {par_dppeventaggregationthreshold = threshold;par_dppeventaggregationmaxsize = maxsize;}
@@ -83,6 +86,7 @@ protected:
   CAEN_DGTZ_UINT8_EVENT_t     *Event8; // generic event struct with 8 bit data (only for 8 bit digitizers) 
   CAEN_DGTZ_X742_EVENT_t       *Event742;  // custom event struct with 8 bit data (only for 8 bit digitizers) 
   CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
+  uint32_t MaxGroupNumber;
   int ReloadCfgStatus;
   CAEN_DGTZ_DPP_PHA_Event_t *dppphaevents[MAX_DPP_PHA_CHANNEL_SIZE];
   CAEN_DGTZ_DPP_PSD_Event_t *dpppsdevents[MAX_DPP_PSD_CHANNEL_SIZE];
@@ -95,7 +99,12 @@ protected:
 
   char* readoutBuffer;
   uint32_t bufferSize;
+  char *EventPtr;
   uint32_t size;  
+
+
+  int Nb;
+  int Ne[MAX_CHANNEL];
   
 protected:
   char Name[128];

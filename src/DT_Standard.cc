@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 日 12月  4 17:05:36 2016 (+0800)
+// Last-Updated: 一 12月  5 12:50:56 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 20
+//     Update #: 26
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -145,7 +145,7 @@ int DT_Standard::GetEvent()
 {
   int ret = 0;
   ret = CAEN_DGTZ_GetNumEvents(handle,readoutBuffer,bufferSize,&numEvents);
-  printf("NumEvent: %d\n",numEvents);
+  // printf("NumEvent: %d\n",numEvents);
 
   return ret;
 }
@@ -153,7 +153,55 @@ int DT_Standard::GetEvent()
 
 int DT_Standard::GetWaveform()
 {
+  int ret = 0;
+  for (int i = 0; i < (int)numEvents; ++i)
+  {
+    // Get one event from the readout buffer
+    ret = CAEN_DGTZ_GetEventInfo(handle, readoutBuffer, bufferSize, i, &EventInfo, &EventPtr);
+    // printf("EventSize: %d   BoardId: %d   Pattern: %d   ChannelMask: %d   EventCounter: %d   TriggerTimeTag: %d\n",EventInfo.EventSize,EventInfo.BoardId,EventInfo.Pattern,EventInfo.ChannelMask,EventInfo.EventCounter,EventInfo.TriggerTimeTag);
 
+    
+    // decode the event 
+    if (NBits == 8)
+      {
+	ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event8);
+	for (int ch = 0; ch < Nch; ++ch)
+	  {
+	    if (!(EventInfo.ChannelMask & (1<<ch))) continue;
+	    Ne[ch]++;
+	    
+	  }
+      }
+    else
+      {
+	if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
+	  {
+	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+	    for (int ch = 0; ch < Nch; ++ch)
+	      {
+		if (!(EventInfo.ChannelMask & (1<<ch))) continue;
+		Ne[ch]++;
+	    
+	      }
+	    
+	  }
+	else
+	  {
+	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event742);
+	    // if (WDcfg.useCorrections != -1)
+	    //   { // if manual corrections
+	    // 	uint32_t gr;
+	    // 	for (gr = 0; gr < MaxGroupNumber; gr++)
+	    // 	  {
+	    // 	    if ( ((par_enablemask >> gr) & 0x1) == 0)
+	    // 	      continue;
+	    // 	    ApplyDataCorrection( &(X742Tables[gr]), WDcfg.DRS4Frequency, WDcfg.useCorrections, &(Event742->DataGroup[gr]));
+	    // 	  }
+	    //   }
+	  }
+      }
+
+  }
 
 }
 

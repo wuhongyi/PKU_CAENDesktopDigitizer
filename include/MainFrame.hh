@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 日 12月  4 12:30:14 2016 (+0800)
+// Last-Updated: 一 12月  5 12:31:02 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 34
+//     Update #: 43
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -166,6 +166,9 @@ private:
   // return  0=success; -1=error
   void Read_DGTZ_Register(int handle,int MaxNChInBoard);
 
+private:
+  uint64_t CurrentTime, PrevRateTime, ElapsedTime;
+  int *Ne;
   
 private:
   // Init
@@ -191,6 +194,14 @@ private:
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;
 
+  TGGroupFrame *statisticsgroup;
+  TGTextEntry *StatisticsDataMsg;
+  TGHorizontalFrame *channelstatisticsframe[MAX_CHANNEL];
+  TGLabel *channelstatisticslabel[MAX_CHANNEL];
+  TGTextEntry *ChannelStatisticsDataMsg[MAX_CHANNEL];
+  TGLabel *channelstatisticsratelabel[MAX_CHANNEL];
+
+  
   // Online
   TCanvas *OnlineCanvas;
   

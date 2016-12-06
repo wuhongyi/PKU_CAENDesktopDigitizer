@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 二 12月  6 14:09:09 2016 (+0800)
+// Last-Updated: 二 12月  6 19:22:49 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 30
+//     Update #: 35
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -151,20 +151,18 @@ int DT_Standard::GetEvent()
 }
 
 
-int DT_Standard::GetWaveform(bool monitor,int type)
+void DT_Standard::GetWaveform(bool monitor,int type)
 {
-  int ret = 0;
   for (int i = 0; i < (int)numEvents; ++i)
   {
     // Get one event from the readout buffer
-    ret = CAEN_DGTZ_GetEventInfo(handle, readoutBuffer, bufferSize, i, &EventInfo, &EventPtr);
+    CAEN_DGTZ_GetEventInfo(handle, readoutBuffer, bufferSize, i, &EventInfo, &EventPtr);
     // printf("EventSize: %d   BoardId: %d   Pattern: %d   ChannelMask: %d   EventCounter: %d   TriggerTimeTag: %d\n",EventInfo.EventSize,EventInfo.BoardId,EventInfo.Pattern,EventInfo.ChannelMask,EventInfo.EventCounter,EventInfo.TriggerTimeTag);
 
-    
     // decode the event 
     if (NBits == 8)
       {
-	ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event8);
+        CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event8);
 	for (int ch = 0; ch < Nch; ++ch)
 	  {
 	    if (!(EventInfo.ChannelMask & (1<<ch))) continue;
@@ -217,11 +215,25 @@ int DT_Standard::GetWaveform(bool monitor,int type)
       {
 	if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
 	  {
-	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+	    CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
 	    for (int ch = 0; ch < Nch; ++ch)
 	      {
 		if (!(EventInfo.ChannelMask & (1<<ch))) continue;
 		Ne[ch]++;
+
+		HeaderSTD[0] = ch;
+		HeaderSTD[1] = EventInfo.TriggerTimeTag;
+		HeaderSTD[2] = EventInfo.EventCounter;
+		HeaderSTD[3] = EventInfo.Pattern;
+		HeaderSTD[4] = Event16->ChSize[ch];
+		
+		if(writedata)
+		  {
+		    if((buffid+HEADERSTD*4+HeaderSTD[4]*2) > BUFFLENGTH) SaveToFile();
+		    memcpy(&buff[buffid],HeaderSTD,HEADERSTD*4);
+		    memcpy(&buff[buffid+HEADERSTD*4],Event16->DataChannel[ch],HeaderSTD[4]*2);
+		    buffid = buffid+HEADERSTD*4+HeaderSTD[4]*2;
+		  }
 
 
 		if(monitor)
@@ -271,7 +283,7 @@ int DT_Standard::GetWaveform(bool monitor,int type)
 	  }
 	else
 	  {
-	    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event742);
+	    CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event742);
 	    // if (WDcfg.useCorrections != -1)
 	    //   { // if manual corrections
 	    // 	uint32_t gr;

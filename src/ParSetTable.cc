@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:22 2016 (+0800)
-// Last-Updated: 一 12月  5 20:42:47 2016 (+0800)
+// Last-Updated: 二 12月  6 19:22:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 185
+//     Update #: 187
 // URL: http://wuhongyi.cn 
 
 #include "ParSetTable.hh"
@@ -209,7 +209,6 @@ void ParSetTable::CopyParameter()
 
 void ParSetTable::LoadParameter()
 {
-  CAEN_DGTZ_DPP_PSD_Params_t dpppsdParams;
   CAEN_DGTZ_PulsePolarity_t loadpulsepolarity;// = CAEN_DGTZ_PulsePolarityPositive;
   CAEN_DGTZ_TriggerPolarity_t triggerpolarity;
   CAEN_DGTZ_TriggerMode_t selftrigger;
@@ -316,7 +315,6 @@ void ParSetTable::ApplyParameter()
       }
   return;
   
-  CAEN_DGTZ_DPP_PSD_Params_t dpppsdParams;
   CAEN_DGTZ_PulsePolarity_t pulsepolarity;// = CAEN_DGTZ_PulsePolarityPositive;
   CAEN_DGTZ_TriggerPolarity_t triggerpolarity;
   CAEN_DGTZ_TriggerMode_t selftrigger;

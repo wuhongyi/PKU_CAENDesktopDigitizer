@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 二 12月  6 13:48:30 2016 (+0800)
+// Last-Updated: 二 12月  6 19:19:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 60
+//     Update #: 64
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -132,29 +132,30 @@ int DT_PSD::GetEvent()
 }
 
 
-int DT_PSD::GetWaveform(bool monitor,int type)
+void DT_PSD::GetWaveform(bool monitor,int type)
 {
   for(int ch = 0; ch < Nch; ch++)
     {
       if (!(par_enablemask & (1<<ch)))
 	continue;
 
-      for(int ev = 0; ev < NumEvents[ch]; ev++)
+      for(unsigned int ev = 0; ev < NumEvents[ch]; ev++)
 	{
 	  Ne[ch]++;
 
+	  HeaderPSD[1] = ch;
 	  // Time Tag
-	  // dpppsdevents[ch][ev].TimeTag;
-
+	  HeaderPSD[1] = dpppsdevents[ch][ev].TimeTag;
 	  // Energy
-	  // dpppsdevents[ch][ev].ChargeLong;
-	  // dpppsdevents[ch][ev].ChargeShort;
-
+	  HeaderPSD[3] = dpppsdevents[ch][ev].ChargeLong;
+	  HeaderPSD[2] = dpppsdevents[ch][ev].ChargeShort;
+	  HeaderPSD[4] = dpppsdevents[ch][ev].Baseline;
+	  
 	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dpppsdevents[ch][ev], dpppsdwaveforms);
 	  // int size;
 	  uint16_t *WaveLine;
 	  // uint8_t *DigitalWaveLine;	  
-	  // size = (int)(dpppsdwaveforms->Ns); // Number of samples
+	  HeaderPSD[5] = (int)(dpppsdwaveforms->Ns); // Number of samples
 	  WaveLine = dpppsdwaveforms->Trace1; // First trace (for DPP-PSD it is ALWAYS the Input Signal)
 	  // WaveLine = dpppsdwaveforms->Trace2; // Second Trace (if single trace mode, it is a sequence of zeroes)
 
@@ -164,6 +165,15 @@ int DT_PSD::GetWaveform(bool monitor,int type)
 	  // DigitalWaveLine = dpppsdwaveforms->DTrace3; // Third Digital Trace (DIGITALPROBE1 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
 	  // DigitalWaveLine = dpppsdwaveforms->DTrace4; // Fourth Digital Trace (DIGITALPROBE2 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
 
+	  if(writedata)
+	    {
+	      if((buffid+HEADERPSD*4+HeaderPSD[5]*2) > BUFFLENGTH) SaveToFile();
+	      memcpy(&buff[buffid],HeaderPSD,HEADERPSD*4);
+	      memcpy(&buff[buffid+HEADERPSD*4],WaveLine,HeaderPSD[5]*2);
+	      buffid = buffid+HEADERPSD*4+HeaderPSD[5]*2;
+	    }
+
+	  
 	  if(monitor)
 	    {
 	      if(type == 0)
@@ -217,14 +227,3 @@ int DT_PSD::GetWaveform(bool monitor,int type)
 
 // 
 // DT_PSD.cc ends here
-
-
-
-
-
-
-
-
-
-
-

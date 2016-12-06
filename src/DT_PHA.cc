@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 二 12月  6 10:59:17 2016 (+0800)
+// Last-Updated: 二 12月  6 19:19:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 4
+//     Update #: 7
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -126,22 +126,77 @@ int DT_PHA::GetEvent()
 }
 
 
-int DT_PHA::GetWaveform(bool monitor,int type)
+void DT_PHA::GetWaveform(bool monitor,int type)
 {
   for(int ch = 0; ch < Nch; ch++)
     {
       if (!(par_enablemask & (1<<ch)))
 	continue;
 
-      for(int ev = 0; ev < NumEvents[ch]; ev++)
+      for(unsigned int ev = 0; ev < NumEvents[ch]; ev++)
 	{
-	  // Time Tag
-	  // dpppsdevents[ch][ev].TimeTag;
+	  Ne[ch]++;
+	  HeaderPHA[0] = ch;
+	  HeaderPHA[1] = dppphaevents[ch][ev].TimeTag;
+	  HeaderPHA[2] = dppphaevents[ch][ev].Energy;
+	  
+	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dppphaevents[ch][ev], dppphawaveforms);
 
-	  // Energy
+	  uint16_t *WaveLine;
+	  HeaderPHA[3] = (int)(dppphawaveforms->Ns); // Number of samples
+	  WaveLine = dpppsdwaveforms->Trace1;
+
+	  if(writedata)
+	    {
+	      if((buffid+HEADERPHA*4+HeaderPHA[3]*2) > BUFFLENGTH) SaveToFile();
+	      memcpy(&buff[buffid],HeaderPHA,HEADERPHA*4);
+	      memcpy(&buff[buffid+HEADERPHA*4],WaveLine,HeaderPHA[3]*2);
+	      buffid = buffid+HEADERPHA*4+HeaderPHA[3]*2;
+	    }
+
+	  if(monitor)
+	    {
+	      if(type == 0)
+		{
+		  // Single
+		  if(ch == MonitorChannel)
+		    {
+		      if(!flagupdatesinglewaveform)
+			{
+			  for (int point = 0; point < (int)(dppphawaveforms->Ns); ++point)
+			    {
+			      SingleWaveform->SetPoint(point,point,int(WaveLine[point]));
+			    }
+			  
+			  flagupdatesinglewaveform = true;
+			}
+		    }
+		}
+	      else
+		{
+		  if(type == 1)
+		    {
+		      // Mutli
+		      if(ch == MonitorChannel)
+			{
+			  for (int point = 0; point < (int)(dppphawaveforms->Ns); ++point)
+			    {
+			      MultiWaveform->Fill(point,int(WaveLine[point]));
+			    }
+			}
+		      
+
+		    }// type =1
+		  else
+		    {
+
+
+		    } // type >1
+		}// type > 0
+	    }// monitor
+
 	  
 	  
-
 	}// loop on events
     }// loop on channels
 }

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 二 12月  6 12:45:09 2016 (+0800)
+// Last-Updated: 二 12月  6 19:08:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 64
+//     Update #: 70
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -17,6 +17,11 @@
 #include "TGraph.h"
 #include "TH2.h"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#define BUFFLENGTH  5400000
+#define HEADERSTD 5
+#define HEADERPSD 6
+#define HEADERPHA 4
 
 class Board
 {
@@ -54,7 +59,7 @@ public:
   virtual int ProgramDigitizer() = 0;
   virtual int AllocateMemory() = 0;
   virtual int GetEvent() = 0;
-  virtual int GetWaveform(bool monitor = false,int type = 0) = 0;
+  virtual void GetWaveform(bool monitor = false,int type = 0) = 0;
   
 public:
 
@@ -62,17 +67,29 @@ public:
   void ClearMonitorGraph();
   TGraph *GetSingleWaveform() {return SingleWaveform;}
   TH2I *GetMultiWaveform() {return MultiWaveform;}
-  
   int GetMonitorChannel() {return MonitorChannel;}
   void SetMonitorChannel(int ch) {MonitorChannel = ch;}
-
   void SetUpdateSingleWaveform() {flagupdatesinglewaveform = false;}
 
+  void SetWriteData(bool flag) {writedata = flag;} 
+  bool OpenFile(const char *filename);
+  bool CloseFile();
+  void SaveToFile();
+  
 protected:
   TGraph *SingleWaveform;
   TH2I  *MultiWaveform;
   bool flagupdatesinglewaveform;// 0-需要刷新  1-已刷新
   int MonitorChannel;
+  bool writedata;
+
+  FILE *FileSave;
+  unsigned char buff[BUFFLENGTH];
+  int buffid;
+
+  unsigned int HeaderSTD[HEADERSTD];// 0-ch 1-TimeTag 2-EventCounter 3-Pattern 4-size
+  unsigned int HeaderPSD[HEADERPSD];// 0-ch 1-TimeTag 2-chargeshort 3-chargelong 4-baseline 5-size
+  unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTag 2-Energy 3-size
   
 protected:
   CAEN_DGTZ_DPP_AcqMode_t par_dppacqmode;// CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope CAEN_DGTZ_DPP_ACQ_MODE_List CAEN_DGTZ_DPP_ACQ_MODE_Mixed

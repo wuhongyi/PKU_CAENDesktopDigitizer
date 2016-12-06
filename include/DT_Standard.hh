@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:27:40 2016 (+0800)
-// Last-Updated: 二 12月  6 13:48:30 2016 (+0800)
+// Last-Updated: 二 12月  6 19:08:37 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 8
+//     Update #: 9
 // URL: http://wuhongyi.cn 
 
 #ifndef _DT_STANDARD_H_
@@ -27,7 +27,7 @@ public:
   virtual int ProgramDigitizer();
   virtual int AllocateMemory();
   virtual int GetEvent();
-  virtual int GetWaveform(bool monitor = false,int type = 0);
+  virtual void GetWaveform(bool monitor = false,int type = 0);
   
 };
 

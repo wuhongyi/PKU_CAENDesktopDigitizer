@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 二 12月  6 14:03:02 2016 (+0800)
+// Last-Updated: 二 12月  6 21:25:40 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 263
+//     Update #: 279
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -50,7 +50,7 @@ MainFrame::MainFrame(const TGWindow * p)
   
   TGTab *TabPanel = new TGTab(this);
   this->AddFrame(TabPanel, new TGLayoutHints(kLHintsBottom | kLHintsExpandX | kLHintsExpandY, 0, 0, 0, 0));
-  TGCompositeFrame *Tab1 = TabPanel->AddTab("Init");
+  Tab1 = TabPanel->AddTab("Init");
   MakeFoldPanelInit(Tab1);
 
   TGCompositeFrame *Tab2 = TabPanel->AddTab("Online");
@@ -69,7 +69,9 @@ MainFrame::MainFrame(const TGWindow * p)
     {
       statisticsgroup->HideFrame(channelstatisticsframe[i]);
     }
-  
+
+  Tab1->HideFrame(controlgroup);
+  Tab1->HideFrame(statisticsgroup);
   // Print();
 }
 
@@ -91,7 +93,6 @@ void MainFrame::CheckLicense(Digitizer* dig)
   if (countdown1 != countdown2 || countdown2 == 0)
     {
       int minleft = countdown2 * LICENSE_COUNTDOWN_MULT / 60000;
-      char text[100];
       printf("Warning: firmware is unlicensed. Remaining demo mode time: %d minutes\n", minleft);
     }
 }
@@ -943,7 +944,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
-  TGGroupFrame *controlgroup = new TGGroupFrame(TabPanel,"Control");
+  controlgroup = new TGGroupFrame(TabPanel,"Control");
   TabPanel->AddFrame(controlgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
 
   TGHorizontalFrame *channelgrouphframe = new TGHorizontalFrame(controlgroup);
@@ -1021,7 +1022,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
   statisticsgroup = new TGGroupFrame(TabPanel,"Statistics");
-  TabPanel->AddFrame(statisticsgroup,new TGLayoutHints(kLHintsExpandX | kLHintsTop));
+  TabPanel->AddFrame(statisticsgroup,new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
   TGHorizontalFrame *readoutframe = new TGHorizontalFrame(statisticsgroup);
   statisticsgroup->AddFrame(readoutframe, new TGLayoutHints(kLHintsExpandX | kLHintsTop,0/*left*/,0/*right*/,0/*top*/,0/*bottom*/));
@@ -1094,9 +1095,39 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 
 void MainFrame::SetWriteData()
 {
+  if(writedata)
+    {
+      // writting ,do stop
+      WtiteDataButton->SetText((char*)"&StartWrite");
+      writedata = false;
+      board->SetWriteData(false);
+      // 这里应该需要sleep一下
+      board->CloseFile();
 
+      runnum++;
+      filerunnum->SetIntNumber(runnum);
+      std::ofstream out("../parset/RunNumber");
+      out<<runnum<<std::endl;
+      out.close();
 
-  
+      StartStopButton->SetEnabled(1);
+    }
+  else
+    {
+      // stop, do writting
+      WtiteDataButton->SetText((char*)"&StopWrite");
+      writedata = true;
+
+      // get last file name
+      const char *path=filepathtext->GetText();
+      const char *filen=filenametext->GetText();
+      runnum = (int)filerunnum->GetIntNumber();
+      sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
+
+      board->OpenFile(Filename);
+      board->SetWriteData(true);
+      StartStopButton->SetEnabled(0);
+    }
 }
 
 void MainFrame::SetOnlineData()
@@ -1116,11 +1147,9 @@ void MainFrame::SetOnlineData()
 
 void MainFrame::SetDataFileName()
 {
-  const char *path=filepathtext->GetText();
-  const char *filen=filenametext->GetText();
-  runnum=(int)filerunnum->GetIntNumber();
-
-  sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
+  // const char *path=filepathtext->GetText();
+  // const char *filen=filenametext->GetText();
+  // runnum = (int)filerunnum->GetIntNumber();
 
   if(IsDirectoryExists(filepathtext->GetText()))
     {
@@ -1129,8 +1158,8 @@ void MainFrame::SetDataFileName()
       out<<filenametext->GetText()<<std::endl;
       out.close();
 
-      // StartStopButton->SetEnabled(1);
-      // StartStopButton->SetText("Start");
+      Tab1->ShowFrame(controlgroup);
+      Tab1->ShowFrame(statisticsgroup);
     }
   else
     {
@@ -1201,8 +1230,6 @@ void MainFrame::RunReadData()
 	  if(!board->GetEvent())
 	    {
 	      board->GetWaveform(MonitorCheckButton->IsOn(),MonitorTypeBox->GetSelected());
-
-	      
 	    }	  
 	}
       else
@@ -1560,6 +1587,7 @@ void MainFrame::ProgramDigitizer()
   board->InitMonitorGraph();
   ProgramButton->SetEnabled(0);
   AllocateButton->SetEnabled(1);
+
 }
 
 

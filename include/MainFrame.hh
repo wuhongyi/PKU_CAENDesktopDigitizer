@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 二 12月  6 12:20:28 2016 (+0800)
+// Last-Updated: 二 12月  6 21:15:03 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 52
+//     Update #: 53
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -173,6 +173,8 @@ private:
   int *Ne;
   
 private:
+  TGCompositeFrame *Tab1;
+  
   // Init
   TGComboBox *connectStyle;
   TGTextButton *connectButton;
@@ -185,6 +187,7 @@ private:
   TGNumberEntry *filerunnum;
   TGTextButton *CompleteButton;
 
+  TGGroupFrame *controlgroup;
   TGCheckButton *ChannelsCheckButton[MAX_CHANNEL];
   TGNumberEntry *RecordLength;
   TGTextButton *ProgramButton;

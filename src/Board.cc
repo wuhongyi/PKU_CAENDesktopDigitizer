@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 二 12月  6 13:03:01 2016 (+0800)
+// Last-Updated: 二 12月  6 18:44:46 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 29
+//     Update #: 34
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -56,6 +56,8 @@ Board::Board(Digitizer* dig,const char *name)
   MultiWaveform = NULL;
   flagupdatesinglewaveform = false;
   MonitorChannel = -1;
+  writedata = false;
+ 
 }
 
 Board::~Board()
@@ -123,16 +125,38 @@ void Board::ClearMonitorGraph()
   SingleWaveform = new TGraph();
 }
 
+bool Board::OpenFile(const char *filename)
+{
+  // open and write header
+
+  FileSave = fopen(filename,"wb");
+  if(FileSave == NULL)
+    {
+      printf("Can't open store file...\n");
+      return false;
+    }
+
+  char header[16];
+  sprintf(header,"%s",Name);
+  if(fwrite(header,1,16,FileSave) != 16) printf("Not All Header Data has been stored!\n");
+  
+  return true;
+}
+
+bool Board::CloseFile()
+{
+  // write buffer and close
+
+  if(buffid > 0) SaveToFile();
+  fclose(FileSave);
+  return true;
+}
+
+void Board::SaveToFile()
+{
+  if(fwrite(buff,1,buffid,FileSave) != (size_t)buffid) printf("Not All Data has been stored!\n");
+  buffid = 0;
+}
 
 // 
 // Board.cc ends here
-
-
-
-
-
-
-
-
-
-

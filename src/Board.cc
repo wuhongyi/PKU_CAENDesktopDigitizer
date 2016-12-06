@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 一 12月  5 12:51:43 2016 (+0800)
+// Last-Updated: 二 12月  6 13:03:01 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 23
+//     Update #: 29
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -51,12 +51,25 @@ Board::Board(Digitizer* dig,const char *name)
   readoutBuffer = NULL;
   EventPtr = NULL;
   ReloadCfgStatus = 0x7FFFFFFF;// Init to the bigger positive number
-  
+
+  SingleWaveform = NULL;
+  MultiWaveform = NULL;
+  flagupdatesinglewaveform = false;
+  MonitorChannel = -1;
 }
 
 Board::~Board()
 {
-
+  if(SingleWaveform != NULL)
+    {
+      delete SingleWaveform;
+      SingleWaveform = NULL;
+    }
+  if(MultiWaveform != NULL)
+    {
+      delete MultiWaveform;
+      MultiWaveform = NULL;
+    }
 }
 
 void Board::SetStatisticsClear()
@@ -82,8 +95,43 @@ bool Board::ReadLoop()
 }
 
 
+void Board::InitMonitorGraph()
+{
+  if(SingleWaveform != NULL)
+    {
+      delete SingleWaveform;
+      SingleWaveform = NULL;
+    }
+  if(MultiWaveform != NULL)
+    {
+      delete MultiWaveform;
+      MultiWaveform = NULL;
+    }
+
+  SingleWaveform = new TGraph();
+  MultiWaveform = new TH2I("MultiWaveform","",par_recordlength,0,par_recordlength,4096,0,1<<NBits);
+}
+
+void Board::ClearMonitorGraph()
+{
+  MultiWaveform->Reset("ICES");
+  if(SingleWaveform != NULL)
+    {
+      delete SingleWaveform;
+      SingleWaveform = NULL;
+    }
+  SingleWaveform = new TGraph();
+}
+
+
 // 
 // Board.cc ends here
+
+
+
+
+
+
 
 
 

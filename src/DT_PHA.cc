@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 六 12月  3 17:48:21 2016 (+0800)
+// Last-Updated: 二 12月  6 10:59:17 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 4
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -126,7 +126,7 @@ int DT_PHA::GetEvent()
 }
 
 
-int DT_PHA::GetWaveform()
+int DT_PHA::GetWaveform(bool monitor,int type)
 {
   for(int ch = 0; ch < Nch; ch++)
     {

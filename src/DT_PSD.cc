@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 一 12月  5 19:57:46 2016 (+0800)
+// Last-Updated: 二 12月  6 13:48:30 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 53
+//     Update #: 60
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -132,7 +132,7 @@ int DT_PSD::GetEvent()
 }
 
 
-int DT_PSD::GetWaveform()
+int DT_PSD::GetWaveform(bool monitor,int type)
 {
   for(int ch = 0; ch < Nch; ch++)
     {
@@ -143,7 +143,6 @@ int DT_PSD::GetWaveform()
 	{
 	  Ne[ch]++;
 
-	  
 	  // Time Tag
 	  // dpppsdevents[ch][ev].TimeTag;
 
@@ -151,12 +150,12 @@ int DT_PSD::GetWaveform()
 	  // dpppsdevents[ch][ev].ChargeLong;
 	  // dpppsdevents[ch][ev].ChargeShort;
 
-	  // CAEN_DGTZ_DecodeDPPWaveforms(handle, &dpppsdevents[ch][ev], dpppsdwaveforms);
+	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dpppsdevents[ch][ev], dpppsdwaveforms);
 	  // int size;
-	  // int16_t *WaveLine;
+	  uint16_t *WaveLine;
 	  // uint8_t *DigitalWaveLine;	  
 	  // size = (int)(dpppsdwaveforms->Ns); // Number of samples
-	  // WaveLine = dpppsdwaveforms->Trace1; // First trace (for DPP-PSD it is ALWAYS the Input Signal)
+	  WaveLine = dpppsdwaveforms->Trace1; // First trace (for DPP-PSD it is ALWAYS the Input Signal)
 	  // WaveLine = dpppsdwaveforms->Trace2; // Second Trace (if single trace mode, it is a sequence of zeroes)
 
 
@@ -165,6 +164,49 @@ int DT_PSD::GetWaveform()
 	  // DigitalWaveLine = dpppsdwaveforms->DTrace3; // Third Digital Trace (DIGITALPROBE1 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
 	  // DigitalWaveLine = dpppsdwaveforms->DTrace4; // Fourth Digital Trace (DIGITALPROBE2 set with CAEN_DGTZ_SetDPP_PSD_VirtualProbe)
 
+	  if(monitor)
+	    {
+	      if(type == 0)
+		{
+		  // Single
+		  if(ch == MonitorChannel)
+		    {
+		      if(!flagupdatesinglewaveform)
+			{
+			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
+			    {
+			      SingleWaveform->SetPoint(point,point,int(WaveLine[point]));
+			    }
+			  
+			  flagupdatesinglewaveform = true;
+			}
+		    }
+		}
+	      else
+		{
+		  if(type == 1)
+		    {
+		      // Mutli
+		      if(ch == MonitorChannel)
+			{
+			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
+			    {
+			      MultiWaveform->Fill(point,int(WaveLine[point]));
+			    }
+			}
+		      
+
+		    }// type =1
+		  else
+		    {
+
+
+		    } // type >1
+		}// type > 0
+	    }// monitor
+
+
+	  
 	  
 	}// loop on events
     }// loop on channels

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 12月  5 21:34:28 2016 (+0800)
+// Last-Updated: 二 12月  6 14:03:02 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 233
+//     Update #: 263
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -32,10 +32,12 @@ MainFrame::MainFrame(const TGWindow * p)
   startstop = false;
   writedata = false;
 
-  SingleWaveform = NULL;
-  MultiWaveform = NULL;
   OnlineCanvas = NULL;
-    
+
+
+  gStyle->SetOptStat(0);//不显示统计框
+
+
   dig = (Digitizer*) calloc(1,sizeof(Digitizer));
   dig->boardInfo = (CAEN_DGTZ_BoardInfo_t*) calloc(1,sizeof(CAEN_DGTZ_BoardInfo_t));
 
@@ -1198,7 +1200,7 @@ void MainFrame::RunReadData()
 	{
 	  if(!board->GetEvent())
 	    {
-	      board->GetWaveform();
+	      board->GetWaveform(MonitorCheckButton->IsOn(),MonitorTypeBox->GetSelected());
 
 	      
 	    }	  
@@ -1235,6 +1237,30 @@ void MainFrame::RunReadData()
 	  
 	      board->SetStatisticsClear();
 	    }
+
+	  if(MonitorCheckButton->IsOn())
+	    {
+	      if(MonitorTypeBox->GetSelected() == 0)//Single
+		{
+		  OnlineCanvas->cd();
+		  // board->GetSingleWaveform()->Print();
+		  board->GetSingleWaveform()->Draw("APL");//DrawCopy("hist");
+		  OnlineCanvas->Modified();
+		  OnlineCanvas->Update();
+		}
+	      else
+		{
+		  if(MonitorTypeBox->GetSelected() == 1)
+		    {
+		      OnlineCanvas->cd();
+		      board->GetMultiWaveform()->Draw("colz");
+		      OnlineCanvas->Modified();
+		      OnlineCanvas->Update();
+		    }
+		}
+	      board->SetUpdateSingleWaveform();
+	    }
+	  
 	  PrevRateTime = CurrentTime;
 	}
       
@@ -1441,7 +1467,6 @@ void MainFrame::ProgramDigitizer()
   int recordlength = 0;
 
   MonitorChannelBox->RemoveAll();
-  MonitorChannelBox->AddEntry("Select",-1);
   
   if(!(MajorNumber == STANDARD_FW_CODE))
     {
@@ -1528,21 +1553,11 @@ void MainFrame::ProgramDigitizer()
   // const int allow_trigger_overlap_bit = 1<<1;
   // printf("wu === 0x8004  %d \n",CAEN_DGTZ_WriteRegister(dig->boardHandle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, allow_trigger_overlap_bit));
   
-
-  if(SingleWaveform != NULL)
-    {
-      delete SingleWaveform;
-      SingleWaveform = NULL;
-    }
-  if(MultiWaveform != NULL)
-    {
-      delete MultiWaveform;
-      MultiWaveform = NULL;
-    }
-
-  SingleWaveform = new TGraph();
-  MultiWaveform = new TH2I("MultiWaveform","",recordlength,0,recordlength,4096,0,1<<board->GetNBits());
-  
+  OnlineCanvas->cd();
+  OnlineCanvas->Clear();
+  OnlineCanvas->Modified();
+  OnlineCanvas->Update();
+  board->InitMonitorGraph();
   ProgramButton->SetEnabled(0);
   AllocateButton->SetEnabled(1);
 }
@@ -1578,15 +1593,37 @@ void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
   TabPanel->AddFrame(monitorframe, new TGLayoutHints(kLHintsExpandX | kLHintsTop,0/*left*/,0/*right*/,0/*top*/,0/*bottom*/));
   
   MonitorCheckButton = new TGCheckButton(monitorframe,"&Monitor");
-  monitorframe->AddFrame(MonitorCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,3,3));
+  monitorframe->AddFrame(MonitorCheckButton,new TGLayoutHints(kLHintsLeft|kLHintsTop,10,4,5,3));
   MonitorCheckButton->SetTextColor(0xEE0000);
   MonitorCheckButton->SetState(kButtonDown);
   MonitorCheckButton->SetState(kButtonUp);
   // MonitorCheckButton->Connect("Clicked()","MainFrame",this,"");
 
+
+  TGLabel *monitorchannellabel = new TGLabel(monitorframe,"Channel: ");
+  monitorframe->AddFrame(monitorchannellabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,5,0));
+  
   MonitorChannelBox = new TGComboBox(monitorframe);
-  monitorframe->AddFrame(MonitorChannelBox,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,03));
+  monitorframe->AddFrame(MonitorChannelBox,new TGLayoutHints(kLHintsLeft | kLHintsTop,2,3,3,3));
   MonitorChannelBox->Resize(60, 20);
+  MonitorChannelBox->Connect("Selected(Int_t)","MainFrame",this,"MonitorChannelSelect(int)");
+  
+
+  TGLabel *monitortypelabel = new TGLabel(monitorframe,"Type: ");
+  monitorframe->AddFrame(monitortypelabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,5,0));
+  
+  MonitorTypeBox = new TGComboBox(monitorframe);
+  monitorframe->AddFrame(MonitorTypeBox,new TGLayoutHints(kLHintsLeft | kLHintsTop,2,3,3,3));
+  MonitorTypeBox->Resize(60, 20);
+  MonitorTypeBox->AddEntry("Single",0);
+  MonitorTypeBox->AddEntry("Multi",1);
+  MonitorTypeBox->Select(0);
+
+
+  MonitorClearButton = new TGTextButton(monitorframe,"&Clear");
+  monitorframe->AddFrame(MonitorClearButton,new TGLayoutHints(kLHintsRight | kLHintsTop,10,10,5,0));
+  MonitorClearButton->Connect("Pressed()","MainFrame",this,"MonitorClear()");
+  MonitorClearButton->SetEnabled(1);
   
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -1598,12 +1635,30 @@ void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
   
   OnlineCanvas = onlinecanvas->GetCanvas();
   OnlineCanvas->SetBorderMode(0); //no red frame
-
-  
-
   
 }
 
+void MainFrame::MonitorClear()
+{
+  OnlineCanvas->Clear();
+  board->GetMultiWaveform()->Reset("ICES");
+  OnlineCanvas->Modified();
+  OnlineCanvas->Update();
+}
+
+void MainFrame::MonitorChannelSelect(int id)
+{
+  printf("Select: %d\n",id);
+
+  if(board->GetMonitorChannel() != id)
+    {
+      board->ClearMonitorGraph();
+
+      board->SetMonitorChannel(id);
+      board->SetUpdateSingleWaveform();
+    }
+  
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

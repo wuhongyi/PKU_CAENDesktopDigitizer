@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 一 12月  5 12:50:56 2016 (+0800)
+// Last-Updated: 二 12月  6 14:09:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 26
+//     Update #: 30
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -151,7 +151,7 @@ int DT_Standard::GetEvent()
 }
 
 
-int DT_Standard::GetWaveform()
+int DT_Standard::GetWaveform(bool monitor,int type)
 {
   int ret = 0;
   for (int i = 0; i < (int)numEvents; ++i)
@@ -169,9 +169,50 @@ int DT_Standard::GetWaveform()
 	  {
 	    if (!(EventInfo.ChannelMask & (1<<ch))) continue;
 	    Ne[ch]++;
-	    
-	  }
-      }
+
+
+	    if(monitor)
+	      {
+		if(type == 0)
+		  {
+		    // Single
+		    if(ch == MonitorChannel)
+		      {
+			if(!flagupdatesinglewaveform)
+			  {
+			    for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+			      {
+				SingleWaveform->SetPoint(point,point,int(Event16->DataChannel[ch][point]));
+			      }
+			    flagupdatesinglewaveform = true;
+			  }
+		      }
+		  }//type=0
+		else
+		  {
+		    if(type == 1)
+		      {
+			// Mutli
+			if(ch == MonitorChannel)
+			  {
+			    for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+			      {
+				MultiWaveform->Fill(point,int(Event16->DataChannel[ch][point]));
+			      }
+			  }
+		      
+
+		      }// type=1
+		    else
+		      {
+
+
+		      }
+		  }// type>0
+	      }//monitor
+
+	  }// channel
+      }//NBits == 8
     else
       {
 	if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
@@ -181,7 +222,50 @@ int DT_Standard::GetWaveform()
 	      {
 		if (!(EventInfo.ChannelMask & (1<<ch))) continue;
 		Ne[ch]++;
-	    
+
+
+		if(monitor)
+		  {
+		    if(type == 0)
+		      {
+			// Single
+			if(ch == MonitorChannel)
+			  {
+			    if(!flagupdatesinglewaveform)
+			      {
+				for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+				  {
+				    SingleWaveform->SetPoint(point,point,int(Event16->DataChannel[ch][point]));
+				  }
+				flagupdatesinglewaveform = true;
+			      }
+			  }
+		      }//type=0
+		    else
+		      {
+			if(type == 1)
+			  {
+			    // Mutli
+			    if(ch == MonitorChannel)
+			      {
+				for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+				  {
+				    MultiWaveform->Fill(point,int(Event16->DataChannel[ch][point]));
+				  }
+			      }
+		      
+
+			  }// type=1
+			else
+			  {
+
+
+			  }
+		      }// type>0
+		  }//monitor
+		
+		
+		
 	      }
 	    
 	  }
@@ -198,12 +282,15 @@ int DT_Standard::GetWaveform()
 	    // 	    ApplyDataCorrection( &(X742Tables[gr]), WDcfg.DRS4Frequency, WDcfg.useCorrections, &(Event742->DataGroup[gr]));
 	    // 	  }
 	    //   }
-	  }
-      }
+	  } // x742
+      }// NBits > 8
 
-  }
+  }// numEvents
 
 }
+
+
+
 
 // 
 // DT_Standard.cc ends here

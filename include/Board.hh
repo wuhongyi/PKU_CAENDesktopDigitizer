@@ -4,15 +4,18 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 一 12月  5 12:30:35 2016 (+0800)
+// Last-Updated: 二 12月  6 12:45:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 54
+//     Update #: 64
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
 #include "Global.hh"
+
+#include "TGraph.h"
+#include "TH2.h"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class Board
@@ -26,13 +29,13 @@ public:
   int GetChannels() {return Nch;}
   int GetFamilyCode() {return FamilyCode;}
   int GetNBits() {return NBits;}
-  
+
   bool ReadLoop();
 
   void SetStatisticsClear();
   int GetStatisticsNb() {return Nb;}
   int *GetStatisticsNe() {return Ne;}
-  
+
   void SetDPPAcquisitionMode(CAEN_DGTZ_DPP_AcqMode_t mode,CAEN_DGTZ_DPP_SaveParam_t par) {par_dppacqmode = mode;par_dppsaveparam = par;}
   void SetDPPEventAggregation(int threshold, int maxsize) {par_dppeventaggregationthreshold = threshold;par_dppeventaggregationmaxsize = maxsize;}
 
@@ -46,14 +49,31 @@ public:
   void SetRunSynchronizationMode(CAEN_DGTZ_RunSyncMode_t mode) {par_runsyncmode = mode;}
   void SetChannelSelfTrigger(CAEN_DGTZ_TriggerMode_t mode) {par_channelselftrigger = mode;}
   
-  
+public:  
   // return  0 = Success; negative numbers are error codes
   virtual int ProgramDigitizer() = 0;
   virtual int AllocateMemory() = 0;
   virtual int GetEvent() = 0;
-  virtual int GetWaveform() = 0;
-private:
+  virtual int GetWaveform(bool monitor = false,int type = 0) = 0;
+  
+public:
 
+  void InitMonitorGraph();
+  void ClearMonitorGraph();
+  TGraph *GetSingleWaveform() {return SingleWaveform;}
+  TH2I *GetMultiWaveform() {return MultiWaveform;}
+  
+  int GetMonitorChannel() {return MonitorChannel;}
+  void SetMonitorChannel(int ch) {MonitorChannel = ch;}
+
+  void SetUpdateSingleWaveform() {flagupdatesinglewaveform = false;}
+
+protected:
+  TGraph *SingleWaveform;
+  TH2I  *MultiWaveform;
+  bool flagupdatesinglewaveform;// 0-需要刷新  1-已刷新
+  int MonitorChannel;
+  
 protected:
   CAEN_DGTZ_DPP_AcqMode_t par_dppacqmode;// CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope CAEN_DGTZ_DPP_ACQ_MODE_List CAEN_DGTZ_DPP_ACQ_MODE_Mixed
   
@@ -102,10 +122,11 @@ protected:
   char *EventPtr;
   uint32_t size;  
 
-
+protected:
+  // online
   int Nb;
   int Ne[MAX_CHANNEL];
-  
+
 protected:
   char Name[128];
   int handle;

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 二 12月  6 19:19:38 2016 (+0800)
+// Last-Updated: 三 12月  7 15:03:18 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 64
+//     Update #: 65
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -143,7 +143,7 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 	{
 	  Ne[ch]++;
 
-	  HeaderPSD[1] = ch;
+	  HeaderPSD[0] = ch;
 	  // Time Tag
 	  HeaderPSD[1] = dpppsdevents[ch][ev].TimeTag;
 	  // Energy

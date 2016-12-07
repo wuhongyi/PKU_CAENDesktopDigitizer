@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 二 12月  6 19:19:38 2016 (+0800)
+// Last-Updated: 三 12月  7 15:25:02 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 7
+//     Update #: 8
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -144,7 +144,7 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 
 	  uint16_t *WaveLine;
 	  HeaderPHA[3] = (int)(dppphawaveforms->Ns); // Number of samples
-	  WaveLine = dpppsdwaveforms->Trace1;
+	  WaveLine = dppphawaveforms->Trace1;
 
 	  if(writedata)
 	    {

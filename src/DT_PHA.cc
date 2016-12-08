@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 三 12月  7 15:25:02 2016 (+0800)
+// Last-Updated: 四 12月  8 19:05:19 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 8
+//     Update #: 9
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -142,7 +142,7 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 	  
 	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dppphaevents[ch][ev], dppphawaveforms);
 
-	  uint16_t *WaveLine;
+	  int16_t *WaveLine;
 	  HeaderPHA[3] = (int)(dppphawaveforms->Ns); // Number of samples
 	  WaveLine = dppphawaveforms->Trace1;
 

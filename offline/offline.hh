@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 四 12月  8 20:21:38 2016 (+0800)
+// Last-Updated: 五 12月  9 19:14:23 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 1
+//     Update #: 3
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -46,7 +46,7 @@ private:
 
   int Threshold;
   int FastLen, FastGap;
-  int SlowLen, SlowGap;
+  int SlowLen, SlowGap, SlowRange;
 
   int CalculateBaselinePoint;
   int baseline;

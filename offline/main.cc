@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 四 12月  8 21:00:54 2016 (+0800)
+// Last-Updated: 五 12月  9 19:14:32 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 33
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -132,12 +132,12 @@ int main(int argc, char *argv[])
   Long64_t TotalEntry = fChain->GetEntries();//拿到TChain中总entry行数
 
   offline *off = new offline();
-  off->SetPulsePolarity(false);
+  off->SetPulsePolarity(true);
   off->SetADCMSPS(500);
-  off->SetPreampTau(1);
-  off->SetFastFilterPar(100,100,500);
-  off->SetSlowFilterPar(500,120);
-  off->SetCalculateBaselinePoint(180);
+  off->SetPreampTau(100);
+  off->SetFastFilterPar(100,100,1000);
+  off->SetSlowFilterPar(1000,120);
+  off->SetCalculateBaselinePoint(400);
 
   TCanvas *c1 = new TCanvas("c1","",600,400);
   // gStyle->SetOptStat(0);//不显示统计框
@@ -150,14 +150,14 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
   
-  TH1D *energy = new TH1D("energy","",4096,0,16384);
+  TH1D *energy = new TH1D("energy","",4096,0,32768);
   
   for (Long64_t entry = 0; entry < TotalEntry; ++entry)
     {//循环处理从这里开始
       fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
       if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
 
-      if(ch != 0) continue;
+      if(ch != 5) continue;
       off->SetEventData(size, data);
       energy->Fill(off->GetEnergy());
       

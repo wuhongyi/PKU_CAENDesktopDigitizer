@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 四 12月  8 20:39:04 2016 (+0800)
+// Last-Updated: 五 12月  9 19:14:43 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 4
+//     Update #: 11
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -32,6 +32,7 @@ offline::~offline()
 void offline::SetADCMSPS(int adc)
 {
   Module_ADCMSPS = adc;
+  if((Module_ADCMSPS != 100) && (Module_ADCMSPS != 250) && (Module_ADCMSPS != 500)) std::cout<<"ADCMSPS != 100,250,500"<<std::endl;
   deltaT = 1.0/((double)Module_ADCMSPS);
 }
 
@@ -44,15 +45,41 @@ void offline::SetPreampTau(double tau)
 void offline::SetFastFilterPar(int fl,int fg,int thre)
 {
   Threshold = thre;
-  FastLen = fl*Module_ADCMSPS/1000;
-  FastGap = fg*Module_ADCMSPS/1000;
+  if(Module_ADCMSPS == 100)
+    {
+      FastLen = fl*Module_ADCMSPS/1000;
+      FastGap = fg*Module_ADCMSPS/1000;
+    }
+  if(Module_ADCMSPS == 250)
+    {
+      FastLen = fl*Module_ADCMSPS/2000;
+      FastGap = fg*Module_ADCMSPS/2000;
+    }
+  if(Module_ADCMSPS == 500)
+    {
+      FastLen = fl*Module_ADCMSPS/5000;
+      FastGap = fg*Module_ADCMSPS/5000;
+    }
 }
 
 void offline::SetSlowFilterPar(int sl,int sg)
 {
-  SlowLen = sl*Module_ADCMSPS/1000;
-  SlowGap = sg*Module_ADCMSPS/1000;
-
+  if(Module_ADCMSPS == 100)
+    {
+      SlowLen = (sl*Module_ADCMSPS/1000);
+      SlowGap = (sg*Module_ADCMSPS/1000);
+    }
+    if(Module_ADCMSPS == 250)
+    {
+      SlowLen = (sl*Module_ADCMSPS/2000);
+      SlowGap = (sg*Module_ADCMSPS/2000);
+    }
+      if(Module_ADCMSPS == 500)
+    {
+      SlowLen = (sl*Module_ADCMSPS/5000);
+      SlowGap = (sg*Module_ADCMSPS/5000);
+    }
+  
   c0 = -(1.0 - b1) * std::pow(b1, (double)SlowLen) * 4.0 / (1.0 - std::pow(b1, (double)SlowLen));
   c1 = (1.0 - b1) * 4.0;
   c2 = (1.0 - b1) * 4.0 / (1.0 - pow(b1, (double)SlowLen));
@@ -131,16 +158,31 @@ int offline::GetEnergy()
   esum0[x] = 0;
   for(y = (x-offset); y < (x-offset+SlowLen); y++)
     {
+      if(y < 0)
+	{
+	  std::cout<<"y<0"<<std::endl;
+	  return -1;
+	}
       esum0[x] += Data[y];
     }
   esum1[x] = 0;
   for(y = (x-offset+SlowLen); y < (x-offset+SlowLen+SlowGap); y++)
     {
+      if(y < 0)
+	{
+	  std::cout<<"y<0"<<std::endl;
+	  return -1;
+	}
       esum1[x] += Data[y];
     }
   esum2[x] = 0;
   for(y = (x-offset+SlowLen+SlowGap); y < (x-offset+2*SlowLen+SlowGap); y++)
     {
+      if(y < 0)
+	{
+	  std::cout<<"y<0"<<std::endl;
+	  return -1;
+	}
       esum2[x] += Data[y];
     }
   return c0*(double)esum0[x] +c1*(double)esum1[x]+c2*(double)esum2[x];

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 五 12月  9 19:14:32 2016 (+0800)
+// Last-Updated: 六 12月 10 21:21:51 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 33
+//     Update #: 38
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -131,13 +131,17 @@ int main(int argc, char *argv[])
   // std::string OutputFileName = wuReadData::ReadValue<string>("OutputFileName","ReadData.txt");
   Long64_t TotalEntry = fChain->GetEntries();//拿到TChain中总entry行数
 
+  int fastfilter[65535];
+  int slowfilter[65535];
+
+  
   offline *off = new offline();
   off->SetPulsePolarity(true);
   off->SetADCMSPS(500);
   off->SetPreampTau(100);
-  off->SetFastFilterPar(100,100,1000);
-  off->SetSlowFilterPar(1000,120);
-  off->SetCalculateBaselinePoint(400);
+  off->SetFastFilterPar(0.1,0.1,1000);
+  off->SetSlowFilterPar(0.6,0.12);
+  off->SetCalculateBaselinePoint(250);
 
   TCanvas *c1 = new TCanvas("c1","",600,400);
   // gStyle->SetOptStat(0);//不显示统计框
@@ -150,21 +154,32 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
   
-  TH1D *energy = new TH1D("energy","",4096,0,32768);
+  TH1D *energy = new TH1D("energy","",8192,0,65536);
+  TGraph *filter = new TGraph();
+
   
   for (Long64_t entry = 0; entry < TotalEntry; ++entry)
     {//循环处理从这里开始
       fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
       if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
 
-      if(ch != 5) continue;
+      if(ch != 4) continue;
       off->SetEventData(size, data);
+      
+      // off->GetFastFilter(fastfilter);
+      // off->GetWaveData(fastfilter);
+      // for (int i = 0; i < size; ++i)
+      // 	{
+      // 	  filter->SetPoint(i,i,fastfilter[i]);
+      // 	}
+      
       energy->Fill(off->GetEnergy());
       
     }//循环处理到这里结束
   std::cout<<std::endl;
   gBenchmark->Show("tree");//计时结束并输出时间
 
+  // filter->Draw("APL");
   energy->Draw();
   c1->Update();
   
@@ -178,8 +193,3 @@ int main(int argc, char *argv[])
 
 // 
 // main.cc ends here
-
-
-
-
-

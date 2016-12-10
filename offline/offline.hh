@@ -4,15 +4,32 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 五 12月  9 19:14:23 2016 (+0800)
+// Last-Updated: 六 12月 10 20:52:41 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 20
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
 #define _OFFLINE_H_
 
+#include <cmath>
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 #define EVENTLENGTH 65535
+
+#define FASTFILTER_MAX_LEN 127
+#define FAST_THRESHOLD_MAX 65535
+#define MIN_FASTLENGTH_LEN 2
+#define SLOWFILTER_MAX_LEN 127
+#define MIN_SLOWLENGTH_LEN 2
+#define MIN_SLOWGAP_LEN 3
+
+#define FASTFILTERRANGE_MAX 0
+#define FASTFILTERRANGE_MIN 0
+#define SLOWFILTERRANGE_MAX 6
+#define SLOWFILTERRANGE_MIN 1
+
+#define ROUND(x)    ((x) < 0.0 ? ceil((x) - 0.5) : floor((x) + 0.5))
 
 class offline
 {
@@ -25,15 +42,17 @@ public:
   void SetADCMSPS(int adc);// MHz
   void SetPreampTau(double tau);//us
 
-  void SetFastFilterPar(int fl,int fg,int thre);//ns-建议100  ns-建议100  units
-  void SetSlowFilterPar(int sl,int sg);//ns ns
-
+  void SetFastFilterPar(double fl,double fg,int thre);//us-建议0.1  us-建议0.1  units
+  void SetSlowFilterPar(double sl,double sg,int slowrange = 2);//us us
+  void PrintFilterPar();
+  
   void SetCalculateBaselinePoint(int n) {CalculateBaselinePoint = n;}
 
   void SetEventData(int size,short *data);
   void SetEventData(int size,int *data);
 
-
+  void GetWaveData(int *data);
+  void GetFastFilter(int *data);
   int GetEnergy();// <0 error  >0 energy
 
 private:
@@ -44,22 +63,28 @@ private:
   int Module_ADCMSPS;
   double PreampTau;
 
+  int FastFilterRange;
+  int FL,FG;
+  int FastThresh;
+  int SlowFilterRange;
+  int SL,SG;
+  
   int Threshold;
   int FastLen, FastGap;
-  int SlowLen, SlowGap, SlowRange;
+  int SlowLen, SlowGap;
 
   int CalculateBaselinePoint;
   int baseline;
   double deltaT;
-  unsigned int bsum0;
+  int bsum0;
   double b1, c0, c1, c2;
-  unsigned int offset, x, y;
+  int offset, x, y;
 
   double fastfilter;
   double slowfilter;
   
-  unsigned int esum0[32768], esum1[32768], esum2[32768];
-  unsigned int fsum0[32768], fsum1[32768];
+  int esum0[32768], esum1[32768], esum2[32768];
+  int fsum0, fsum1;
   
   int Size;
   int Data[EVENTLENGTH];

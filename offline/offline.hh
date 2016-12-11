@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 六 12月 10 20:52:41 2016 (+0800)
+// Last-Updated: 日 12月 11 20:19:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 20
+//     Update #: 21
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -53,6 +53,7 @@ public:
 
   void GetWaveData(int *data);
   void GetFastFilter(int *data);
+  void GetSlowFilter(int *data);
   int GetEnergy();// <0 error  >0 energy
 
 private:
@@ -83,7 +84,7 @@ private:
   double fastfilter;
   double slowfilter;
   
-  int esum0[32768], esum1[32768], esum2[32768];
+  int esum0, esum1, esum2;
   int fsum0, fsum1;
   
   int Size;

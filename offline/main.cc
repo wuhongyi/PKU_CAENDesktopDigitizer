@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 六 12月 10 21:21:51 2016 (+0800)
+// Last-Updated: 日 12月 11 21:10:22 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 38
+//     Update #: 51
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -106,23 +106,23 @@ int main(int argc, char *argv[])
   // chain->Print();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-   Int_t           ch;
-   Int_t           size;
-   UInt_t          timestamp;
-   Int_t           dt[65535];   //[size]
-   Int_t           data[65535];   //[size]
+  Int_t           ch;
+  Int_t           size;
+  UInt_t          timestamp;
+  Int_t           dt[65535];   //[size]
+  Int_t           data[65535];   //[size]
 
-   TBranch        *b_ch;   //!
-   TBranch        *b_size;   //!
-   TBranch        *b_timestamp;   //!
-   TBranch        *b_dt;   //!
-   TBranch        *b_data;   //!
+  TBranch        *b_ch;   //!
+  TBranch        *b_size;   //!
+  TBranch        *b_timestamp;   //!
+  TBranch        *b_dt;   //!
+  TBranch        *b_data;   //!
    
-   fChain->SetBranchAddress("ch", &ch, &b_ch);
-   fChain->SetBranchAddress("size", &size, &b_size);
-   fChain->SetBranchAddress("timestamp", &timestamp, &b_timestamp);
-   fChain->SetBranchAddress("dt", dt, &b_dt);
-   fChain->SetBranchAddress("data", data, &b_data);
+  fChain->SetBranchAddress("ch", &ch, &b_ch);
+  fChain->SetBranchAddress("size", &size, &b_size);
+  fChain->SetBranchAddress("timestamp", &timestamp, &b_timestamp);
+  fChain->SetBranchAddress("dt", dt, &b_dt);
+  fChain->SetBranchAddress("data", data, &b_data);
    
   std::cout <<std::endl<< "=== Running Hongyi Wu Analysis ===" << std::endl;
 
@@ -131,17 +131,14 @@ int main(int argc, char *argv[])
   // std::string OutputFileName = wuReadData::ReadValue<string>("OutputFileName","ReadData.txt");
   Long64_t TotalEntry = fChain->GetEntries();//拿到TChain中总entry行数
 
-  int fastfilter[65535];
-  int slowfilter[65535];
-
-  
+  int SelectChannel = 4;
   offline *off = new offline();
-  off->SetPulsePolarity(true);
+  off->SetPulsePolarity(false);
   off->SetADCMSPS(500);
-  off->SetPreampTau(100);
-  off->SetFastFilterPar(0.1,0.1,1000);
-  off->SetSlowFilterPar(0.6,0.12);
-  off->SetCalculateBaselinePoint(250);
+  off->SetPreampTau(700);
+  off->SetFastFilterPar(0.1,0.1,200);
+  off->SetSlowFilterPar(1.2,0.5);
+  off->SetCalculateBaselinePoint(400);
 
   TCanvas *c1 = new TCanvas("c1","",600,400);
   // gStyle->SetOptStat(0);//不显示统计框
@@ -153,35 +150,119 @@ int main(int argc, char *argv[])
   // c1->SetGridx();//SetGridy();
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
-  
-  TH1D *energy = new TH1D("energy","",8192,0,65536);
+
+  TH1D *energy = new TH1D("energy","",8192,0,8192);
   TGraph *filter = new TGraph();
 
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+  if(argc == 1)
+    {
+      std::cout<<"Calculate Energy:"<<std::endl;
+      
+      for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	{//循环处理从这里开始
+	  fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
+	  if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+
+	  if(ch != SelectChannel) continue;
+	  off->SetEventData(size, data);
+
+	  energy->Fill(off->GetEnergy());
+	}//循环处理到这里结束
+      std::cout<<std::endl;
+      gBenchmark->Show("tree");//计时结束并输出时间
+
+      c1->cd();
+      energy->Draw();
+      c1->Update();
+    }
   
-  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
-    {//循环处理从这里开始
-      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
-      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+  if(argc == 4)
+    {
+      int fastfilter[65535];
+      int slowfilter[65535];
+      int wavedata[65535];
 
-      if(ch != 4) continue;
-      off->SetEventData(size, data);
-      
-      // off->GetFastFilter(fastfilter);
-      // off->GetWaveData(fastfilter);
-      // for (int i = 0; i < size; ++i)
-      // 	{
-      // 	  filter->SetPoint(i,i,fastfilter[i]);
-      // 	}
-      
-      energy->Fill(off->GetEnergy());
-      
-    }//循环处理到这里结束
-  std::cout<<std::endl;
-  gBenchmark->Show("tree");//计时结束并输出时间
+      TString argv2(argv[2]);
+      TString argv3(argv[3]);
+      int NMIN = argv2.Atoi();
+      int NMAX = argv3.Atoi();
 
-  // filter->Draw("APL");
-  energy->Draw();
-  c1->Update();
+      int CountPoint = 0;
+
+      if(argv[1][0] == 'W' || argv[1][0] == 'w')
+	{
+	  std::cout<<"Draw Wave Data:"<<std::endl;
+	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
+	    {//循环处理从这里开始
+	      if(entry > TotalEntry) break;
+	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
+	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      off->GetWaveData(wavedata);
+	      for (int i = 0; i < size; ++i)
+		{
+		  filter->SetPoint(CountPoint++,i,wavedata[i]);
+		}
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+      
+      if(argv[1][0] == 'F' || argv[1][0] == 'f')
+	{
+	  std::cout<<"Calculate Fast Filter:"<<std::endl;
+	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
+	    {//循环处理从这里开始
+	      if(entry > TotalEntry) break;
+	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
+	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      off->GetFastFilter(fastfilter);
+	      for (int i = 0; i < size; ++i)
+		{
+		  filter->SetPoint(CountPoint++,i,fastfilter[i]);
+		}
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+      if(argv[1][0] == 'S' || argv[1][0] == 's')
+	{
+	  std::cout<<"Calculate Slow Filter:"<<std::endl;
+	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
+	    {//循环处理从这里开始
+	      if(entry > TotalEntry) break;
+	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
+	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      off->GetSlowFilter(slowfilter);
+	      for (int i = 0; i < size; ++i)
+		{
+		  filter->SetPoint(CountPoint++,i,slowfilter[i]);
+		}
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+      gBenchmark->Show("tree");//计时结束并输出时间
+    }
   
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   // and enter the event loop...

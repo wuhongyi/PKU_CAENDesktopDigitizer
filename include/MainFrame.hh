@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 一 12月 12 10:50:00 2016 (+0800)
+// Last-Updated: 一 12月 12 20:12:26 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 56
+//     Update #: 57
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -195,9 +195,10 @@ private:
   TGTextButton *StartStopButton;
   TGCheckButton *OnlineCheckButton;//->IsOn()
   TGTextButton *WtiteDataButton;
-
+  
   TGGroupFrame *statisticsgroup;
   TGTextEntry *StatisticsDataMsg;
+  TGTextEntry *StatisticsFileSizeMsg;
   TGHorizontalFrame *channelstatisticsframe[MAX_CHANNEL];
   TGLabel *channelstatisticslabel[MAX_CHANNEL];
   TGTextEntry *ChannelStatisticsDataMsg[MAX_CHANNEL];

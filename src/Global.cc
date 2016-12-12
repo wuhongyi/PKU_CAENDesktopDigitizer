@@ -4,13 +4,18 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 09:30:24 2016 (+0800)
-// Last-Updated: 一 12月  5 10:25:07 2016 (+0800)
+// Last-Updated: 一 12月 12 20:11:48 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 5
+//     Update #: 14
 // URL: http://wuhongyi.cn 
 
 #include "Global.hh"
-#include <cstring> 
+#include <cstring>
+#include <ctime>
+#include <sys/stat.h>//stat(const char *file_name,struct stat *buf)
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+static FILE *PKU_DGTZ_LogFilePointer = NULL;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 // Set a bit in a 32-bit unsigned integer.
@@ -75,6 +80,52 @@ long GetTime()
   return time_ms;
 }
 
+double GetFileSizeMB(const char *name)
+{
+  struct stat statbuff;  
+  if(stat(name, &statbuff) < 0){  
+    printf("errno：%d\n",errno);
+    printf("ERR  ：%s\n",strerror(errno));
+    return 0;  
+  }else{  
+    return statbuff.st_size/(1024.0*1024.0);
+  }
+}
+
+
+std::string GetTimeStringYmdHMS()
+{
+  time_t lt = time(NULL);
+  tm* current = localtime(&lt);
+  char str[100];
+  strftime(str,100,"%Y%m%d%H%M%S",current);
+  return std::string(str);
+}
+
+
+void OpenRunLog()
+{
+  PKU_DGTZ_LogFilePointer = fopen("../run.log","aw");
+  if(PKU_DGTZ_LogFilePointer == NULL)
+    printf("open file ../run.log fail \n");
+}
+
+void WriteRunLog(char *log)
+{
+  fprintf(PKU_DGTZ_LogFilePointer,"%s",log);
+}
+
+void WriteRunLog(std::string log)
+{
+  fprintf(PKU_DGTZ_LogFilePointer,"%s",log.c_str());
+}
+
+void CloseRunLog()
+{
+  if(PKU_DGTZ_LogFilePointer != NULL)
+    fclose(PKU_DGTZ_LogFilePointer);
+  PKU_DGTZ_LogFilePointer = NULL; 
+}
 
 // 
 // Global.cc ends here

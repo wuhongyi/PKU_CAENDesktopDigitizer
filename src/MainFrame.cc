@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 12月 12 10:49:29 2016 (+0800)
+// Last-Updated: 一 12月 12 20:18:01 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 286
+//     Update #: 299
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -73,6 +73,10 @@ MainFrame::MainFrame(const TGWindow * p)
   Tab1->HideFrame(controlgroup);
   Tab1->HideFrame(statisticsgroup);
   // Print();
+
+  OpenRunLog();
+  WriteRunLog((char *)"\n\n##########OpenSoftware##########\ntime: ");
+  WriteRunLog(GetTimeStringYmdHMS());
 }
 
 MainFrame::~MainFrame()
@@ -81,7 +85,11 @@ MainFrame::~MainFrame()
   
   // Clean up all widgets, frames and layouthints that were used
   Cleanup();
-  
+
+  WriteRunLog((char *)"\ntime: ");
+  WriteRunLog(GetTimeStringYmdHMS());
+  WriteRunLog((char *)"\n##########CloseSoftware##########\n");
+  CloseRunLog();
 }
 
 void MainFrame::CheckLicense(Digitizer* dig)
@@ -100,6 +108,11 @@ void MainFrame::CheckLicense(Digitizer* dig)
 
 void MainFrame::CloseWindow()
 {
+  WriteRunLog((char *)"\ntime: ");
+  WriteRunLog(GetTimeStringYmdHMS());
+  WriteRunLog((char *)"\n##########CloseSoftware##########\n");
+  CloseRunLog();
+  
   gApplication->Terminate(0);
 }
 
@@ -115,8 +128,8 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
   // 1001 - 10000. Sub-messages must always be in the range 1-255.        
   // To use MK_MSG() just cast your message id's to an EWidgetMessageType.
 
-  std::cout<<msg <<"  "<< parm1<<"  "<<parm2<<std::endl;
-  std::cout<<GET_MSG(msg)<<"  "<<GET_SUBMSG(msg)<<std::endl;
+  // std::cout<<msg <<"  "<< parm1<<"  "<<parm2<<std::endl;
+  // std::cout<<GET_MSG(msg)<<"  "<<GET_SUBMSG(msg)<<std::endl;
 
   switch(GET_MSG(msg))
     {
@@ -1019,6 +1032,10 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   WtiteDataButton->Connect("Pressed()","MainFrame",this,"SetWriteData()");
   WtiteDataButton->SetEnabled(0);
 
+
+
+  
+  
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
   statisticsgroup = new TGGroupFrame(TabPanel,"Statistics");
@@ -1047,6 +1064,28 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
   TGLabel *readoutdataratelabel = new TGLabel(readoutframe,"MB/s ");
   readoutframe->AddFrame(readoutdataratelabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,5,3,3,0));
 
+
+  TGLabel *readoutfilesizemblabel = new TGLabel(readoutframe,"MB ");
+  readoutframe->AddFrame(readoutfilesizemblabel,new TGLayoutHints(kLHintsRight | kLHintsTop,5,3,3,0));
+
+  StatisticsFileSizeMsg = new TGTextEntry(readoutframe,
+				      new TGTextBuffer(14), -1,
+				      StatisticsDataMsg->GetDefaultGC()(),
+				      StatisticsDataMsg->GetDefaultFontStruct(),
+				      kRaisedFrame | kDoubleBorder,
+				      GetWhitePixel());
+  readoutframe->AddFrame(StatisticsFileSizeMsg, new TGLayoutHints(kLHintsTop | kLHintsRight, 10, 0, 0, 0));
+  StatisticsFileSizeMsg->SetAlignment(kTextCenterX);
+  StatisticsFileSizeMsg->SetFont("-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-iso8859-1", false);
+  StatisticsFileSizeMsg->SetTextColor(0xFF0000, false);
+  StatisticsFileSizeMsg->SetText("");
+  StatisticsFileSizeMsg->SetEnabled(kFALSE);
+  StatisticsFileSizeMsg->SetFrameDrawn(kTRUE);
+
+  TGLabel *readoutfilesizelabel = new TGLabel(readoutframe,"File Size: ");
+  readoutframe->AddFrame(readoutfilesizelabel,new TGLayoutHints(kLHintsRight | kLHintsTop,10,3,3,0));
+
+  
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
       channelstatisticsframe[i] = new TGHorizontalFrame(statisticsgroup);
@@ -1104,6 +1143,9 @@ void MainFrame::SetWriteData()
       // 这里应该需要sleep一下
       board->CloseFile();
 
+      WriteRunLog((char *)"\n=====WriteStop   ");
+      WriteRunLog(GetTimeStringYmdHMS());
+      
       runnum++;
       filerunnum->SetIntNumber(runnum);
       std::ofstream out("../parset/RunNumber");
@@ -1124,6 +1166,10 @@ void MainFrame::SetWriteData()
       runnum = (int)filerunnum->GetIntNumber();
       sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
 
+      WriteRunLog((char *)"\n=====WriteStart   ");
+      WriteRunLog(GetTimeStringYmdHMS());
+      sprintf(tmp,"\nFileNumber: %04d",runnum);
+      
       board->OpenFile(Filename);
       board->SetWriteData(true);
       StartStopButton->SetEnabled(0);
@@ -1220,7 +1266,6 @@ void MainFrame::RunReadData()
   int ret = 0;
   std::cout<<"read loop ..."<<std::endl;
 
-  
   while(startstop)
     {
       // Read data
@@ -1248,6 +1293,9 @@ void MainFrame::RunReadData()
       ElapsedTime = CurrentTime - PrevRateTime;
       if (ElapsedTime > 1000)
 	{
+	  sprintf(tmp,"%0.2f",GetFileSizeMB(Filename));
+	  StatisticsFileSizeMsg->SetText(tmp);
+	  
 	  if(OnlineCheckButton->IsOn())
 	    {
 	      sprintf(tmp,"%0.2f",(float)board->GetStatisticsNb()/((float)ElapsedTime*1048.576f));

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 21:05:40 2016 (+0800)
-// Last-Updated: 一 12月  5 20:52:41 2016 (+0800)
+// Last-Updated: 一 12月 12 20:11:48 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 25
+//     Update #: 33
 // URL: http://wuhongyi.cn 
 
 #ifndef _GLOBAL_H_
@@ -16,9 +16,12 @@
 #include <CAENDigitizerType.h>
 
 #include <cmath>
+#include <cstring>
+#include <string>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #define MAX_CHANNEL 16
+
 
 // Set a bit in a 32-bit unsigned integer.
 unsigned int SetBit_32(unsigned short bit,unsigned int value);//将value第bit位设为1
@@ -39,6 +42,16 @@ int Decimal2Binary(uint32_t d, char *bstr);
 // Get time in milliseconds
 // return  time in msec
 long GetTime();
+
+double GetFileSizeMB(const char *name);//返回MB
+
+std::string GetTimeStringYmdHMS();
+
+
+void OpenRunLog();
+void WriteRunLog(char *log);
+void WriteRunLog(std::string log);
+void CloseRunLog();
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

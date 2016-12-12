@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 日 12月 11 21:19:27 2016 (+0800)
+// Last-Updated: 一 12月 12 21:17:08 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 48
+//     Update #: 49
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -302,6 +302,12 @@ void offline::GetSlowFilter(int *data)
     {
       data[x] = data[offset];
     }
+}
+
+double offline::GetRiseTime()
+{
+
+  return -1;
 }
 
 int offline::GetEnergy()

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 四 12月  8 19:05:19 2016 (+0800)
+// Last-Updated: 一 12月 12 10:36:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 9
+//     Update #: 10
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -181,7 +181,7 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 			{
 			  for (int point = 0; point < (int)(dppphawaveforms->Ns); ++point)
 			    {
-			      MultiWaveform->Fill(point,int(WaveLine[point]));
+			      MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
 			    }
 			}
 		      

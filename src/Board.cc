@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 二 12月  6 18:44:46 2016 (+0800)
+// Last-Updated: 一 12月 12 10:32:42 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 34
+//     Update #: 35
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -57,7 +57,7 @@ Board::Board(Digitizer* dig,const char *name)
   flagupdatesinglewaveform = false;
   MonitorChannel = -1;
   writedata = false;
- 
+  CountPointMultiWaveform = 0;
 }
 
 Board::~Board()
@@ -110,19 +110,27 @@ void Board::InitMonitorGraph()
       MultiWaveform = NULL;
     }
 
+  CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
-  MultiWaveform = new TH2I("MultiWaveform","",par_recordlength,0,par_recordlength,4096,0,1<<NBits);
+  MultiWaveform = new TGraph();
 }
 
 void Board::ClearMonitorGraph()
 {
-  MultiWaveform->Reset("ICES");
   if(SingleWaveform != NULL)
     {
       delete SingleWaveform;
       SingleWaveform = NULL;
     }
+  if(MultiWaveform != NULL)
+    {
+      delete MultiWaveform;
+      MultiWaveform = NULL;
+    }
+
+  CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
+  MultiWaveform = new TGraph();
 }
 
 bool Board::OpenFile(const char *filename)

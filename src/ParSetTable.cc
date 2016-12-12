@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:22 2016 (+0800)
-// Last-Updated: 二 12月  6 19:22:09 2016 (+0800)
+// Last-Updated: 一 12月 12 10:20:05 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 187
+//     Update #: 195
 // URL: http://wuhongyi.cn 
 
 #include "ParSetTable.hh"
@@ -209,18 +209,34 @@ void ParSetTable::CopyParameter()
 
 void ParSetTable::LoadParameter()
 {
-  CAEN_DGTZ_PulsePolarity_t loadpulsepolarity;// = CAEN_DGTZ_PulsePolarityPositive;
+  if(strstr(board->GetName(),(char*)"STD") != NULL)
+    {
+      LoadSTDParameter();
+    }
+  else
+    {
+      if(strstr(board->GetName(),(char*)"PSD") != NULL)
+	{
+	  LoadPSDParameter();
+	}
+      else
+	{
+	  printf("Error:  ParSetTable::LoadParameter\n");
+	}
+  
+      }
+  return;
+}
+
+void ParSetTable::LoadSTDParameter()
+{
   CAEN_DGTZ_TriggerPolarity_t triggerpolarity;
   CAEN_DGTZ_TriggerMode_t selftrigger;
   unsigned int dcoffset = 0;
   unsigned int threshold = 0;
-  unsigned int pretrigger = 0;
   unsigned int posttrigger = 0;
   int ret = 0;
 
-  // PSD PHA Load 没用
-  if(!(strstr(board->GetName(),(char*)"STD") != NULL)) return;
-  
   for (int i = 0; i < MAX_CHANNEL; ++i)
     {
       if(i < board->GetChannels() && TstBit_32(i,channelmask))
@@ -250,50 +266,69 @@ void ParSetTable::LoadParameter()
 	  Threshold[i]->SetIntNumber(int(threshold));
 
 	  
-	  if(strstr(board->GetName(),(char*)"STD") == NULL)
-	    {
-	      // 不存在
-	      // DPP
-	      
-	      // Pulse Polarity
-	      ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&loadpulsepolarity);
-	      std::cout<<"load PS:"<<loadpulsepolarity<<std::endl;
-	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
-	      // PulsePolarityBox[i]->Select(int(pulsepolarity));
-	      if(loadpulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
-		PulsePolarityBox[i]->Select(0);
-	      else
-		PulsePolarityBox[i]->Select(1);
-
-	      
-	      ret = CAEN_DGTZ_GetDPPPreTriggerSize(board->GetHandle(),i,&pretrigger);
-	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetDPPPreTriggerSize"<<std::endl;
-	      PreTriggerSize[i]->SetIntNumber(int(pretrigger));
-	    }
+	  ret = CAEN_DGTZ_GetTriggerPolarity(board->GetHandle(),i,&triggerpolarity);
+	  std::cout<<"load PS:"<<triggerpolarity<<std::endl;
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetTriggerPolarity"<<std::endl;
+	  // PulsePolarityBox[i]->Select(int(pulsepolarity));
+	  if(triggerpolarity == CAEN_DGTZ_TriggerOnRisingEdge)
+	    PulsePolarityBox[i]->Select(0);
 	  else
-	    {
-	      // 存在
-	      // STD
-	      ret = CAEN_DGTZ_GetTriggerPolarity(board->GetHandle(),i,&triggerpolarity);
-	      std::cout<<"load PS:"<<triggerpolarity<<std::endl;
-	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetTriggerPolarity"<<std::endl;
-	      // PulsePolarityBox[i]->Select(int(pulsepolarity));
-	      if(triggerpolarity == CAEN_DGTZ_TriggerOnRisingEdge)
-		PulsePolarityBox[i]->Select(0);
-	      else
-		PulsePolarityBox[i]->Select(1);
+	    PulsePolarityBox[i]->Select(1);
 
 	      
-	      ret = CAEN_DGTZ_GetPostTriggerSize(board->GetHandle(),&posttrigger);
-	      if(ret) std::cout<<"Error: CAEN_DGTZ_GetPostTriggerSize"<<std::endl;
-	      std::cout<<"load posttrigger:"<<posttrigger<<std::endl;
-	      PostTriggerSize->SetIntNumber(int(posttrigger));
-	      
-	    }
-	  
+	  ret = CAEN_DGTZ_GetPostTriggerSize(board->GetHandle(),&posttrigger);
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetPostTriggerSize"<<std::endl;
+	  std::cout<<"load posttrigger:"<<posttrigger<<std::endl;
+	  PostTriggerSize->SetIntNumber(int(posttrigger)); 
+	}
+    }  
+}
+
+void ParSetTable::LoadPSDParameter()
+{
+  unsigned int pretrigger = 0;
+  unsigned int dcoffset = 0;
+  CAEN_DGTZ_PulsePolarity_t loadpulsepolarity;
+  int ret = 0;
+  
+  for (int i = 0; i < MAX_CHANNEL; ++i)
+    {
+      if(i < board->GetChannels() && TstBit_32(i,channelmask))
+	{
+	  // Channel Trigger Threshold
+	  Threshold[i]->SetIntNumber(int(board->dpppsdParams.thr[i]));
+
+	  // Trigger Enabled
+	  if(board->dpppsdParams.selft[i] == 1) SelfTriggerBox[i]->Select(1);
+	  if(board->dpppsdParams.selft[i] == 0) SelfTriggerBox[i]->Select(0);
+
+	  // DC Offset
+	  ret = CAEN_DGTZ_GetChannelDCOffset(board->GetHandle(),i,&dcoffset);
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelDCOffset"<<std::endl;
+	  if(100.0*int(dcoffset)/0xFFFF-50 > 0)
+	    DCOffset[i]->SetIntNumber(100.0*int(dcoffset)/0xFFFF-50+0.5);
+	  else
+	    DCOffset[i]->SetIntNumber(100.0*int(dcoffset)/0xFFFF-50);
+	  // DCOffset[i]->SetIntNumber(int(dcoffset));
+
+	  // Pulse Polarity
+	  ret = CAEN_DGTZ_GetChannelPulsePolarity(board->GetHandle(),i,&loadpulsepolarity);
+	  std::cout<<"load PS:"<<loadpulsepolarity<<std::endl;
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetChannelPulsePolarity"<<std::endl;
+	  // PulsePolarityBox[i]->Select(int(pulsepolarity));
+	  if(loadpulsepolarity == CAEN_DGTZ_PulsePolarityPositive)
+	    PulsePolarityBox[i]->Select(0);
+	  else
+	    PulsePolarityBox[i]->Select(1);
+
+	  // Pre Trigger
+	  ret = CAEN_DGTZ_GetDPPPreTriggerSize(board->GetHandle(),i,&pretrigger);
+	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetDPPPreTriggerSize"<<std::endl;
+	  PreTriggerSize[i]->SetIntNumber(int(pretrigger));
 	}
     }
 }
+
 
 void ParSetTable::ApplyParameter()
 {
@@ -707,36 +742,11 @@ void ParSetTable::ApplySTDParameter()
 
 void ParSetTable::ApplyPSDParameter()
 {
-  CAEN_DGTZ_DPP_PSD_Params_t dpppsdParams;
+  // CAEN_DGTZ_DPP_PSD_Params_t dpppsdParams;
   CAEN_DGTZ_PulsePolarity_t pulsepolarity;
   unsigned int dcoffset = 0;
   unsigned int pretrigger = 0;
   int ret = 0;
-
-  for (int ch = 0; ch < board->GetChannels(); ++ch)
-    {
-      dpppsdParams.thr[ch] = 0;// Trigger Threshold
-      dpppsdParams.nsbl[ch] = 2;    // used to specifiy the number of samples for the baseline averaging
-      dpppsdParams.lgate[ch] = 32;    // Long Gate Width (N*4ns)
-      dpppsdParams.sgate[ch] = 24;    // Short Gate Width (N*4ns)
-      dpppsdParams.pgate[ch] = 8;     // Pre Gate Width (N*4ns)
-      dpppsdParams.selft[ch] = 0;  // Self Trigger Mode: 0 -> Disabled 1 -> Enabled
-      // Trigger configuration:
-      // CAEN_DGTZ_DPP_TriggerConfig_Peak       -> trigger on peak. NOTE: Only for FW <= 13X.5
-      // CAEN_DGTZ_DPP_TriggerConfig_Threshold  -> trigger on threshold 
-      dpppsdParams.trgc[ch] = CAEN_DGTZ_DPP_TriggerConfig_Threshold;
-      dpppsdParams.tvaw[ch] = 50;// Trigger Validation Acquisition Window
-      dpppsdParams.csens[ch] = 0;// Charge sensibility: 0->40fc/LSB; 1->160fc/LSB; 2->640fc/LSB; 3->2,5pc/LSB
-    }
-  // Pile-Up rejection Mode
-  //    CAEN_DGTZ_DPP_PSD_PUR_DetectOnly -> Only Detect Pile-Up
-  //    CAEN_DGTZ_DPP_PSD_PUR_Enabled -> Reject Pile-Up
-  // DPPParams[b].purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
-  dpppsdParams.purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly; //NOTE: Ignored on 5730
-  dpppsdParams.purgap = 100;  // Purity Gap   // Pile-up Rejection Gap  //NOTE: Ignored on 5730
-  dpppsdParams.blthr = 3;     // Baseline Threshold  //This parameter is deprecated
-  dpppsdParams.bltmo = 100;   // Baseline Timeout    //This parameter is deprecated
-  dpppsdParams.trgho = 0;     // Trigger HoldOff
 
 
   for (int i = 0; i < MAX_CHANNEL; ++i)
@@ -744,10 +754,10 @@ void ParSetTable::ApplyPSDParameter()
       if(i < board->GetChannels() && TstBit_32(i,channelmask))
 	{
 	  // Channel Trigger Threshold
-	  dpppsdParams.thr[i] = Threshold[i]->GetIntNumber();
+	  board->dpppsdParams.thr[i] = Threshold[i]->GetIntNumber();
 	  
 	  // Trigger Enabled
-	  dpppsdParams.selft[i] = SelfTriggerBox[i]->GetSelected();
+	  board->dpppsdParams.selft[i] = SelfTriggerBox[i]->GetSelected();
 
 
 	  // DC Offset
@@ -786,12 +796,11 @@ void ParSetTable::ApplyPSDParameter()
 	  if(ret) std::cout<<"Error: CAEN_DGTZ_GetDPPPreTriggerSize"<<std::endl;
 	  PreTriggerSize[i]->SetIntNumber(int(pretrigger));
 
-	  
 	}//channelmask
 
     }//MAX_CHANNEL
 
-  ret = CAEN_DGTZ_SetDPPParameters(board->GetHandle(), channelmask, &dpppsdParams);
+  ret = CAEN_DGTZ_SetDPPParameters(board->GetHandle(), channelmask, &board->dpppsdParams);
   if(ret) std::cout<<"Error: CAEN_DGTZ_SetDPPParameters"<<std::endl;
   
 }

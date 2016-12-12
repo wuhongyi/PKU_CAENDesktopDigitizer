@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 二 12月  6 21:15:03 2016 (+0800)
+// Last-Updated: 一 12月 12 10:50:00 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 53
+//     Update #: 56
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -14,6 +14,7 @@
 
 #include "Global.hh"
 #include "ParSetTable.hh"
+#include "PrintRegisters.hh"
 
 #include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
@@ -143,7 +144,7 @@ public:
   void ProgramDigitizer();
   void AllocateMemory();
 
-
+  void SendASoftwareTrigger();
   void MonitorClear();
   void MonitorChannelSelect(int id);
   
@@ -163,10 +164,6 @@ private:
   void RunReadData();
 
   int GetMoreBoardInfo(int handle, CAEN_DGTZ_BoardInfo_t *BoardInfo);
-
-  // Read DGTZ Registers 
-  // return  0=success; -1=error
-  void Read_DGTZ_Register(int handle,int MaxNChInBoard);
 
 private:
   uint64_t CurrentTime, PrevRateTime, ElapsedTime;
@@ -211,6 +208,7 @@ private:
   TGCheckButton *MonitorCheckButton;
   TGComboBox *MonitorChannelBox;
   TGComboBox *MonitorTypeBox;// 0-Single 1-Multi  2-Energy ...
+  TGTextButton *SendASoftwareTriggerButton;
   TGTextButton *MonitorClearButton;
   TCanvas *OnlineCanvas;
 

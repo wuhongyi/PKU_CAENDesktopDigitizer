@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 二 12月  6 19:22:49 2016 (+0800)
+// Last-Updated: 一 12月 12 10:36:04 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 35
+//     Update #: 37
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
@@ -195,7 +195,7 @@ void DT_Standard::GetWaveform(bool monitor,int type)
 			  {
 			    for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
 			      {
-				MultiWaveform->Fill(point,int(Event16->DataChannel[ch][point]));
+				MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event16->DataChannel[ch][point]));
 			      }
 			  }
 		      
@@ -262,7 +262,7 @@ void DT_Standard::GetWaveform(bool monitor,int type)
 			      {
 				for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
 				  {
-				    MultiWaveform->Fill(point,int(Event16->DataChannel[ch][point]));
+				    MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event16->DataChannel[ch][point]));
 				  }
 			      }
 		      

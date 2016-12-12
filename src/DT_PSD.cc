@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 三 12月  7 15:03:18 2016 (+0800)
+// Last-Updated: 一 12月 12 10:34:05 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 65
+//     Update #: 67
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -62,6 +62,34 @@ int DT_PSD::ProgramDigitizer()
   ret |= CAEN_DGTZ_SetDPPEventAggregation(handle, par_dppeventaggregationthreshold, par_dppeventaggregationmaxsize);
 
   ret |= CAEN_DGTZ_SetRunSynchronizationMode(handle, par_runsyncmode);
+
+
+  for (int ch = 0; ch < Nch; ++ch)
+    {
+      dpppsdParams.thr[ch] = 0;// Trigger Threshold
+      dpppsdParams.nsbl[ch] = 2;    // used to specifiy the number of samples for the baseline averaging
+      dpppsdParams.lgate[ch] = 32;    // Long Gate Width (N*4ns)
+      dpppsdParams.sgate[ch] = 24;    // Short Gate Width (N*4ns)
+      dpppsdParams.pgate[ch] = 8;     // Pre Gate Width (N*4ns)
+      dpppsdParams.selft[ch] = 0;  // Self Trigger Mode: 0 -> Disabled 1 -> Enabled
+      // Trigger configuration:
+      // CAEN_DGTZ_DPP_TriggerConfig_Peak       -> trigger on peak. NOTE: Only for FW <= 13X.5
+      // CAEN_DGTZ_DPP_TriggerConfig_Threshold  -> trigger on threshold 
+      dpppsdParams.trgc[ch] = CAEN_DGTZ_DPP_TriggerConfig_Threshold;
+      dpppsdParams.tvaw[ch] = 50;// Trigger Validation Acquisition Window
+      dpppsdParams.csens[ch] = 0;// Charge sensibility: 0->40fc/LSB; 1->160fc/LSB; 2->640fc/LSB; 3->2,5pc/LSB
+    }
+  // Pile-Up rejection Mode
+  //    CAEN_DGTZ_DPP_PSD_PUR_DetectOnly -> Only Detect Pile-Up
+  //    CAEN_DGTZ_DPP_PSD_PUR_Enabled -> Reject Pile-Up
+  // DPPParams[b].purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
+  dpppsdParams.purh = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly; //NOTE: Ignored on 5730
+  dpppsdParams.purgap = 100;  // Purity Gap   // Pile-up Rejection Gap  //NOTE: Ignored on 5730
+  dpppsdParams.blthr = 3;     // Baseline Threshold  //This parameter is deprecated
+  dpppsdParams.bltmo = 100;   // Baseline Timeout    //This parameter is deprecated
+  dpppsdParams.trgho = 0;     // Trigger HoldOff
+
+
 
   
   // if (FamilyCode == CAEN_DGTZ_XX720_FAMILY_CODE ||
@@ -201,7 +229,7 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 			{
 			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
 			    {
-			      MultiWaveform->Fill(point,int(WaveLine[point]));
+			      MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
 			    }
 			}
 		      

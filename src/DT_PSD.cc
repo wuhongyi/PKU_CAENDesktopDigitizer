@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 一 12月 12 10:34:05 2016 (+0800)
+// Last-Updated: 二 12月 13 11:00:13 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 67
+//     Update #: 68
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -183,7 +183,7 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 	  // int size;
 	  uint16_t *WaveLine;
 	  // uint8_t *DigitalWaveLine;	  
-	  HeaderPSD[5] = (int)(dpppsdwaveforms->Ns); // Number of samples
+	  HeaderPSD[5] = dpppsdwaveforms->Ns; // Number of samples
 	  WaveLine = dpppsdwaveforms->Trace1; // First trace (for DPP-PSD it is ALWAYS the Input Signal)
 	  // WaveLine = dpppsdwaveforms->Trace2; // Second Trace (if single trace mode, it is a sequence of zeroes)
 

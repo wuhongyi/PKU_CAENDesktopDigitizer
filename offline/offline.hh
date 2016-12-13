@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 一 12月 12 21:17:08 2016 (+0800)
+// Last-Updated: 二 12月 13 13:04:41 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 22
+//     Update #: 23
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -48,6 +48,7 @@ public:
   
   void SetCalculateBaselinePoint(int n) {CalculateBaselinePoint = n;}
 
+  void SetEventData(unsigned short size,unsigned short *data);
   void SetEventData(int size,short *data);
   void SetEventData(int size,int *data);
 

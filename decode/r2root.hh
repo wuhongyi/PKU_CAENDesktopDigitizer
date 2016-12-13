@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:33:48 2016 (+0800)
-// Last-Updated: 二 12月  6 20:52:34 2016 (+0800)
+// Last-Updated: 二 12月 13 12:18:30 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 9
+//     Update #: 12
 // URL: http://wuhongyi.cn 
 
 #ifndef _R2ROOT_H_
@@ -26,7 +26,7 @@
 #define MAXTRACEN 65535
 #define HEADERSTD 5
 #define HEADERPSD 6
-#define HEADERPHA 4
+#define HEADERPHA 5
 
 class r2root
 {
@@ -47,7 +47,7 @@ private:
   char header[16];
   unsigned int HeaderSTD[HEADERSTD];// 0-ch 1-TimeTag 2-EventCounter 3-Pattern 4-size
   unsigned int HeaderPSD[HEADERPSD];// 0-ch 1-TimeTag 2-chargeshort 3-chargelong 4-baseline 5-size
-  unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTag 2-Energy 3-size
+  unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTagHigh 2-TimeTagLow 3-Energy 4-size
   unsigned short rawdata;
 
   
@@ -58,17 +58,18 @@ private:
   char filename[1024];
   char rootfilename[1024];
 private:
-  int ch;
-  int size;
+  Short_t ch;
+  UShort_t size;
   UInt_t timestamp;
+  ULong64_t TimeStamp;
   UInt_t eventcounter;
   UInt_t pattern;
-  int chargeshort;
-  int chargelong;
-  int baseline;
-  int energy;
-  int data[MAXTRACEN];
-  int dt[MAXTRACEN];
+  Short_t chargeshort;
+  Short_t chargelong;
+  Short_t baseline;
+  UShort_t energy;
+  UShort_t data[MAXTRACEN];
+  UShort_t dt[MAXTRACEN];
 };
 
 #endif /* _R2ROOT_H_ */

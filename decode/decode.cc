@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:25:21 2016 (+0800)
-// Last-Updated: 二 12月  6 19:46:46 2016 (+0800)
+// Last-Updated: 二 12月 13 12:12:15 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 3
+//     Update #: 4
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
       return 0;
     }
 
-  TString rawfilepath = "../data/";
-  TString rootfilepath = "../data/";
+  TString rawfilepath = "../data/";// 必须以 '/' 结尾
+  TString rootfilepath = "../data/";// 必须以 '/' 结尾
 
   TString filename(argv[1]);
   TString RunNumber(argv[2]);

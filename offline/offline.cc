@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 一 12月 12 21:17:08 2016 (+0800)
+// Last-Updated: 二 12月 13 13:13:07 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 49
+//     Update #: 51
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -171,6 +171,16 @@ void offline::PrintFilterPar()
 	}
     }
 
+}
+
+void offline::SetEventData(unsigned short size,unsigned short *data)
+{
+  Size = size;
+  for (int i = 0; i < Size; ++i)
+    {
+      Data[i] = data[i];
+    }
+  DataPrimaryProcess();
 }
 
 void offline::SetEventData(int size,short *data)
@@ -347,7 +357,7 @@ int offline::GetEnergy()
       if(fastfilter >= Threshold) break;
       if(x == Size-1)
 	{
-	  std::cout<<"Under Threshold ..."<<std::endl;
+	  // std::cout<<"Under Threshold ..."<<std::endl;
 	  return -1;
 	}
     }
@@ -363,8 +373,6 @@ int offline::GetEnergy()
       if(y < 0)
 	{
 	  // std::cout<<"y<0  " <<SlowGap<<"  "<<SlowLen<<"  "<<y<<std::endl;
-	  // return -1;
-
 	  esum0 += 0;
 	}
       else

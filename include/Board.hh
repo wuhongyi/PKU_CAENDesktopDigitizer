@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 一 12月 12 10:32:42 2016 (+0800)
+// Last-Updated: 二 12月 13 10:59:42 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 72
+//     Update #: 73
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -21,7 +21,7 @@
 #define BUFFLENGTH  5400000
 #define HEADERSTD 5
 #define HEADERPSD 6
-#define HEADERPHA 4
+#define HEADERPHA 5
 
 class Board
 {
@@ -93,7 +93,7 @@ protected:
 
   unsigned int HeaderSTD[HEADERSTD];// 0-ch 1-TimeTag 2-EventCounter 3-Pattern 4-size
   unsigned int HeaderPSD[HEADERPSD];// 0-ch 1-TimeTag 2-chargeshort 3-chargelong 4-baseline 5-size
-  unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTag 2-Energy 3-size
+  unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTagHigh 2-TimeTagLow 3-Energy 4-size
   
 protected:
   CAEN_DGTZ_DPP_AcqMode_t par_dppacqmode;// CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope CAEN_DGTZ_DPP_ACQ_MODE_List CAEN_DGTZ_DPP_ACQ_MODE_Mixed

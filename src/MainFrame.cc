@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 12月 12 20:18:01 2016 (+0800)
+// Last-Updated: 二 12月 13 14:22:43 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 299
+//     Update #: 301
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1152,6 +1152,10 @@ void MainFrame::SetWriteData()
       out<<runnum<<std::endl;
       out.close();
 
+      const char *path=filepathtext->GetText();
+      const char *filen=filenametext->GetText();
+      sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
+      
       StartStopButton->SetEnabled(1);
     }
   else
@@ -1160,7 +1164,6 @@ void MainFrame::SetWriteData()
       WtiteDataButton->SetText((char*)"&StopWrite");
       writedata = true;
 
-      // get last file name
       const char *path=filepathtext->GetText();
       const char *filen=filenametext->GetText();
       runnum = (int)filerunnum->GetIntNumber();
@@ -1169,6 +1172,7 @@ void MainFrame::SetWriteData()
       WriteRunLog((char *)"\n=====WriteStart   ");
       WriteRunLog(GetTimeStringYmdHMS());
       sprintf(tmp,"\nFileNumber: %04d",runnum);
+      WriteRunLog(tmp);
       
       board->OpenFile(Filename);
       board->SetWriteData(true);

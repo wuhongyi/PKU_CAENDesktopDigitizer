@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 日 12月 11 21:10:22 2016 (+0800)
+// Last-Updated: 二 12月 13 13:13:07 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 51
+//     Update #: 53
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -106,12 +106,19 @@ int main(int argc, char *argv[])
   // chain->Print();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-  Int_t           ch;
-  Int_t           size;
+  
+  Short_t         ch;
+  UShort_t        size;
   UInt_t          timestamp;
-  Int_t           dt[65535];   //[size]
-  Int_t           data[65535];   //[size]
+  UShort_t        dt[65535];   //[size]
+  UShort_t        data[65535];   //[size]
 
+  // Int_t           ch;
+  // Int_t           size;
+  // UInt_t          timestamp;
+  // Int_t           dt[65535];   //[size]
+  // Int_t           data[65535];   //[size]
+  
   TBranch        *b_ch;   //!
   TBranch        *b_size;   //!
   TBranch        *b_timestamp;   //!
@@ -136,8 +143,8 @@ int main(int argc, char *argv[])
   off->SetPulsePolarity(false);
   off->SetADCMSPS(500);
   off->SetPreampTau(700);
-  off->SetFastFilterPar(0.1,0.1,200);
-  off->SetSlowFilterPar(1.2,0.5);
+  off->SetFastFilterPar(0.1,0.1,100);//100
+  off->SetSlowFilterPar(2.4,0.7);
   off->SetCalculateBaselinePoint(400);
 
   TCanvas *c1 = new TCanvas("c1","",600,400);
@@ -159,16 +166,34 @@ int main(int argc, char *argv[])
   if(argc == 1)
     {
       std::cout<<"Calculate Energy:"<<std::endl;
+      int CountUnderThreshold = 0;
+      int CountChannelEntey = 0;
+      double tempenergy;
       
       for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	{//循环处理从这里开始
 	  fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
-	  if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
-
+	  if(entry % 10000 == 0)
+	    {
+	      std::cout<<"Process Event: "<<entry<<std::endl;
+	      std::cout<<"UnderThreshold: "<<CountUnderThreshold<<" / "<<CountChannelEntey<<std::endl;
+	      CountUnderThreshold = 0;
+	      CountChannelEntey = 0;
+	    }
+	    
 	  if(ch != SelectChannel) continue;
+	  CountChannelEntey++;
 	  off->SetEventData(size, data);
-
-	  energy->Fill(off->GetEnergy());
+	  tempenergy = off->GetEnergy();
+	  
+	  if(tempenergy < 0)
+	    {
+	      CountUnderThreshold++;
+	    }
+	  else
+	    {
+	      energy->Fill(tempenergy);
+	    }
 	}//循环处理到这里结束
       std::cout<<std::endl;
       gBenchmark->Show("tree");//计时结束并输出时间
@@ -197,8 +222,7 @@ int main(int argc, char *argv[])
 	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
 	    {//循环处理从这里开始
 	      if(entry > TotalEntry) break;
-	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
-	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+	      fChain->GetEvent(entry);
 
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
@@ -221,8 +245,7 @@ int main(int argc, char *argv[])
 	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
 	    {//循环处理从这里开始
 	      if(entry > TotalEntry) break;
-	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
-	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+	      fChain->GetEvent(entry);
 
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
@@ -244,8 +267,7 @@ int main(int argc, char *argv[])
 	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
 	    {//循环处理从这里开始
 	      if(entry > TotalEntry) break;
-	      fChain->GetEvent(entry);//这个是重点，拿到TChain中第entry行数据
-	      if(entry % 1000 == 0) std::cout<<"Process Event: "<<entry<<std::endl;
+	      fChain->GetEvent(entry);
 
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);

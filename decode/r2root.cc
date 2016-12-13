@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 二 12月  6 20:53:55 2016 (+0800)
+// Last-Updated: 二 12月 13 12:19:06 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 22
+//     Update #: 26
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -99,35 +99,35 @@ void r2root::Process()
   switch(flag)
     {
     case 0:
-      t->Branch("ch",&ch,"ch/I");
-      t->Branch("size",&size,"size/I");
+      t->Branch("ch",&ch,"ch/S");
+      t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&timestamp,"timestamp/i");
       t->Branch("eventcounter",&eventcounter,"eventcounter/i");
       t->Branch("pattern",&pattern,"pattern/i");
-      t->Branch("dt",&dt,"dt[size]/I");
-      t->Branch("data",&data,"data[size]/I");
+      t->Branch("dt",&dt,"dt[size]/s");
+      t->Branch("data",&data,"data[size]/s");
       t->Branch("nevt",&nevt,"nevt/I");
       break;
 
     case 1:
-      t->Branch("ch",&ch,"ch/I");
-      t->Branch("size",&size,"size/I");
-      t->Branch("timestamp",&timestamp,"timestamp/i");
-      t->Branch("energy",&energy,"energy/I");
-      t->Branch("dt",&dt,"dt[size]/I");
-      t->Branch("data",&data,"data[size]/I");
+      t->Branch("ch",&ch,"ch/S");
+      t->Branch("size",&size,"size/s");
+      t->Branch("timestamp",&TimeStamp,"timestamp/l");
+      t->Branch("energy",&energy,"energy/s");
+      t->Branch("dt",&dt,"dt[size]/s");
+      t->Branch("data",&data,"data[size]/s");
       t->Branch("nevt",&nevt,"nevt/I"); 
       break;
 
     case 2:
-      t->Branch("ch",&ch,"ch/I");
-      t->Branch("size",&size,"size/I");
+      t->Branch("ch",&ch,"ch/S");
+      t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&timestamp,"timestamp/i");
-      t->Branch("chargeshort",&chargeshort,"chargeshort/I");
-      t->Branch("chargelong",&chargelong,"chargelong/I");
-      t->Branch("baseline",&baseline,"baseline/I");
-      t->Branch("dt",&dt,"dt[size]/I");
-      t->Branch("data",&data,"data[size]/I");
+      t->Branch("chargeshort",&chargeshort,"chargeshort/S");
+      t->Branch("chargelong",&chargelong,"chargelong/S");
+      t->Branch("baseline",&baseline,"baseline/S");
+      t->Branch("dt",&dt,"dt[size]/s");
+      t->Branch("data",&data,"data[size]/s");
       t->Branch("nevt",&nevt,"nevt/I");       
       break;
     }
@@ -168,9 +168,9 @@ bool r2root::ReadEvent()
       n = read(fd,&HeaderPHA,4*HEADERPHA);
       if(n <= 0) return false;
       ch = HeaderPHA[0];
-      size = HeaderPHA[3];
-      timestamp = HeaderPHA[1];
-      energy = HeaderPHA[2];
+      size = HeaderPHA[4];
+      TimeStamp = ((ULong64_t)HeaderPHA[1]<<32)+HeaderPHA[2];
+      energy = HeaderPHA[3];
       break;
 
     case 2:
@@ -189,7 +189,7 @@ bool r2root::ReadEvent()
     {
       n = read(fd,&rawdata,2);
       if(n <= 0) return false;
-      dt[i] = i;
+      dt[i] = (UShort_t)i;
       data[i] = rawdata;
     }
   

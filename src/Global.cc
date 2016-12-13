@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 09:30:24 2016 (+0800)
-// Last-Updated: 一 12月 12 20:11:48 2016 (+0800)
+// Last-Updated: 二 12月 13 10:04:30 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 14
+//     Update #: 15
 // URL: http://wuhongyi.cn 
 
 #include "Global.hh"
@@ -84,8 +84,8 @@ double GetFileSizeMB(const char *name)
 {
   struct stat statbuff;  
   if(stat(name, &statbuff) < 0){  
-    printf("errno：%d\n",errno);
-    printf("ERR  ：%s\n",strerror(errno));
+    // printf("errno：%d\n",errno);
+    // printf("ERR  ：%s\n",strerror(errno));
     return 0;  
   }else{  
     return statbuff.st_size/(1024.0*1024.0);

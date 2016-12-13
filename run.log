@@ -32,3 +32,34 @@ time: 20161212201749
 time: 20161212201820
 time: 20161212201843
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161213122247
+time: 20161213123201
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161213123205
+time: 20161213123812
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161213125544
+=====WriteStart   20161213140750
+=====WriteStop   20161213140932
+=====WriteStart   20161213140937
+=====WriteStop   20161213140942
+time: 20161213140947
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161213142347
+=====WriteStart   20161213142723
+FileNumber: 0042
+=====WriteStop   20161213142745
+time: 20161213142825
+##########CloseSoftware##########

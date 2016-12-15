@@ -4,13 +4,14 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 二 12月 13 13:13:07 2016 (+0800)
+// Last-Updated: 三 12月 14 10:45:14 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 51
+//     Update #: 69
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
 
+#include "TSpline.h"
 #include <cmath>
 #include <iostream>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -316,7 +317,50 @@ void offline::GetSlowFilter(int *data)
 
 double offline::GetRiseTime()
 {
+  int temp = -1;
+  for (int i = 0; i < Size; ++i)
+    {
+      if(Data[i] > temp) temp = Data[i];
+    }
 
+  double percent10,percent90;
+  percent10 = temp*0.1;
+  percent90 = temp*0.9;
+
+  int min = -1;
+  int max = -1;
+
+  for (int i = 0; i < Size; ++i)
+    {
+      if(Data[i] > percent10)
+	{
+	  min = i-1;
+	  break;
+	}
+    }
+
+  for (int i = 0; i < Size; ++i)
+    {
+      if(Data[i] > percent90)
+	{
+	  max = i;
+	  break;
+	}
+    }
+
+  if(max< 0 || min < 0) return -1;
+
+  // std::cout<<"--: min:"<<min<<"  max:"<<max<<std::endl;
+  // std::cout<<"--: min:"<<percent10<<"  max:"<<percent90<<std::endl;
+  // TSpline3 *spline3 = new TSpline3();//必须单调才能使用？？？
+  // for (int i = min; i <= max; ++i)
+  //   {
+  //     spline3->SetPoint(i-min,Data[i],i);
+  //     std::cout<<i-min<<" "<<Data[i]<<" "<<i<<std::endl;
+  //   }
+
+  // std::cout<<"=90 :"<<spline3->Eval(percent90)<<std::endl;
+  // return (spline3->Eval(percent90)-spline3->Eval(percent10))*(1000.0/Module_ADCMSPS);
   return -1;
 }
 
@@ -402,6 +446,10 @@ int offline::GetEnergy()
     }
   return c0*(double)esum0+c1*(double)esum1+c2*(double)esum2;
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
 
 // 
 // offline.cc ends here

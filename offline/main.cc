@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 二 12月 13 13:13:07 2016 (+0800)
+// Last-Updated: 三 12月 14 11:53:33 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 53
+//     Update #: 62
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
   off->SetADCMSPS(500);
   off->SetPreampTau(700);
   off->SetFastFilterPar(0.1,0.1,100);//100
-  off->SetSlowFilterPar(2.4,0.7);
+  off->SetSlowFilterPar(1.2,0.5);
   off->SetCalculateBaselinePoint(400);
 
   TCanvas *c1 = new TCanvas("c1","",600,400);
@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
   // c1->SetName("");
 
   TH1D *energy = new TH1D("energy","",8192,0,8192);
+  TH1D *time = new TH1D("time","",2000,0,500);
   TGraph *filter = new TGraph();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -185,7 +186,6 @@ int main(int argc, char *argv[])
 	  CountChannelEntey++;
 	  off->SetEventData(size, data);
 	  tempenergy = off->GetEnergy();
-	  
 	  if(tempenergy < 0)
 	    {
 	      CountUnderThreshold++;
@@ -194,12 +194,16 @@ int main(int argc, char *argv[])
 	    {
 	      energy->Fill(tempenergy);
 	    }
+
+	  // time->Fill(off->GetRiseTime());
+	  
 	}//循环处理到这里结束
       std::cout<<std::endl;
       gBenchmark->Show("tree");//计时结束并输出时间
 
       c1->cd();
       energy->Draw();
+      // time->Draw();
       c1->Update();
     }
   

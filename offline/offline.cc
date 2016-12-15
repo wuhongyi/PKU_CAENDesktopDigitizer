@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 三 12月 14 10:45:14 2016 (+0800)
+// Last-Updated: 四 12月 15 20:09:29 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 69
+//     Update #: 71
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -343,13 +343,15 @@ double offline::GetRiseTime()
     {
       if(Data[i] > percent90)
 	{
-	  max = i;
+	  max = i-1;
 	  break;
 	}
     }
 
   if(max< 0 || min < 0) return -1;
 
+  return (((percent90-Data[max])/(Data[max+1]-Data[max])+max)-((percent10-Data[min])/(Data[min+1]-Data[min])+min))*(1000.0/Module_ADCMSPS);
+  
   // std::cout<<"--: min:"<<min<<"  max:"<<max<<std::endl;
   // std::cout<<"--: min:"<<percent10<<"  max:"<<percent90<<std::endl;
   // TSpline3 *spline3 = new TSpline3();//必须单调才能使用？？？

@@ -24,3 +24,78 @@ FileNumber: 0044
 =====WriteStop   20161214115221
 time: 20161214120037
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161216134924
+=====WriteStart   20161216135358
+FileNumber: 0045
+=====WriteStop   20161216135413
+time: 20161216135611
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161216184710
+=====WriteStart   20161216190157
+FileNumber: 0046
+=====WriteStop   20161216190548
+=====WriteStart   20161216190550
+FileNumber: 0047
+=====WriteStop   20161216191115
+=====WriteStart   20161216192528
+FileNumber: 0048
+=====WriteStop   20161217103955
+time: 20161217104005
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161217190604
+time: 20161217190609
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161217205154
+
+##########OpenSoftware##########
+time: 20161218123452
+time: 20161218123818
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161218123843
+time: 20161218124232
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161218124916
+time: 20161218125021
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161218125812
+time: 20161218125911
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161218125935
+
+##########OpenSoftware##########
+time: 20161218135728
+
+##########OpenSoftware##########
+time: 20161220100345
+time: 20161220100535
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20161220130259
+time: 20161220193833
+##########CloseSoftware##########

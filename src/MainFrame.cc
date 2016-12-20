@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 二 12月 13 14:22:43 2016 (+0800)
+// Last-Updated: 二 12月 20 13:01:33 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 301
+//     Update #: 305
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1219,7 +1219,38 @@ void MainFrame::SetDataFileName()
 
 void MainFrame::PrintRegisters()
 {
-  Read_DGTZ_Register(board->GetHandle(),board->GetChannels());
+  int MajorNumber;
+  sscanf(dig->boardInfo->AMC_FirmwareRel, "%d", &MajorNumber);
+  
+  switch(dig->boardInfo->Model)
+    {
+    case CAEN_DGTZ_DT5724:
+      if((strcmp(dig->boardInfo->ModelName, "DT5724") == 0) || (strcmp(dig->boardInfo->ModelName, "DT5724A") == 0))
+	{
+	  // if(MajorNumber == STANDARD_FW_CODE) ;
+	}
+      break;
+      
+    case CAEN_DGTZ_DT5730:
+      if(strcmp(dig->boardInfo->ModelName, "DT5730") == 0)
+	{
+	  if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
+	  if(MajorNumber == STANDARD_FW_CODE) Read_DGTZ_Register_725_730_STD_Revision00(board->GetHandle(),board->GetChannels());
+	  if(MajorNumber == V1730_DPP_PHA_CODE)  Read_DGTZ_Register_725_730_DPP_PHA_Revision00(board->GetHandle(),board->GetChannels());
+	}
+      break;
+
+    case CAEN_DGTZ_DT5742:
+      if((strcmp(dig->boardInfo->ModelName, "DT5742") == 0) || (strcmp(dig->boardInfo->ModelName, "DT5742B") == 0))
+	{
+	  // if(MajorNumber == STANDARD_FW_CODE) ;
+	}
+      break;
+      
+    default:
+      break;
+    }
+
 }
 
 

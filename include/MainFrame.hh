@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 一 12月 12 20:12:26 2016 (+0800)
+// Last-Updated: Fri Dec 16 13:48:09 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 57
+//     Update #: 58
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -112,7 +112,7 @@
 #include "TGTextEdit.h"
 #include "TGTextEntry.h"
 #include "TGTextView.h"
-#include "TGTextViewStream.h"
+// #include "TGTextViewStream.h"
 #include "TGTreeTable.h"
 #include "TGTripleSlider.h"
 #include "TGWindow.h"

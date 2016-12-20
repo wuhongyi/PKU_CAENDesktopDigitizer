@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 三 11月 30 13:02:11 2016 (+0800)
-// Last-Updated: 一 12月 12 10:20:05 2016 (+0800)
+// Last-Updated: Fri Dec 16 13:49:06 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 25
+//     Update #: 26
 // URL: http://wuhongyi.cn 
 
 #ifndef _PARSETTABLE_H_
@@ -46,7 +46,7 @@
 #include "TGTextEdit.h"
 #include "TGTextEntry.h"
 #include "TGTextView.h"
-#include "TGTextViewStream.h"
+// #include "TGTextViewStream.h"
 #include "TGTreeTable.h"
 #include "TGTripleSlider.h"
 #include "TGWindow.h"

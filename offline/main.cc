@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 三 12月 21 19:07:00 2016 (+0800)
+// Last-Updated: 三 12月 21 21:14:16 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 63
+//     Update #: 96
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -103,21 +103,21 @@ int main(int argc, char *argv[])
   //将要处理的文件放在这里，支持tree名相同的多个结构相同的文件。特别适合用于Geant4多线程模拟的输出文件处理。
   string InputFileName = "$Dir"+InputFile;
   fChain->Add(InputFileName.c_str());
-  // chain->Print();
+  // fChain->Print();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
-  Short_t         ch;
-  UShort_t        size;
-  UInt_t          timestamp;
-  UShort_t        dt[65535];   //[size]
-  UShort_t        data[65535];   //[size]
-
-  // Int_t           ch;
-  // Int_t           size;
+  // Short_t         ch;
+  // UShort_t        size;
   // UInt_t          timestamp;
-  // Int_t           dt[65535];   //[size]
-  // Int_t           data[65535];   //[size]
+  // UShort_t        dt[65535];   //[size]
+  // UShort_t        data[65535];   //[size]
+
+  Int_t           ch;
+  Int_t           size;
+  UInt_t          timestamp;
+  Int_t           dt[65535];   //[size]
+  Int_t           data[65535];   //[size]
   
   TBranch        *b_ch;   //!
   TBranch        *b_size;   //!
@@ -137,16 +137,17 @@ int main(int argc, char *argv[])
   gBenchmark->Start("tree");//计时开始
   // std::string OutputFileName = wuReadData::ReadValue<string>("OutputFileName","ReadData.txt");
   Long64_t TotalEntry = fChain->GetEntries();//拿到TChain中总entry行数
-
+  std::cout<<"TotalEntry:  "<<TotalEntry<<std::endl;
+  
   int SelectChannel = 4;
   offline *off = new offline();
   off->SetPulsePolarity(false);
   off->SetADCMSPS(500);
   off->SetCalculateVertexPoint(20);
-  off->SetCalculateBaselinePoint(400);
+  off->SetCalculateBaselinePoint(600);
   
-  off->SetFastFilterPar(0.1,0.1,100);//100
-  off->SetSlowFilterPar(1.2,0.5);
+  off->SetFastFilterPar(0.1,0.1,40);//100
+  off->SetSlowFilterPar(2.4,1.5);
   off->SetPreampTau(700);
   
   TCanvas *c1 = new TCanvas("c1","",600,400);
@@ -161,7 +162,7 @@ int main(int argc, char *argv[])
   // c1->SetName("");
 
   TH1D *energy = new TH1D("energy","",8192,0,8192);
-  TH1D *time = new TH1D("time","",2000,0,500);
+  TH1D *time = new TH1D("time","",3000,0,300);
   TGraph *filter = new TGraph();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -197,15 +198,18 @@ int main(int argc, char *argv[])
 	      energy->Fill(tempenergy);
 	    }
 
-	  // time->Fill(off->GetRiseTime());
+	  // if(tempenergy > 1670 && tempenergy < 1680)
+	    time->Fill(off->GetRiseTime());
 	  
 	}//循环处理到这里结束
       std::cout<<std::endl;
       gBenchmark->Show("tree");//计时结束并输出时间
 
-      c1->cd();
+      c1->Divide(2,1);
+      c1->cd(1);
       energy->Draw();
-      // time->Draw();
+      c1->cd(2);
+      time->Draw();
       c1->Update();
     }
   
@@ -240,7 +244,7 @@ int main(int argc, char *argv[])
 	    }//循环处理到这里结束
 
 	  c1->cd();
-	  filter->Draw("AP");
+	  filter->Draw("AP*");
 	  c1->Update();
 	}
 

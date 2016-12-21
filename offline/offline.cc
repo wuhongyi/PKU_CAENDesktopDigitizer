@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 四 12月 15 20:09:29 2016 (+0800)
+// Last-Updated: 三 12月 21 19:05:37 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 71
+//     Update #: 72
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -18,7 +18,7 @@
 
 offline::offline()
 {
-
+  CalculateVertexPoint = 10;
 
 }
 
@@ -317,15 +317,27 @@ void offline::GetSlowFilter(int *data)
 
 double offline::GetRiseTime()
 {
+  double percent10,percent90;
+  
   int temp = -1;
+  int tempn = -1;
   for (int i = 0; i < Size; ++i)
     {
-      if(Data[i] > temp) temp = Data[i];
+      if(Data[i] > temp)
+	{
+	  temp = Data[i];
+	  tempn = i;
+	}
     }
 
-  double percent10,percent90;
-  percent10 = temp*0.1;
-  percent90 = temp*0.9;
+  temp = 0;
+  for (int i = tempn; i < (tempn + CalculateVertexPoint); ++i)
+    {
+      temp += Data[i];
+    }
+  
+  percent10 = temp*0.1/CalculateVertexPoint;
+  percent90 = temp*0.9/CalculateVertexPoint;
 
   int min = -1;
   int max = -1;

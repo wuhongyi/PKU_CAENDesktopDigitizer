@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 三 12月 14 11:53:33 2016 (+0800)
+// Last-Updated: 三 12月 21 19:07:00 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 62
+//     Update #: 63
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -142,11 +142,13 @@ int main(int argc, char *argv[])
   offline *off = new offline();
   off->SetPulsePolarity(false);
   off->SetADCMSPS(500);
-  off->SetPreampTau(700);
+  off->SetCalculateVertexPoint(20);
+  off->SetCalculateBaselinePoint(400);
+  
   off->SetFastFilterPar(0.1,0.1,100);//100
   off->SetSlowFilterPar(1.2,0.5);
-  off->SetCalculateBaselinePoint(400);
-
+  off->SetPreampTau(700);
+  
   TCanvas *c1 = new TCanvas("c1","",600,400);
   // gStyle->SetOptStat(0);//不显示统计框
   // c1->ToggleEventStatus();//底端信息栏

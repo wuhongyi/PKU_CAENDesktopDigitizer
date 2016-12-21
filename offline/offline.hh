@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 三 12月 14 10:45:14 2016 (+0800)
+// Last-Updated: 三 12月 21 19:05:38 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 27
+//     Update #: 28
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -41,7 +41,9 @@ public:
   
   void SetADCMSPS(int adc);// MHz
   void SetPreampTau(double tau);//us
+  void SetCalculateVertexPoint(int n) {CalculateVertexPoint = n;} 
 
+  
   void SetFastFilterPar(double fl,double fg,int thre);//us-建议0.1  us-建议0.1  units
   void SetSlowFilterPar(double sl,double sg,int slowrange = 2);//us us
   void PrintFilterPar();
@@ -77,6 +79,7 @@ private:
   int FastLen, FastGap;
   int SlowLen, SlowGap;
 
+  int CalculateVertexPoint;
   int CalculateBaselinePoint;
   int baseline;
   double deltaT;

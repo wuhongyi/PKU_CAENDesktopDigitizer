@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 三 12月 21 21:14:16 2016 (+0800)
+// Last-Updated: 四 12月 22 20:29:49 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 96
+//     Update #: 118
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -143,11 +143,12 @@ int main(int argc, char *argv[])
   offline *off = new offline();
   off->SetPulsePolarity(false);
   off->SetADCMSPS(500);
-  off->SetCalculateVertexPoint(20);
-  off->SetCalculateBaselinePoint(600);
+  off->SetCalculateVertexPoint(100);
+  off->SetCalculateBaselinePoint(400);
+  off->SetCalculateRiseTimeType(1);//设置上升时间计算方法
   
-  off->SetFastFilterPar(0.1,0.1,40);//100
-  off->SetSlowFilterPar(2.4,1.5);
+  off->SetFastFilterPar(0.1,0.1,100);//100
+  off->SetSlowFilterPar(1.2,1.5);
   off->SetPreampTau(700);
   
   TCanvas *c1 = new TCanvas("c1","",600,400);
@@ -161,8 +162,9 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
 
-  TH1D *energy = new TH1D("energy","",8192,0,8192);
-  TH1D *time = new TH1D("time","",3000,0,300);
+  TH1I *energy = new TH1I("energy","",8192,0,8192);
+  TH1I *time = new TH1I("time","",5000,0,500);
+  TH2I *energytime = new TH2I("energytime","",2500,0,500,8192,0,8192);
   TGraph *filter = new TGraph();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -196,20 +198,24 @@ int main(int argc, char *argv[])
 	  else
 	    {
 	      energy->Fill(tempenergy);
+	      
+	      double risetime = off->GetRiseTime();
+	      // if(tempenergy > 1660 && tempenergy < 1690)
+		time->Fill(risetime);
+	      energytime->Fill(risetime,tempenergy);
 	    }
-
-	  // if(tempenergy > 1670 && tempenergy < 1680)
-	    time->Fill(off->GetRiseTime());
 	  
 	}//循环处理到这里结束
       std::cout<<std::endl;
       gBenchmark->Show("tree");//计时结束并输出时间
 
-      c1->Divide(2,1);
+      c1->Divide(2,2);
       c1->cd(1);
       energy->Draw();
       c1->cd(2);
       time->Draw();
+      c1->cd(3);
+      energytime->Draw("colz");
       c1->Update();
     }
   

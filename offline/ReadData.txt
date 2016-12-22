@@ -4,13 +4,13 @@
 ## Author: Hongyi Wu(吴鸿毅)
 ## Email: wuhongyi@qq.com 
 ## Created: 五 4月 18 18:16:22 2014 (+0800)
-## Last-Updated: 三 12月 21 21:14:16 2016 (+0800)
+## Last-Updated: 四 12月 22 20:29:49 2016 (+0800)
 ##           By: Hongyi Wu(吴鸿毅)
-##     Update #: 63
+##     Update #: 76
 ## URL: http://wuhongyi.cn 
 
 
-##要处理文件相对main.cc文件路径及文件名，可采用通配符*
+##要处理文件路径及文件名，可采用通配符*
 InputFileName /../*0035.root
 
 ##输出文件名

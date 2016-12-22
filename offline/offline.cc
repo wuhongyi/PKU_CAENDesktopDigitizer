@@ -4,13 +4,15 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 三 12月 21 19:05:37 2016 (+0800)
+// Last-Updated: 四 12月 22 16:29:44 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 72
+//     Update #: 74
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
 
+#include "TF1.h"
+#include "TGraph.h"
 #include "TSpline.h"
 #include <cmath>
 #include <iostream>
@@ -19,7 +21,11 @@
 offline::offline()
 {
   CalculateVertexPoint = 10;
+  CalculateRiseTimeType = 0;
 
+  tf1fitpol3 = new TF1("tf1fitpol3","pol3");
+  tf1fitpol3->SetNpx(10000);
+  tgraphfitpol3 = new TGraph();
 }
 
 offline::~offline()
@@ -362,8 +368,36 @@ double offline::GetRiseTime()
 
   if(max< 0 || min < 0) return -1;
 
-  return (((percent90-Data[max])/(Data[max+1]-Data[max])+max)-((percent10-Data[min])/(Data[min+1]-Data[min])+min))*(1000.0/Module_ADCMSPS);
-  
+
+  if(CalculateRiseTimeType == 0)
+    {
+      return (((percent90-Data[max])/(Data[max+1]-Data[max])+max)-((percent10-Data[min])/(Data[min+1]-Data[min])+min))*(1000.0/Module_ADCMSPS);
+    }
+  else
+    {
+      if(CalculateRiseTimeType == 1)
+	{
+	  for (int i = 0; i < Size; ++i)
+	    {
+	      tgraphfitpol3->SetPoint(i,i,Data[i]);
+	    }
+	  tf1fitpol3->SetRange(min-(max-min)/8,max+(max-min)/8);
+	  if(tgraphfitpol3->Fit("tf1fitpol3","RQ") == 0)// OK
+	    {
+	      return (tf1fitpol3->GetX(percent90)-tf1fitpol3->GetX(percent10))*(1000.0/Module_ADCMSPS);
+	    }
+	  else
+	    {
+	      return -1;
+	    }
+	}
+      else
+	{
+	  return -1;
+	}
+    }
+
+      
   // std::cout<<"--: min:"<<min<<"  max:"<<max<<std::endl;
   // std::cout<<"--: min:"<<percent10<<"  max:"<<percent90<<std::endl;
   // TSpline3 *spline3 = new TSpline3();//必须单调才能使用？？？

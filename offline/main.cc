@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 四 12月 22 20:29:49 2016 (+0800)
+// Last-Updated: 五 12月 23 21:20:16 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 118
+//     Update #: 144
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -95,14 +95,20 @@ int main(int argc, char *argv[])
   dir.ReplaceAll("/./","/");
   // std::cout<<dir<<std::endl;
   //=======================================================
-  //以下两个选一个： 手动填写root文件所在路径 或 者直接使用当前文件所在路径
+  //以下两个选一个： 手动填写root文件所在路径或者直接使用当前文件所在路径
   // gSystem->Setenv("Dir","/home/wuhongyi");//手动填写路径
-  std::string InputFile = wuReadData::ReadValue<std::string>("InputFileName","ReadData.txt");
-  gSystem->Setenv("Dir",dir);//当前文件路径
+  // gSystem->Setenv("Dir",dir);//当前文件路径
+  int AddFileNumber = wuReadData::ReadValue<int>("AddFileNumber","ReadData.txt");
+  // std::cout<<"AddFileNumber: "<<AddFileNumber<<std::endl;
   //=======================================================
-  //将要处理的文件放在这里，支持tree名相同的多个结构相同的文件。特别适合用于Geant4多线程模拟的输出文件处理。
-  string InputFileName = "$Dir"+InputFile;
-  fChain->Add(InputFileName.c_str());
+  std::string InputFile;
+  for (int i = 0; i < AddFileNumber; ++i)
+    {
+      char InputFileName[1024];
+      sprintf(InputFileName,"InputFileName_%d",i);
+      InputFile = wuReadData::ReadValue<std::string>(InputFileName,"ReadData.txt");
+      fChain->Add(InputFile.c_str());
+    }
   // fChain->Print();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -139,21 +145,43 @@ int main(int argc, char *argv[])
   Long64_t TotalEntry = fChain->GetEntries();//拿到TChain中总entry行数
   std::cout<<"TotalEntry:  "<<TotalEntry<<std::endl;
   
-  int SelectChannel = 4;
+  int SelectChannel = wuReadData::ReadValue<int>("SelectChannel","ReadData.txt");
+  int VotoChannel = wuReadData::ReadValue<int>("VotoChannel","ReadData.txt");
   offline *off = new offline();
-  off->SetPulsePolarity(false);
-  off->SetADCMSPS(500);
-  off->SetCalculateVertexPoint(100);
-  off->SetCalculateBaselinePoint(400);
-  off->SetCalculateRiseTimeType(1);//设置上升时间计算方法
+
+  bool PulsePolarity;
+  if(wuReadData::ReadValue<int>("PulsePolarity","ReadData.txt") == 1)
+    PulsePolarity = true;
+  else
+    PulsePolarity = false;
+  int ADCMSPS = wuReadData::ReadValue<int>("ADCMSPS","ReadData.txt");
+
+  int CalculateVertexPoint = wuReadData::ReadValue<int>("CalculateVertexPoint","ReadData.txt");
+  int CalculateBaselinePoint = wuReadData::ReadValue<int>("CalculateBaselinePoint","ReadData.txt");
+  int CalculateRiseTimeType = wuReadData::ReadValue<int>("CalculateRiseTimeType","ReadData.txt");
+  double FastFilterFL = wuReadData::ReadValue<double>("FastFilterFL","ReadData.txt");
+  double FastFilterFG = wuReadData::ReadValue<double>("FastFilterFG","ReadData.txt");
+  int FastFilterThre = wuReadData::ReadValue<int>("FastFilterThre","ReadData.txt");
+  double SlowFilterSL = wuReadData::ReadValue<double>("SlowFilterSL","ReadData.txt");
+  double SlowFilterSG = wuReadData::ReadValue<double>("SlowFilterSG","ReadData.txt");
+  int SlowFilterRange = wuReadData::ReadValue<int>("SlowFilterRange","ReadData.txt");
+  double PreampTau = wuReadData::ReadValue<double>("PreampTau","ReadData.txt");
   
-  off->SetFastFilterPar(0.1,0.1,100);//100
-  off->SetSlowFilterPar(1.2,1.5);
-  off->SetPreampTau(700);
+  off->SetPulsePolarity(PulsePolarity);
+  off->SetADCMSPS(ADCMSPS);
+  off->SetCalculateVertexPoint(CalculateVertexPoint);
+  off->SetCalculateBaselinePoint(CalculateBaselinePoint);
+  off->SetCalculateRiseTimeType(CalculateRiseTimeType);//设置上升时间计算方法
   
-  TCanvas *c1 = new TCanvas("c1","",600,400);
+  off->SetFastFilterPar(FastFilterFL,FastFilterFG,FastFilterThre);//100
+  off->SetSlowFilterPar(SlowFilterSL,SlowFilterSG,SlowFilterRange);
+  off->SetPreampTau(PreampTau);
+
+  off->PrintFilterPar();
+  
+  TCanvas *c1 = new TCanvas("c1","",1200,800);
   // gStyle->SetOptStat(0);//不显示统计框
-  // c1->ToggleEventStatus();//底端信息栏
+  c1->ToggleEventStatus();//底端信息栏
   // c1->ToggleEditor();
   // c1->ToggleToolBar();
   // c1->Clear("");
@@ -163,8 +191,12 @@ int main(int argc, char *argv[])
   // c1->SetName("");
 
   TH1I *energy = new TH1I("energy","",8192,0,8192);
+  energy->GetXaxis()->SetTitle("Energy[ch]");
   TH1I *time = new TH1I("time","",5000,0,500);
+  time->GetXaxis()->SetTitle("RiseTime[ns]");
   TH2I *energytime = new TH2I("energytime","",2500,0,500,8192,0,8192);
+  energytime->GetXaxis()->SetTitle("RiseTime[ns]");
+  energytime->GetYaxis()->SetTitle("Energy[ch]");
   TGraph *filter = new TGraph();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -200,9 +232,11 @@ int main(int argc, char *argv[])
 	      energy->Fill(tempenergy);
 	      
 	      double risetime = off->GetRiseTime();
-	      // if(tempenergy > 1660 && tempenergy < 1690)
-		time->Fill(risetime);
-	      energytime->Fill(risetime,tempenergy);
+	      // if(tempenergy > 1680 && tempenergy < 1720)
+		{
+		  time->Fill(risetime);
+		  energytime->Fill(risetime,tempenergy);
+		}
 	    }
 	  
 	}//循环处理到这里结束

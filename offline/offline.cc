@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 四 12月 22 16:29:44 2016 (+0800)
+// Last-Updated: 五 12月 23 20:57:06 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 74
+//     Update #: 86
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -30,8 +30,8 @@ offline::offline()
 
 offline::~offline()
 {
-
-
+  delete tf1fitpol3;
+  delete tgraphfitpol3;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -323,7 +323,7 @@ void offline::GetSlowFilter(int *data)
 
 double offline::GetRiseTime()
 {
-  double percent10,percent90;
+  double percentL,percentH;
   
   int temp = -1;
   int tempn = -1;
@@ -342,15 +342,15 @@ double offline::GetRiseTime()
       temp += Data[i];
     }
   
-  percent10 = temp*0.1/CalculateVertexPoint;
-  percent90 = temp*0.9/CalculateVertexPoint;
+  percentL = temp*0.2/CalculateVertexPoint;
+  percentH = temp*0.7/CalculateVertexPoint;
 
   int min = -1;
   int max = -1;
 
   for (int i = 0; i < Size; ++i)
     {
-      if(Data[i] > percent10)
+      if(Data[i] > percentL)
 	{
 	  min = i-1;
 	  break;
@@ -359,7 +359,7 @@ double offline::GetRiseTime()
 
   for (int i = 0; i < Size; ++i)
     {
-      if(Data[i] > percent90)
+      if(Data[i] > percentH)
 	{
 	  max = i-1;
 	  break;
@@ -371,8 +371,8 @@ double offline::GetRiseTime()
 
   if(CalculateRiseTimeType == 0)
     {
-      return (((percent90-Data[max])/(Data[max+1]-Data[max])+max)-((percent10-Data[min])/(Data[min+1]-Data[min])+min))*(1000.0/Module_ADCMSPS);
-    }
+      return (((percentH-Data[max])/(Data[max+1]-Data[max])+max)-((percentL-Data[min])/(Data[min+1]-Data[min])+min))*(1000.0/Module_ADCMSPS);
+    }// 0
   else
     {
       if(CalculateRiseTimeType == 1)
@@ -381,19 +381,48 @@ double offline::GetRiseTime()
 	    {
 	      tgraphfitpol3->SetPoint(i,i,Data[i]);
 	    }
-	  tf1fitpol3->SetRange(min-(max-min)/8,max+(max-min)/8);
+	  tf1fitpol3->SetRange(min-(max-min)/5-1,max+(max-min)/5+1);
 	  if(tgraphfitpol3->Fit("tf1fitpol3","RQ") == 0)// OK
 	    {
-	      return (tf1fitpol3->GetX(percent90)-tf1fitpol3->GetX(percent10))*(1000.0/Module_ADCMSPS);
+	      return (tf1fitpol3->GetX(percentH)-tf1fitpol3->GetX(percentL))*(1000.0/Module_ADCMSPS);
 	    }
 	  else
 	    {
 	      return -1;
 	    }
-	}
+	}// 1
       else
 	{
-	  return -1;
+	  if(CalculateRiseTimeType == 2)
+	    {
+	      min = -1;
+	      max = -1;
+	      for (int i = 0; i < Size; i = i+5)
+		{
+		  if(Data[i] > percentL)
+		    {
+		      min = i-5;
+		      break;
+		    }
+		}
+
+	      for (int i = 0; i < Size; i = i+5)
+		{
+		  if(Data[i] > percentH)
+		    {
+		      max = i-5;
+		      break;
+		    }
+		}
+
+	      if((max < min) || (max < 0) || (min < 0)) return -1;
+	      return ((percentH-Data[max])/(Data[max+5]-Data[max])-(percentL-Data[min])/(Data[min+5]-Data[min]))*(5*1000.0/Module_ADCMSPS)+(max-min)*(1000.0/Module_ADCMSPS);
+
+	    }// 2
+	  else
+	    {
+	      return -1;
+	    }// >2
 	}
     }
 

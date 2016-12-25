@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 二 12月 13 12:19:06 2016 (+0800)
+// Last-Updated: 日 12月 25 14:55:24 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 26
+//     Update #: 28
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -23,14 +23,20 @@
 #include <cmath>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-r2root::r2root(TString rawfilepath,TString rootfilepath,TString fn,int runnumber)
+r2root::r2root(TString rawfilepath,TString rootfilepath,TString fn,int runnumber,int argc,int start,int stop)
 {
   benchmark = new TBenchmark;
   nevt = 0;
   flag = -1;
-
+  ARGC = argc;
+  StartEvent = start;
+  StopEvent = stop;
+  
   sprintf(filename,"%s%s_R%04d.bin",rawfilepath.Data(),fn.Data(),runnumber);
-  sprintf(rootfilename,"%s%s_R%04d.root",rootfilepath.Data(),fn.Data(),runnumber);
+  if(argc == 5)
+    sprintf(rootfilename,"%s%s_R%04d_%d_%d.root",rootfilepath.Data(),fn.Data(),runnumber,start,stop);
+  else
+    sprintf(rootfilename,"%s%s_R%04d.root",rootfilepath.Data(),fn.Data(),runnumber);
 }
 
 r2root::~r2root()
@@ -134,7 +140,16 @@ void r2root::Process()
   
   while(ReadEvent())
     {
-      t->Fill();
+      if(ARGC == 5)
+	{
+	  if(nevt >= StartEvent && nevt < StopEvent) t->Fill();
+	  if(nevt == StopEvent-1) break;
+	}
+      else
+	{
+	  t->Fill();
+	}
+      
       nevt++;
       if(nevt%10000 == 0) std::cout<<"nevt: "<<nevt<<std::endl;
     }

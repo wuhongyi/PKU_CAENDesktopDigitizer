@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:33:48 2016 (+0800)
-// Last-Updated: 二 12月 13 12:18:30 2016 (+0800)
+// Last-Updated: 日 12月 25 14:55:25 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 12
+//     Update #: 14
 // URL: http://wuhongyi.cn 
 
 #ifndef _R2ROOT_H_
@@ -31,7 +31,7 @@
 class r2root
 {
 public:
-  r2root(TString rawfilepath,TString rootfilepath,TString fn,int runnumber);
+  r2root(TString rawfilepath,TString rootfilepath,TString fn,int runnumber,int argc = -1,int start = -1,int stop = -1);
   virtual ~r2root();
 
   void Process();
@@ -50,7 +50,9 @@ private:
   unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTagHigh 2-TimeTagLow 3-Energy 4-size
   unsigned short rawdata;
 
-  
+  Int_t ARGC;
+  Int_t StartEvent;
+  Int_t StopEvent;
   Int_t nevt;
   TFile *file;
   TTree *t;

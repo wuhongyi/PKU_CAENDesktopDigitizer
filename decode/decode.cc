@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:25:21 2016 (+0800)
-// Last-Updated: 日 12月 18 12:44:09 2016 (+0800)
+// Last-Updated: 日 12月 25 15:02:05 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 5
+//     Update #: 7
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -19,10 +19,12 @@
 
 int main(int argc, char *argv[])
 {
-  if(argc != 3)
+  if((argc != 3) || (argc != 5))
     {
-      std::cout<<"error(argc != 3)      ./"<<argv[0]<<" [FileName]  [RuNnumber]"<<std::endl;
+      std::cout<<"(argc == 3)      "<<argv[0]<<" [FileName]  [RuNnumber]"<<std::endl;
       std::cout<<"example:  ./decode  data  11"<<std::endl;
+      std::cout<<"(argc == 5)      "<<argv[0]<<" [FileName]  [RuNnumber]  [StartEvent]  [StopEvent]"<<std::endl;
+      std::cout<<"example:  ./decode  data  11  10000 200000"<<std::endl;
       return 0;
     }
 
@@ -33,7 +35,15 @@ int main(int argc, char *argv[])
   TString RunNumber(argv[2]);
   int  runnumber = RunNumber.Atoi();
 
-  r2root *r2r=new r2root(rawfilepath,rootfilepath,filename,runnumber);
+  int StartEvent,StopEvent;
+  if(argc == 5)
+    {
+      TString StartNumber(argv[3]);
+      TString StopNumber(argv[4]);
+      StartEvent = StartNumber.Atoi();
+      StopEvent = StopNumber.Atoi();
+    }
+  r2root *r2r=new r2root(rawfilepath,rootfilepath,filename,runnumber,argc,StartEvent,StopEvent);
   r2r->Process();
   delete r2r;
   

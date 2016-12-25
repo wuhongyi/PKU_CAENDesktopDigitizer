@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 五 12月 23 21:20:16 2016 (+0800)
+// Last-Updated: 日 12月 25 12:40:31 2016 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 144
+//     Update #: 147
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -113,17 +113,17 @@ int main(int argc, char *argv[])
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   
-  // Short_t         ch;
-  // UShort_t        size;
-  // UInt_t          timestamp;
-  // UShort_t        dt[65535];   //[size]
-  // UShort_t        data[65535];   //[size]
-
-  Int_t           ch;
-  Int_t           size;
+  Short_t         ch;
+  UShort_t        size;
   UInt_t          timestamp;
-  Int_t           dt[65535];   //[size]
-  Int_t           data[65535];   //[size]
+  UShort_t        dt[65535];   //[size]
+  UShort_t        data[65535];   //[size]
+
+  // Int_t           ch;
+  // Int_t           size;
+  // UInt_t          timestamp;
+  // Int_t           dt[65535];   //[size]
+  // Int_t           data[65535];   //[size]
   
   TBranch        *b_ch;   //!
   TBranch        *b_size;   //!
@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
   
   int SelectChannel = wuReadData::ReadValue<int>("SelectChannel","ReadData.txt");
   int VotoChannel = wuReadData::ReadValue<int>("VotoChannel","ReadData.txt");
+  int VotoTime = wuReadData::ReadValue<int>("VotoTime","ReadData.txt");
   offline *off = new offline();
 
   bool PulsePolarity;
@@ -222,6 +223,25 @@ int main(int argc, char *argv[])
 	  if(ch != SelectChannel) continue;
 	  CountChannelEntey++;
 	  off->SetEventData(size, data);
+
+	  // vote
+	  Long64_t timevote1 = timestamp;
+	  Long64_t timevote2;
+	  if(VotoChannel > -1)
+	    {
+	      for (Long64_t tempvote = entry+1; tempvote < TotalEntry; ++tempvote)
+		{
+		  fChain->GetEvent(tempvote);
+		  if(ch == SelectChannel) break;
+		  if(ch == VotoChannel)
+		    {
+		      timevote2 = timestamp;
+		      if(timevote1 > timevote2) timevote2 = timevote2+((Long64_t)1<<32);
+		      if(timevote2-timevote1 <= VotoTime) continue; 
+		    }
+		}
+	    }
+	  
 	  tempenergy = off->GetEnergy();
 	  if(tempenergy < 0)
 	    {

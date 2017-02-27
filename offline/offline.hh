@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 四 12月 22 20:31:14 2016 (+0800)
+// Last-Updated: 日 2月 12 20:51:48 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 31
+//     Update #: 35
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -20,7 +20,7 @@
 #define FASTFILTER_MAX_LEN 127
 #define FAST_THRESHOLD_MAX 65535
 #define MIN_FASTLENGTH_LEN 2
-#define SLOWFILTER_MAX_LEN 127
+#define SLOWFILTER_MAX_LEN 511 //127
 #define MIN_SLOWLENGTH_LEN 2
 #define MIN_SLOWGAP_LEN 3
 
@@ -72,12 +72,16 @@ public:
   void GetWaveData(int *data);
   void GetFastFilter(int *data);
   void GetSlowFilter(int *data);
-
+  void GetFirstOrderDifferential(int *data);
+  
   // 获取该事件的上升事件
   double GetRiseTime();
-  // 货物该事件的能量
+  // 获取该事件的能量
   int GetEnergy();// <0 error  >0 energy
+  // 获取该事件波形高度
+  int GetWaveHigh();
 
+  
 private:
   void DataPrimaryProcess();//将数据转为基线为0的正脉冲
 
@@ -93,6 +97,7 @@ private:
   int FastThresh;
   int SlowFilterRange;
   int SL,SG;
+  int PeakSample;
   
   int Threshold;
   int FastLen, FastGap;

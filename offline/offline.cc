@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 五 12月 23 20:57:06 2016 (+0800)
+// Last-Updated: 二 1月 17 20:26:57 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 86
+//     Update #: 96
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -151,6 +151,32 @@ void offline::SetSlowFilterPar(double sl,double sg,int slowrange)
 	  SG = SLOWFILTER_MAX_LEN - MIN_SLOWLENGTH_LEN;
 	}
     }
+
+  switch(SlowFilterRange)
+    {
+    case 1:
+      PeakSample = SL + SG - 3;
+      break;
+    case 2:
+      PeakSample = SL + SG - 2;
+      break;
+    case 3:
+      PeakSample = SL + SG - 2;
+      break;
+    case 4:
+      PeakSample = SL + SG - 1;
+      break;
+    case 5:
+      PeakSample = SL + SG;
+      break;
+    case 6:
+      PeakSample = SL + SG + 1;
+      break;
+    default:
+      PeakSample = SL + SG - 2;
+      break;
+    }
+  
 }
 
 void offline::PrintFilterPar()
@@ -240,6 +266,15 @@ for (int i = 0; i < Size; ++i)
   }
 }
 
+void offline::GetFirstOrderDifferential(int *data)
+{
+for (int i = 0; i < Size-1; ++i)
+  {
+    data[i] = Data[i+1]-Data[i];
+  }
+ data[Size-1] = data[Size-2];
+}
+
 void offline::GetFastFilter(int *data)
 {
   FastLen = FL * (unsigned int)std::pow(2.0, (double)FastFilterRange);
@@ -278,7 +313,7 @@ void offline::GetSlowFilter(int *data)
   c2 = (1.0 - b1) * 4.0 / (1.0 - std::pow(b1, (double)SlowLen));  
 
   offset = 2*SlowLen + SlowGap - 1;
-  for(x = offset; x < Size; x++)
+  for(x = 0/*offset*/; x < Size; x++)
     {
       esum0 = 0;
       for(y = (x-offset); y < (x-offset+SlowLen); y++)
@@ -299,27 +334,57 @@ void offline::GetSlowFilter(int *data)
 	{
 	  if(y < 0)
 	    {
-	      std::cout<<"error: y<0"<<std::endl;
+	      // std::cout<<"error: y<0"<<std::endl;
+	      esum1 += 0;
 	    }
-	  esum1 += Data[y];
+	  else
+	    {
+	      esum1 += Data[y];
+	    }
 	}
       esum2 = 0;
       for(y = (x-offset+SlowLen+SlowGap); y < (x-offset+2*SlowLen+SlowGap); y++)
 	{
 	  if(y < 0)
 	    {
-	      std::cout<<"error: y<0"<<std::endl;
+	      // std::cout<<"error: y<0"<<std::endl;
+	      esum2 += 0;
 	    }
-	  esum2 += Data[y];
+	  else
+	    {
+	      esum2 += Data[y];
+	    }
 	}
       data[x] = c0*(double)esum0+c1*(double)esum1+c2*(double)esum2;
     }
 
-    for(x = 0; x < offset; x++)
-    {
-      data[x] = data[offset];
-    }
+    // for(x = 0; x < offset; x++)
+    // {
+    //   data[x] = data[offset];
+    // }
 }
+
+int offline::GetWaveHigh()
+{
+  int temp = -1;
+  int tempn = -1;
+  for (int i = 0; i < Size; ++i)
+    {
+      if(Data[i] > temp)
+	{
+	  temp = Data[i];
+	  tempn = i;
+	}
+    }
+
+  temp = 0;
+  for (int i = tempn; i < (tempn + CalculateVertexPoint); ++i)
+    {
+      temp += Data[i];
+    }
+  return temp*1.0/CalculateVertexPoint;
+}
+
 
 double offline::GetRiseTime()
 {
@@ -484,8 +549,8 @@ int offline::GetEnergy()
     }
 
   // std::cout<<"Threshold:"<<Threshold<<"  x:"<<x<<std::endl;
-  x = x+SlowLen+SlowGap/2;
-  // x = x+SlowLen+SlowGap-2;
+  // x = x+SlowLen+SlowGap/2;
+  x = x+PeakSample*(unsigned int)std::pow(2.0, (double)SlowFilterRange);
   offset = 2*SlowLen + SlowGap - 1;
 
   esum0 = 0;
@@ -506,20 +571,26 @@ int offline::GetEnergy()
     {
       if(y < 0)
 	{
-	  std::cout<<"y<0"<<std::endl;
-	  return -1;
+	  // std::cout<<"y<0"<<std::endl;
+	  esum1 += 0;
 	}
-      esum1 += Data[y];
+      else
+	{
+	  esum1 += Data[y];
+	}
     }
   esum2 = 0;
   for(y = (x-offset+SlowLen+SlowGap); y < (x-offset+2*SlowLen+SlowGap); y++)
     {
       if(y < 0)
 	{
-	  std::cout<<"y<0"<<std::endl;
-	  return -1;
+	  // std::cout<<"y<0"<<std::endl;
+	  esum2 += 0;
 	}
-      esum2 += Data[y];
+      else
+	{
+	  esum2 += Data[y];
+	}
     }
   return c0*(double)esum0+c1*(double)esum1+c2*(double)esum2;
 }

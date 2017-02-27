@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 日 12月 25 12:40:31 2016 (+0800)
+// Last-Updated: 日 2月 12 21:03:56 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 147
+//     Update #: 203
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -150,6 +150,8 @@ int main(int argc, char *argv[])
   int VotoTime = wuReadData::ReadValue<int>("VotoTime","ReadData.txt");
   offline *off = new offline();
 
+  std::string OutputFileName = wuReadData::ReadValue<std::string>("OutputFileName","ReadData.txt");
+  
   bool PulsePolarity;
   if(wuReadData::ReadValue<int>("PulsePolarity","ReadData.txt") == 1)
     PulsePolarity = true;
@@ -191,13 +193,18 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
 
-  TH1I *energy = new TH1I("energy","",8192,0,8192);
+  TH1I *energy = new TH1I("energy","",2048,0,32768);//2048,0,32768
   energy->GetXaxis()->SetTitle("Energy[ch]");
-  TH1I *time = new TH1I("time","",5000,0,500);
+  TH1I *time = new TH1I("time","",2000,0,2000);
   time->GetXaxis()->SetTitle("RiseTime[ns]");
-  TH2I *energytime = new TH2I("energytime","",2500,0,500,8192,0,8192);
+  TH2I *energytime = new TH2I("energytime","",2000,0,2000,2048,0,32768);//2048,0,32768
   energytime->GetXaxis()->SetTitle("RiseTime[ns]");
   energytime->GetYaxis()->SetTitle("Energy[ch]");
+
+  TH2I *deltaEE = new TH2I("DeltaE-E","",2048,0,32768,2048,0,32768);//2048,0,32768,2048,0,32728
+  deltaEE->GetXaxis()->SetTitle("E[ch]");
+  deltaEE->GetYaxis()->SetTitle("DeltaE[ch]");
+  
   TGraph *filter = new TGraph();
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -207,7 +214,7 @@ int main(int argc, char *argv[])
       std::cout<<"Calculate Energy:"<<std::endl;
       int CountUnderThreshold = 0;
       int CountChannelEntey = 0;
-      double tempenergy;
+      double tempenergy,tempenergyvote;
       
       for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	{//循环处理从这里开始
@@ -227,6 +234,7 @@ int main(int argc, char *argv[])
 	  // vote
 	  Long64_t timevote1 = timestamp;
 	  Long64_t timevote2;
+	  bool voteflag = false;
 	  if(VotoChannel > -1)
 	    {
 	      for (Long64_t tempvote = entry+1; tempvote < TotalEntry; ++tempvote)
@@ -236,13 +244,31 @@ int main(int argc, char *argv[])
 		  if(ch == VotoChannel)
 		    {
 		      timevote2 = timestamp;
-		      if(timevote1 > timevote2) timevote2 = timevote2+((Long64_t)1<<32);
-		      if(timevote2-timevote1 <= VotoTime) continue; 
+		      // if(timevote1 > timevote2) timevote2 = timevote2+((Long64_t)1<<32);
+		      if(TMath::Abs(timevote2-timevote1) <= VotoTime)
+			{
+			  voteflag = true;
+			  break;
+			}
 		    }
 		}
 	    }
+	  if(voteflag)
+	    {
+	      tempenergy = off->GetEnergy();
+	      // tempenergy = off->GetWaveHigh();
+	      off->SetEventData(size, data);
+	      tempenergyvote = off->GetEnergy();
+	      // tempenergyvote = off->GetWaveHigh();
+	      deltaEE->Fill(tempenergyvote,tempenergy);
+	      continue;
+	    }
+	  
+	  // if(data[0]<15700 || data[0]>15800) continue;
 	  
 	  tempenergy = off->GetEnergy();
+	  // tempenergy = off->GetWaveHigh();
+	  
 	  if(tempenergy < 0)
 	    {
 	      CountUnderThreshold++;
@@ -270,7 +296,26 @@ int main(int argc, char *argv[])
       time->Draw();
       c1->cd(3);
       energytime->Draw("colz");
+      c1->cd(4);
+      deltaEE->Draw("colz");
       c1->Update();
+
+      TFile *outputrootfile = new TFile(OutputFileName.c_str(),"RECREATE");//"RECREATE" "READ"
+      if(!outputrootfile->IsOpen())
+	{
+	  std::cout<<"Can't open root file"<<std::endl;
+	}
+ 
+      // outputrootfile->ls("");
+      // TObject->Write();
+      // TH1D *h = (TH1D*)outputrootfile->Get("name");
+      outputrootfile->cd();
+      c1->Write();
+      energy->Write();
+      time->Write();
+      energytime->Write();
+      deltaEE->Write();
+      outputrootfile->Close();
     }
   
   if(argc == 4)
@@ -278,7 +323,8 @@ int main(int argc, char *argv[])
       int fastfilter[65535];
       int slowfilter[65535];
       int wavedata[65535];
-
+      int firstorderdifferential[65535];
+      
       TString argv2(argv[2]);
       TString argv3(argv[3]);
       int NMIN = argv2.Atoi();
@@ -304,7 +350,7 @@ int main(int argc, char *argv[])
 	    }//循环处理到这里结束
 
 	  c1->cd();
-	  filter->Draw("AP*");
+	  filter->Draw("AP");
 	  c1->Update();
 	}
 
@@ -353,8 +399,106 @@ int main(int argc, char *argv[])
 	  c1->Update();
 	}
 
+      if(argv[1][0] == 'I' || argv[1][0] == 'i')
+	{
+	  std::cout<<"Calculate First Order Differential:"<<std::endl;
+	  for (Long64_t entry = NMIN; entry <= NMAX; ++entry)
+	    {//循环处理从这里开始
+	      if(entry > TotalEntry) break;
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      off->GetFirstOrderDifferential(firstorderdifferential);
+	      for (int i = 0; i < size; ++i)
+		{
+		  filter->SetPoint(CountPoint++,i,firstorderdifferential[i]);
+		}
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+      
       gBenchmark->Show("tree");//计时结束并输出时间
     }
+
+
+  if(argc == 2)
+    {
+      int wavedata[65535];
+      int CountPoint = 0;
+      
+      if(argv[1][0] == '1')
+	{
+      
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      double tempenergy = off->GetEnergy();
+	      double risetime = off->GetRiseTime();
+
+	      if(tempenergy > 22200)
+		{
+		  if(/*(risetime>129&&risetime<131) ||*/ (risetime>144&&risetime<146))
+		    {
+		      off->GetWaveData(wavedata);
+		      for (int i = 0; i < size; ++i)
+			{
+			  filter->SetPoint(CountPoint++,i,wavedata[i]);
+			}
+		    }
+		}
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+
+      if(argv[1][0] == '2')
+	{
+      
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      double tempenergy = off->GetEnergy();
+	      // double tempenergy = off->GetWaveHigh();
+	      double risetime = off->GetRiseTime();
+	      if(tempenergy > 20900 && tempenergy < 21100 && risetime > 1100 && risetime < 1200)
+		{
+		  off->GetWaveData(wavedata);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      filter->SetPoint(CountPoint++,i,wavedata[i]);
+		    }
+		}
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP");
+	  c1->Update();
+	}
+
+
+      
+      gBenchmark->Show("tree");//计时结束并输出时间
+    }
+
+
   
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   // and enter the event loop...

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 二 12月 20 13:01:33 2016 (+0800)
+// Last-Updated: 一 2月 27 22:09:09 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 305
+//     Update #: 306
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -77,6 +77,7 @@ MainFrame::MainFrame(const TGWindow * p)
   OpenRunLog();
   WriteRunLog((char *)"\n\n##########OpenSoftware##########\ntime: ");
   WriteRunLog(GetTimeStringYmdHMS());
+  CloseRunLog();
 }
 
 MainFrame::~MainFrame()
@@ -86,6 +87,7 @@ MainFrame::~MainFrame()
   // Clean up all widgets, frames and layouthints that were used
   Cleanup();
 
+  OpenRunLog();
   WriteRunLog((char *)"\ntime: ");
   WriteRunLog(GetTimeStringYmdHMS());
   WriteRunLog((char *)"\n##########CloseSoftware##########\n");
@@ -108,6 +110,7 @@ void MainFrame::CheckLicense(Digitizer* dig)
 
 void MainFrame::CloseWindow()
 {
+  OpenRunLog();
   WriteRunLog((char *)"\ntime: ");
   WriteRunLog(GetTimeStringYmdHMS());
   WriteRunLog((char *)"\n##########CloseSoftware##########\n");
@@ -1143,8 +1146,10 @@ void MainFrame::SetWriteData()
       // 这里应该需要sleep一下
       board->CloseFile();
 
+      OpenRunLog();
       WriteRunLog((char *)"\n=====WriteStop   ");
       WriteRunLog(GetTimeStringYmdHMS());
+      CloseRunLog();
       
       runnum++;
       filerunnum->SetIntNumber(runnum);
@@ -1169,10 +1174,12 @@ void MainFrame::SetWriteData()
       runnum = (int)filerunnum->GetIntNumber();
       sprintf(Filename,"%s%s_R%04d.bin",path,filen,runnum);
 
+      OpenRunLog();
       WriteRunLog((char *)"\n=====WriteStart   ");
       WriteRunLog(GetTimeStringYmdHMS());
       sprintf(tmp,"\nFileNumber: %04d",runnum);
       WriteRunLog(tmp);
+      CloseRunLog();
       
       board->OpenFile(Filename);
       board->SetWriteData(true);

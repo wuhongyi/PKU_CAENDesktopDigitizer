@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 2月 27 22:09:09 2017 (+0800)
+// Last-Updated: 五 4月 14 23:28:02 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 306
+//     Update #: 316
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -236,7 +236,20 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	case kCM_COMBOBOX://TGComboBox
 	  // combobox id,item id
 	  // Selecting an item in the combobox will generate the event
-
+	  switch(parm1)
+	    {
+	    case DPPACQMODE:
+	      ProgramButton->SetEnabled(1);
+	      gSystem->ProcessEvents();
+	      break;
+	    case DPPSAVEPARAM:
+	      ProgramButton->SetEnabled(1);
+	      gSystem->ProcessEvents();
+	      break;
+	      
+	    default:
+	      break;
+	    }
 	  
 	  break;
 
@@ -981,6 +994,24 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
       ChannelsCheckButton[i]->SetEnabled(0);
     }
 
+  DPPAcqMode = new TGComboBox(channelgrouphframe,DPPACQMODE);
+  channelgrouphframe->AddFrame(DPPAcqMode, new TGLayoutHints(kLHintsLeft, 5, 5, 2, 2));
+  DPPAcqMode->AddEntry("Oscilloscope",0);
+  DPPAcqMode->AddEntry("List",1);
+  DPPAcqMode->AddEntry("Mixed",2);
+  DPPAcqMode->Select(2);
+  DPPAcqMode->Resize(100,20);
+
+  DPPSaveParam = new TGComboBox(channelgrouphframe,DPPSAVEPARAM);
+  channelgrouphframe->AddFrame(DPPSaveParam, new TGLayoutHints(kLHintsLeft, 5, 5, 2, 2));
+  DPPSaveParam->AddEntry("EnergyOnly",0);
+  DPPSaveParam->AddEntry("TimeOnly",1);
+  DPPSaveParam->AddEntry("EnergyAndTime",2);
+  DPPSaveParam->AddEntry("None",3);
+  DPPSaveParam->AddEntry("ChargeAndTime",4);
+  DPPSaveParam->Select(2);
+  DPPSaveParam->Resize(100,20);
+  
   TGLabel *recordlengthlabel = new TGLabel(channelgrouphframe,"Record Length: ");
   channelgrouphframe->AddFrame(recordlengthlabel,new TGLayoutHints(kLHintsLeft | kLHintsTop,10,3,3,0));
 
@@ -1589,7 +1620,7 @@ void MainFrame::ProgramDigitizer()
   
   if(!(MajorNumber == STANDARD_FW_CODE))
     {
-      board->SetDPPAcquisitionMode(CAEN_DGTZ_DPP_ACQ_MODE_Mixed, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
+      board->SetDPPAcquisitionMode( CAEN_DGTZ_DPP_AcqMode_t(DPPAcqMode->GetSelected()), CAEN_DGTZ_DPP_SaveParam_t(DPPSaveParam->GetSelected()));
     }
   
   board->SetAcquisitionMode(CAEN_DGTZ_SW_CONTROLLED);

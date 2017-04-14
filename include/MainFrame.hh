@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: Fri Dec 16 13:48:09 2016 (+0800)
+// Last-Updated: 五 4月 14 23:06:22 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 58
+//     Update #: 59
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -185,6 +185,8 @@ private:
   TGTextButton *CompleteButton;
 
   TGGroupFrame *controlgroup;
+  TGComboBox *DPPAcqMode;//Oscilloscope List Mixed
+  TGComboBox *DPPSaveParam;// EnergyOnly TimeOnly EnergyAndTime ChargeAndTime None
   TGCheckButton *ChannelsCheckButton[MAX_CHANNEL];
   TGNumberEntry *RecordLength;
   TGTextButton *ProgramButton;

@@ -1,0 +1,112 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x30 DPP-PHA FPGA firmware revision history.
+  These digitizer boards houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+===============================================================================
+Release 4.11_139.06
+===============================================================================
+New Features / Changes	:
+
+		* Removed Internal Pulse Emulator because of lack of internal resources in the FPGA
+
+		* Added option to decide whether "bad events" (i.e. unmatched coincidence, vetoed, ect...) are discarded or tagged
+   		  bit[19] of DppCtrl2 @ 0x1nA0: 0=discard, 1=tag with flag[7] = bit 23 of the energy word
+
+Bug Fix			:
+
+		* Bug Fix: energy cat at half range when NsPeak = 2 (num of samples for the peaking average)
+
+		* Bug Fix: time stamp error at the roll-over of the 31 bit 
+  
+===============================================================================
+Release 4.11_139.05
+===============================================================================     
+New Features / Changes	:
+
+		* Added LE discriminator (set bit 6 of DppCtrl1 at 0x1n80)
+
+		* Added CF discriminator (set bit 17 of DppCtrl1 at 0x1n80, previously used as "delta1" option; 
+
+		* CFD fraction: bit [13:12] of DppCtrl2 at 0x1nA0): 00 = 25%, 01 = 50%, 10 = reserved, 11 = 100%
+
+		* Register at address 0x1nD0 used to set the input baseline level (in ADC counts) for the CFD and LED
+
+		* Added VETO with programmable width (0x1nD4 = set width in step of 8 ns; max value 0xFFFF;
+
+		* Veto Source: 0x1nA0 - bit[15:14]: "00" = disabled, "01" = veto from trgin. "10" = veto from other channels, 
+		  "11" = negative saturation (for TRP)
+
+		* Modification: triggers occurring while the channel is busy or vetoed are not written to memory but still 
+		  used to start the algorithms (trapezoid, baseline, etc...)
+		* Changed busy LED driving: it lights up when a trigger is lost (trigger while busy=1, and not when the system is just busy)
+		* Changed flags of the extras of Energy Word (bits from 16 to 31): bit0 = lost events (dead time), 
+		  bit1 = roll-over, bit3 = fake event, bit4 = input saturation
+
+		* Modified coincidence logic within the couples
+
+		* Modified trigger individual validation/propagation settings (bit[5:4] @ 0x1n84): "00": from other channel in the couple, 
+		  "01": from other couples (mother-board), "10": trg0 and trg1, "11": trg0 or trg1
+
+		* Optimized timing for the internal control signals used to implement the coincidence logic
+
+		* Added protection against wrong settings of the peaking time going beyond the flat-top (to prevent the FSM to wait for the peak value)
+
+		* Added counters for total input triggers (ICR) and lost triggers: tick flags on Extras (extra_sel=2): bit[5] = lost trg, bit[6] = total trg.
+    		  Tick rate: bit[17:16] of DppCtrl2 (@ 0x1nA0): "00" = 1 tick every 1024 triggers, "01" = every 128, "10" = every 8K
+
+		* Completed the implementation of the decimation (it didn't work in the previous releases). Note: the decimation applies to the energy
+    		  filter only: Decay Time (PZ-comp), Trap Rise Time and Flat Top. Timing filter (RC-CR2), baseline, hold-off, waveform length are not affected. 
+
+		* Increased maximum record length from 32K to 128K samples (14 bit in the relevant register @ 0x1n20)
+
+		* Changed format in energy word (32 bit): bit[14:0] = energy; bit[15] = PUR or SATUR; bit[31:16] = Extras (flags, as before) 
+ 
+		* Reviewed input and trapezoid saturation management
+ 
+		* Modified internal pulse emulator: now common to 4 channels and less options (modification needed to save FPGA resources)
+
+		* Added option (sel=4) for the extra word: bit[15:0]=total trigger counter, bit[31:16]=lost trigger counter
+
+		* Changed waveform dynamic range (mult by 2) of trapezoid and baseline. NOTE: it has no effect on the energy
+
+		* Resized TTFdelay register (addr 0x1n58, 0x8058): 8 bit instead of 12 (12 bit was just wrong since max value is 255)
+ 
+		* Changed behaviour of the Disable_SelfTrigger (bit 24 of DppCtrl1 @ 0x1n80): don't save events but generate trgout 
+
+		* Implemented quad-range for the veto/gate window: VetoWidth register @1nD4: bit[17:16]=step, bit[15:0]=width_set
+	    	  bit[17:16]: "00" step=8 ns; "01" step=2 us; "10" step=524 us; "11" step=134 ms
+
+		* Changed baseline calculation: active also when the acquisition is not running. This allows the baseline to be immediately ready 
+    		  after the start of run and prevents wrong energy caclulation in the first events. It is possible to go back to the old mode
+    		  by setting the bit 18 of the DppCtrl2 register at 0x1nA0.
+
+Bug Fix			:
+	
+		* Bug fix in coincidences
+		* Bug fix in memory management: event data corrupted (the waveform looks rolled over)
+		* Bug fix: in waveform mode, energy value not associated to the 1st pulse in the waveform
+		* Bug fix: smoothing with 2 samples not available (option 0 = 1 sample; option 1 = 4 samples)
+		* Bug fix: pulses exceeding the input dynamic range (clipped) where not acquired; now they are acquired and tagged as "saturated"
+		* Bug fix: roll-over events discarded by coincidence logic
+		* Bug fix in trigger hold-off; when lower than the time for the RC-CR2 to go from armed to zero crossing, the trigger was lost
+    		  because at the end of the hold-off time the trigger was disarmed.
+
+
+===============================================================================
+Release 4.5_139.1
+===============================================================================
+
+  First release

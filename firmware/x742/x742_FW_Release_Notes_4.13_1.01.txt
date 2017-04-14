@@ -1,0 +1,129 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is V1742-VX1742 FPGA firmware revision history.
+  V1742 digitizers board houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+===============================================================================
+Release 4.13_1.01
+===============================================================================
+
+  New Features / Changes	:
+
+  * Added polarity for TRGIN used as Trigger's "ARM": 0="ARM", 1="VETO"
+	* Added Sampling Fequency option = 750MHz
+	* Improved Data Capture to solved a bug of capture of Vin/2 instead of Vin. 
+	* Solved a bug in automatic VOFF setting at the end of conversion, before new DWRITE. 
+	* Added clear to TTT by a "one clock cycle" pulse on nLCLR
+	* (only X743 e X742 models): extended to these families the direct sending of 
+		TRGIN signal to daughterboard
+	* (only VME): Optimized timing on LVDS I/O (signals registered and placed on pad)
+	* Added option delayedRUN (bits[20:18]@0x811C)
+	* Added LVDS_TRGOUT selection: LVDS_TRGOUT must be a copy of ACQ_TRG(GTRG) 
+		or a copy of TRG_OUT(lemo).
+	* (ONLY VME) FW for PCB rev >=4: added or modified Sync signal for new DC/DC Converters. 
+	* (ONLY VME) Added Force Reboot also for VME 
+	* (for x742 only) Modified trigger management (like x743 family) to reduce TRG IN latency.
+	* Added option to have "UNLOCK" onto TRGOUT (used to trigger in PLL_LOCK_LOSS): 
+		reg 0x811c : bit[20]='1', bit[19:18]="01" (main probe) bit [17:16]= "11" (BUSY_UNLOCK).
+	* Modified Board Fake bit: removed readout_timeout in generated "Board Fake" 
+		and modified localbus_timeout.
+	* Added Board Fake bit in header and Error Monitor Register 0x8178.
+	* (ONLY DESKTOP): Added a new fan management and an automatic control of fan speed.
+	* Added support for new flash type.
+	* Added feature: TRGIN used as Trigger's "ARM"
+	* Modified the length of the signals that can be sent to MB through TRGOUT.
+	* Modified TRGOUT (on Front Panel) logic generation.
+	* Added PB_READY and CLK_READY to BRDREADY on Status Register.
+	* Improved management of CLEARRUN before a "Start RUN" (there might be a
+		loss of communication with the card in case of stop and next start of RUN).
+	* Added automatic RELOAD_CONF after source clock change (ext/int)   
+	* Solved readout problem with "Custom Size" other than 1024.
+	* Added a new management of front panel LVDS I/Os; added Busy/Veto IN/Out
+	  by default, the old LVDS I/O setting is kept for compatibility with previous versions      
+	* Implemented channel trigger and acquisition in "trasparent mode" (useful for trigger 
+		threshold setting).
+	* Modified some timig constraint
+	* Modified default value for the Trgout Mask at power ON
+	* Modified usage of S-IN input (new modes for board synchronization)
+	* Added dedicated clock synchronization command (write at 0x813C) to ensure proper
+	  synchronization of a multi-board system with daisy-chained clock propagation scheme
+	* Added option to propagate S-IN to TRGOUT (bit[17:16] at 0x811C = "11")
+	* Added register 0x816C (set level for almost full output on LVDS I/O)
+	* Added option to send trigger clock onto TRGOUT (used to check synchronization)
+     
+  Bug fix     	            :
+  
+    * Bug Fix: EXT TRG mask not working in 0x810C[30]
+	* Completed bug fix on USB communication (Only DT models affected).
+	* Fixed a bug on USB communication (Only DT models affected).
+	* Fixed a bug in LVDS I/O trigger selection for TRG-OUT propagation: 
+	  erroneous use of bit 0x810C[29] instead of 0x8110[29].
+	  Only VME models affected.
+	* (only X743 e X742 models): Fixed a bug in TRGOUT_FP generation : 
+	  erroneous use of bit 0x810C[7:0] instead of 0x8110[7:0].
+	* Bug Fix: Error in reporting FULL Status (BUSY LED and FULL flag) when the board
+		is not in run  
+	* Bug Fix: Improved Timing constraint on signal SYNCIN, TRGIN and nLPKRDY(run)  
+	* Bug Fix: Error after Clear command
+	* Bug Fix: Forced SYNCIN on PAD in fitter
+	* Bug Fix: Solved a problem in case of single access on LB during BLT
+	* Bug Fix: occasional communication error when restarting after an anomalous program
+	  interruption (e.g. process killed); added an internal timeout to recover
+	* Bug Fix: External trigger Mask not working
+	* Bug Fix: occasional data readout error 
+	* Bug Fix: PLL lock flag (0x8104[7]) not reporting current status of lock
+	* Bug Fix: interrupts through optical link not working properly
+	* Bug Fix: occasional readout failure when performing acquisition start/stop
+
+
+===============================================================================
+Release 3.2_0.3
+===============================================================================
+
+  New Features / Changes	:
+
+    * Increased bit of post trigger register from 7 to 10 => 
+      max post trigger about 8.6usec. 
+     
+  Bug fix     	            :
+  
+    * Fixed a problem following the Clear.
+  
+===============================================================================
+Release 3.2_0.2
+===============================================================================
+
+  New Features / Changes	:
+
+    * New syncronous start for multiboard configuration with TRG-OUT/TRG-IN
+      configuration fully implemented. Added possibility to start acquisition
+      with a software trigger to the first board in the chain.
+     
+  Bug fix     	            :
+  
+    * Fixed issue on optical link state machine.
+    * Fixed bug in local trigger : false trigger was generated after clear.
+
+===============================================================================
+Release 3.2_0.1
+===============================================================================
+    * Introduced menagement of pcb rev1.
+    * Solved problem of synchronization between different daughterboards 
+
+===============================================================================
+Release 3.2_0.0
+===============================================================================
+  First official release

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 21:05:40 2016 (+0800)
-// Last-Updated: 一 12月 12 20:11:48 2016 (+0800)
+// Last-Updated: 五 4月 14 23:25:26 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 33
+//     Update #: 35
 // URL: http://wuhongyi.cn 
 
 #ifndef _GLOBAL_H_
@@ -85,6 +85,13 @@ enum NumberEntryIDs
     RUNNUMBER,
     RECORDLENGTH
   };
+
+enum ComboBoxIDs
+  {
+    DPPACQMODE,
+    DPPSAVEPARAM
+  };
+
 
 
 #endif /* _GLOBAL_H_ */

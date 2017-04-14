@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:25:21 2016 (+0800)
-// Last-Updated: 日 12月 25 15:02:05 2016 (+0800)
+// Last-Updated: 五 4月 14 22:39:32 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 7
+//     Update #: 12
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -19,7 +19,8 @@
 
 int main(int argc, char *argv[])
 {
-  if((argc != 3) || (argc != 5))
+  // std::cout<<"argc: "<<argc<<std::endl;
+  if((argc-3)*(argc-5) != 0)
     {
       std::cout<<"(argc == 3)      "<<argv[0]<<" [FileName]  [RuNnumber]"<<std::endl;
       std::cout<<"example:  ./decode  data  11"<<std::endl;
@@ -28,8 +29,8 @@ int main(int argc, char *argv[])
       return 0;
     }
 
-  TString rawfilepath = "/media/wuhongyi/CIAE201612/";// 必须以 '/' 结尾
-  TString rootfilepath = "/media/wuhongyi/CIAE201612/";// 必须以 '/' 结尾
+  TString rawfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/";// 必须以 '/' 结尾
+  TString rootfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/";// 必须以 '/' 结尾
 
   TString filename(argv[1]);
   TString RunNumber(argv[2]);

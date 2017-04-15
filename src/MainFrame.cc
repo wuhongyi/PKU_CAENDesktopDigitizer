@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 五 4月 14 23:28:02 2017 (+0800)
+// Last-Updated: 六 4月 15 14:24:36 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 316
+//     Update #: 325
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -239,12 +239,12 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	  switch(parm1)
 	    {
 	    case DPPACQMODE:
-	      ProgramButton->SetEnabled(1);
-	      gSystem->ProcessEvents();
+	      if(int(board->GetDPPAcqMode()) != parm2)
+		ProgramButton->SetEnabled(1);
 	      break;
 	    case DPPSAVEPARAM:
+	      if(int(board->GetDPPSaveParam()) != parm2)
 	      ProgramButton->SetEnabled(1);
-	      gSystem->ProcessEvents();
 	      break;
 	      
 	    default:
@@ -996,6 +996,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 
   DPPAcqMode = new TGComboBox(channelgrouphframe,DPPACQMODE);
   channelgrouphframe->AddFrame(DPPAcqMode, new TGLayoutHints(kLHintsLeft, 5, 5, 2, 2));
+  DPPAcqMode->Associate(this);
   DPPAcqMode->AddEntry("Oscilloscope",0);
   DPPAcqMode->AddEntry("List",1);
   DPPAcqMode->AddEntry("Mixed",2);
@@ -1004,6 +1005,7 @@ void MainFrame::MakeFoldPanelInit(TGCompositeFrame *TabPanel)
 
   DPPSaveParam = new TGComboBox(channelgrouphframe,DPPSAVEPARAM);
   channelgrouphframe->AddFrame(DPPSaveParam, new TGLayoutHints(kLHintsLeft, 5, 5, 2, 2));
+  DPPSaveParam->Associate(this);
   DPPSaveParam->AddEntry("EnergyOnly",0);
   DPPSaveParam->AddEntry("TimeOnly",1);
   DPPSaveParam->AddEntry("EnergyAndTime",2);
@@ -1390,25 +1392,47 @@ void MainFrame::RunReadData()
 
 	  if(MonitorCheckButton->IsOn())
 	    {
-	      if(MonitorTypeBox->GetSelected() == 0)//Single
+
+	      switch(MonitorTypeBox->GetSelected())
 		{
+		case 0://Single
 		  OnlineCanvas->cd();
 		  // board->GetSingleWaveform()->Print();
 		  board->GetSingleWaveform()->Draw("APL");//DrawCopy("hist");
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();
+		  break;
+
+		case 1://Multi
+		  OnlineCanvas->cd();
+		  board->GetMultiWaveform()->Draw("AP");
+		  OnlineCanvas->Modified();
+		  OnlineCanvas->Update();
+		  break;
+
+		case 2:
+		  OnlineCanvas->cd();
+		  board->GetEnergySpectrum()->Draw("AP");
+		  OnlineCanvas->Modified();
+		  OnlineCanvas->Update();
+		  break;
+
+		case 3:
+		  OnlineCanvas->cd();
+		  board->GetSingleFFT()->Draw("APL");
+		  board->GetSingleFFT()->GetXaxis()->SetTitle("MHz");
+		  board->GetSingleFFT()->GetYaxis()->SetTitle("dB");
+		  OnlineCanvas->Modified();
+		  OnlineCanvas->Update();
+		  break;
+
+		default:
+		  break;
 		}
-	      else
-		{
-		  if(MonitorTypeBox->GetSelected() == 1)
-		    {
-		      OnlineCanvas->cd();
-		      board->GetMultiWaveform()->Draw("AP");
-		      OnlineCanvas->Modified();
-		      OnlineCanvas->Update();
-		    }
-		}
+	      
+	      
 	      board->SetUpdateSingleWaveform();
+	      board->SetUpdateSingleFFT();
 	    }
 	  
 	  PrevRateTime = CurrentTime;
@@ -1765,9 +1789,11 @@ void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
   
   MonitorTypeBox = new TGComboBox(monitorframe);
   monitorframe->AddFrame(MonitorTypeBox,new TGLayoutHints(kLHintsLeft | kLHintsTop,2,3,3,3));
-  MonitorTypeBox->Resize(60, 20);
-  MonitorTypeBox->AddEntry("Single",0);
-  MonitorTypeBox->AddEntry("Multi",1);
+  MonitorTypeBox->Resize(100, 20);
+  MonitorTypeBox->AddEntry("SingleWave",0);
+  MonitorTypeBox->AddEntry("MultiWave",1);
+  MonitorTypeBox->AddEntry("Energy",2);
+  MonitorTypeBox->AddEntry("FFT(CAEN)",3);
   MonitorTypeBox->Select(0);
 
 
@@ -1821,6 +1847,7 @@ void MainFrame::MonitorChannelSelect(int id)
 
       board->SetMonitorChannel(id);
       board->SetUpdateSingleWaveform();
+      board->SetUpdateSingleFFT();
     }
   
 }

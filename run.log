@@ -60,3 +60,66 @@ time: 20170414232751
 time: 20170414232808
 time: 20170414233025
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415123430
+time: 20170415123639
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415123645
+time: 20170415131636
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415133021
+time: 20170415133127
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415133632
+time: 20170415133716
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415140959
+time: 20170415141214
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415142447
+=====WriteStart   20170415143500
+FileNumber: 0050
+=====WriteStop   20170415143651
+time: 20170415143654
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415150409
+
+##########OpenSoftware##########
+time: 20170415154102
+=====WriteStart   20170415154136
+FileNumber: 0051
+=====WriteStop   20170415154157
+time: 20170415165141
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170415165151
+=====WriteStart   20170415165308
+FileNumber: 0052
+=====WriteStop   20170415165438
+=====WriteStart   20170415170151
+FileNumber: 0053
+=====WriteStop   20170415170226
+time: 20170415204830
+##########CloseSoftware##########

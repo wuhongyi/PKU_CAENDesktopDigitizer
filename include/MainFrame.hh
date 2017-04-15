@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:53:51 2016 (+0800)
-// Last-Updated: 五 4月 14 23:06:22 2017 (+0800)
+// Last-Updated: 六 4月 15 14:02:25 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 59
+//     Update #: 61
 // URL: http://wuhongyi.cn 
 
 #ifndef _MAINFRAME_H_
@@ -210,7 +210,7 @@ private:
   // Online
   TGCheckButton *MonitorCheckButton;
   TGComboBox *MonitorChannelBox;
-  TGComboBox *MonitorTypeBox;// 0-Single 1-Multi  2-Energy ...
+  TGComboBox *MonitorTypeBox;// 0-Single 1-Multi  2-Energy 3-SingleFFT(CAEN) ...
   TGTextButton *SendASoftwareTriggerButton;
   TGTextButton *MonitorClearButton;
   TCanvas *OnlineCanvas;

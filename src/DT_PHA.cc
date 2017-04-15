@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 二 12月 13 10:59:42 2016 (+0800)
+// Last-Updated: 六 4月 15 15:22:41 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 11
+//     Update #: 12
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
@@ -140,6 +140,10 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 	  HeaderPHA[1] = (dppphaevents[ch][ev].TimeTag >> 32);
 	  HeaderPHA[2] = (dppphaevents[ch][ev].TimeTag & 0xFFFFFFFF);
 	  HeaderPHA[3] = dppphaevents[ch][ev].Energy;
+	  
+	  HeaderPHA[5] = dppphaevents[ch][ev].Format;
+	  HeaderPHA[6] = dppphaevents[ch][ev].Extras;
+	  HeaderPHA[7] = dppphaevents[ch][ev].Extras2;
 	  
 	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dppphaevents[ch][ev], dppphawaveforms);
 

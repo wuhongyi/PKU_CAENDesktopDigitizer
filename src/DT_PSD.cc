@@ -4,12 +4,13 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 二 12月 13 11:00:13 2016 (+0800)
+// Last-Updated: 六 4月 15 15:22:41 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 68
+//     Update #: 71
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
+#include "Analysis.hh"
 
 #include <cstdlib>
 #include <cstdio>
@@ -178,6 +179,11 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 	  HeaderPSD[3] = dpppsdevents[ch][ev].ChargeLong;
 	  HeaderPSD[2] = dpppsdevents[ch][ev].ChargeShort;
 	  HeaderPSD[4] = dpppsdevents[ch][ev].Baseline;
+
+	  HeaderPSD[6] = dpppsdevents[ch][ev].Format;
+	  HeaderPSD[7] = dpppsdevents[ch][ev].Format2;
+	  HeaderPSD[8] = dpppsdevents[ch][ev].Extras;
+	  HeaderPSD[9] = dpppsdevents[ch][ev].Pur;
 	  
 	  CAEN_DGTZ_DecodeDPPWaveforms(handle, &dpppsdevents[ch][ev], dpppsdwaveforms);
 	  // int size;
@@ -204,8 +210,10 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 	  
 	  if(monitor)
 	    {
-	      if(type == 0)
+
+	      switch(type)
 		{
+		case 0:
 		  // Single
 		  if(ch == MonitorChannel)
 		    {
@@ -219,28 +227,50 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 			  flagupdatesinglewaveform = true;
 			}
 		    }
-		}
-	      else
-		{
-		  if(type == 1)
+		  break;
+
+		  
+		case 1:
+		  // Mutli
+		  if(ch == MonitorChannel)
 		    {
-		      // Mutli
-		      if(ch == MonitorChannel)
+		      for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
 			{
-			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
-			    {
-			      MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
-			    }
+			  MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
 			}
-		      
+		    }
+		  break;
 
-		    }// type =1
-		  else
+
+		case 2:
+		  // Energy
+
+		  
+		  break;
+
+		case 3:
+		  // SingleFFT(CAEN)
+		  if(ch == MonitorChannel)
 		    {
+		      if(!flagupdatesinglefft)
+			{
+			  int SizeFFT = FFT(WaveLine, BufferFFT, (int)(dpppsdwaveforms->Ns), 0);
+			  
+			  for (int point = 0; point < SizeFFT; ++point)
+			    {
+			      SingleFFT->SetPoint(point,point,BufferFFT[point]);
+			    }
+			  
+			  flagupdatesinglefft = true;
+			}
+
+		    }
+		  break;
 
 
-		    } // type >1
-		}// type > 0
+		default:
+		  break;
+		}	      
 	    }// monitor
 
 

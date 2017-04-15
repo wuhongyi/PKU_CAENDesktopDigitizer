@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 日 12月 25 14:55:24 2016 (+0800)
+// Last-Updated: 六 4月 15 15:39:35 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 28
+//     Update #: 29
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -104,7 +104,7 @@ void r2root::Process()
 
   switch(flag)
     {
-    case 0:
+    case 0://STD
       t->Branch("ch",&ch,"ch/S");
       t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&timestamp,"timestamp/i");
@@ -115,23 +115,30 @@ void r2root::Process()
       t->Branch("nevt",&nevt,"nevt/I");
       break;
 
-    case 1:
+    case 1://PHA
       t->Branch("ch",&ch,"ch/S");
       t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&TimeStamp,"timestamp/l");
       t->Branch("energy",&energy,"energy/s");
+      t->Branch("format",&format,"format/i");
+      t->Branch("extras",&extrasUS,"extras/S");
+      t->Branch("extras2",&extras2,"extras2/i");
       t->Branch("dt",&dt,"dt[size]/s");
       t->Branch("data",&data,"data[size]/s");
       t->Branch("nevt",&nevt,"nevt/I"); 
       break;
 
-    case 2:
+    case 2://PSD
       t->Branch("ch",&ch,"ch/S");
       t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&timestamp,"timestamp/i");
       t->Branch("chargeshort",&chargeshort,"chargeshort/S");
       t->Branch("chargelong",&chargelong,"chargelong/S");
       t->Branch("baseline",&baseline,"baseline/S");
+      t->Branch("format",&format,"format/i");
+      t->Branch("format2",&format2,"format2/i");
+      t->Branch("extras",&extrasUI,"extras/i");
+      t->Branch("pur",&pur,"pur/S");
       t->Branch("dt",&dt,"dt[size]/s");
       t->Branch("data",&data,"data[size]/s");
       t->Branch("nevt",&nevt,"nevt/I");       
@@ -186,6 +193,9 @@ bool r2root::ReadEvent()
       size = HeaderPHA[4];
       TimeStamp = ((ULong64_t)HeaderPHA[1]<<32)+HeaderPHA[2];
       energy = HeaderPHA[3];
+      format = HeaderPHA[5];
+      extrasUS = UShort_t(HeaderPHA[6]);
+      extras2 = HeaderPHA[7];
       break;
 
     case 2:
@@ -197,6 +207,11 @@ bool r2root::ReadEvent()
       chargeshort = HeaderPSD[2];
       chargelong = HeaderPSD[3];
       baseline = HeaderPSD[4];
+
+      format = HeaderPSD[6];
+      format2 = HeaderPSD[7];
+      extrasUI = HeaderPSD[8];
+      pur = Short_t(HeaderPSD[9]);
       break;
     }
 

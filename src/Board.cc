@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 一 12月 12 10:32:42 2016 (+0800)
+// Last-Updated: 六 4月 15 14:01:23 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 35
+//     Update #: 36
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -54,7 +54,10 @@ Board::Board(Digitizer* dig,const char *name)
 
   SingleWaveform = NULL;
   MultiWaveform = NULL;
+  EnergySpectrum = NULL;
+  SingleFFT = NULL;
   flagupdatesinglewaveform = false;
+  flagupdatesinglefft  = false;
   MonitorChannel = -1;
   writedata = false;
   CountPointMultiWaveform = 0;
@@ -72,6 +75,16 @@ Board::~Board()
       delete MultiWaveform;
       MultiWaveform = NULL;
     }
+  if(EnergySpectrum != NULL)
+    {
+      delete EnergySpectrum;
+      EnergySpectrum = NULL;
+    }
+  if(SingleFFT != NULL)
+    {
+      delete SingleFFT;
+      SingleFFT = NULL;
+    }  
 }
 
 void Board::SetStatisticsClear()
@@ -109,10 +122,22 @@ void Board::InitMonitorGraph()
       delete MultiWaveform;
       MultiWaveform = NULL;
     }
-
+  if(EnergySpectrum != NULL)
+    {
+      delete EnergySpectrum;
+      EnergySpectrum = NULL;
+    }
+  if(SingleFFT != NULL)
+    {
+      delete SingleFFT;
+      SingleFFT = NULL;
+    }
+  
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
+  EnergySpectrum = new TGraph();
+  SingleFFT = new TGraph();
 }
 
 void Board::ClearMonitorGraph()
@@ -127,10 +152,22 @@ void Board::ClearMonitorGraph()
       delete MultiWaveform;
       MultiWaveform = NULL;
     }
-
+  if(EnergySpectrum != NULL)
+    {
+      delete EnergySpectrum;
+      EnergySpectrum = NULL;
+    }
+  if(SingleFFT != NULL)
+    {
+      delete SingleFFT;
+      SingleFFT = NULL;
+    }
+  
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
+  EnergySpectrum = new TGraph();
+  SingleFFT = new TGraph();
 }
 
 bool Board::OpenFile(const char *filename)

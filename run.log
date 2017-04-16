@@ -1,125 +1,20 @@
 
 ##########OpenSoftware##########
-time: 20170414214612
-time: 20170414215513
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414221726
-time: 20170414223157
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414223211
-=====WriteStart   20170414223305
-FileNumber: 0049
-=====WriteStop   20170414223337
-time: 20170414223348
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414224639
-time: 20170414225126
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414225131
-time: 20170414230625
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414230639
-time: 20170414230710
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414231234
-time: 20170414232458
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414232555
-time: 20170414232642
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414232731
-time: 20170414232751
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170414232808
-time: 20170414233025
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415123430
-time: 20170415123639
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415123645
-time: 20170415131636
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415133021
-time: 20170415133127
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415133632
-time: 20170415133716
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415140959
-time: 20170415141214
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415142447
-=====WriteStart   20170415143500
-FileNumber: 0050
-=====WriteStop   20170415143651
-time: 20170415143654
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415150409
-
-##########OpenSoftware##########
-time: 20170415154102
-=====WriteStart   20170415154136
-FileNumber: 0051
-=====WriteStop   20170415154157
-time: 20170415165141
-##########CloseSoftware##########
-
-
-##########OpenSoftware##########
-time: 20170415165151
-=====WriteStart   20170415165308
-FileNumber: 0052
-=====WriteStop   20170415165438
-=====WriteStart   20170415170151
-FileNumber: 0053
-=====WriteStop   20170415170226
-time: 20170415204830
+time: 20170416211833
+=====WriteStart   20170416212214
+FileNumber: 0061
+=====WriteStop   20170416212236
+=====WriteStart   20170416212405
+FileNumber: 0062
+=====WriteStop   20170416212436
+=====WriteStart   20170416212618
+FileNumber: 0063
+=====WriteStop   20170416212630
+=====WriteStart   20170416212810
+FileNumber: 0064
+=====WriteStop   20170416212902
+=====WriteStart   20170416213127
+FileNumber: 0065
+=====WriteStop   20170416213145
+time: 20170416213425
 ##########CloseSoftware##########

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 4月 15 13:10:33 2017 (+0800)
-// Last-Updated: 六 4月 15 13:18:56 2017 (+0800)
+// Last-Updated: 日 4月 16 17:03:16 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 2
+//     Update #: 3
 // URL: http://wuhongyi.cn 
 
 #include "Analysis.hh"
@@ -140,6 +140,85 @@ int FFT(unsigned short *wave, double *fft, int ns, int WindowType)
   free(x);
   free(y);
   return (n/2);
+}
+
+
+
+int Pixie16complexFFT(double *data, unsigned int length)
+{
+  double tempR;
+  double tempI;
+  double theta;
+  double wr;
+  double wi;
+  double wpr;
+  double wpi;
+  double wtemp;
+	
+  unsigned int nComplex;
+  unsigned int m;
+  unsigned int mmax;
+  unsigned int iStep;
+  unsigned int i, j;
+	
+  nComplex = 2 * length;
+	
+  // Do the bit reversal re-ordering
+  j = 0;
+  for (i = 0; i < nComplex; i += 2) 
+    {
+      if (j > i) 
+	{
+	  tempR = data[j];
+	  tempI = data[j+1];
+	  data[j]   = data[i];
+	  data[j+1] = data[i+1];
+	  data[i]   = tempR;
+	  data[i+1] = tempI;
+	}
+		
+      m = nComplex / 2;
+      while ((m >= 2) && (j >= m)) 
+	{
+	  j = j - m;
+	  m = m / 2;
+	}
+		
+      j = j + m;
+    }
+	
+  // Do the recursive FFT
+  mmax = 2;
+  while (nComplex > mmax)
+    {
+      iStep = 2 * mmax;
+      theta = PI2 / mmax;
+      wpr = std::sin(0.5 * theta);
+      wpr = -2. * wpr * wpr;
+      wpi = std::sin(theta);
+      wr = 1.;
+      wi = 0.;
+      for (m = 0; m < mmax; m += 2)
+	{
+	  for (i = m; i < nComplex; i += iStep)
+	    {
+	      j = i + mmax;
+	      tempR = wr * data[j]   - wi * data[j+1];
+	      tempI = wr * data[j+1] + wi * data[j];
+	      data[j]   = data[i]   - tempR;
+	      data[j+1] = data[i+1] - tempI;
+	      data[i]   = data[i]   + tempR;
+	      data[i+1] = data[i+1] + tempI;
+	    }
+	  wtemp = wr;
+	  wr = wr * wpr - wi * wpi + wr;
+	  wi = wi * wpr + wtemp * wpi + wi;
+	}
+      mmax = iStep;
+    }
+	
+  return 0;
+	
 }
 
 

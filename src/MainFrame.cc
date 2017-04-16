@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 4月 15 14:24:36 2017 (+0800)
+// Last-Updated: 日 4月 16 20:44:29 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 325
+//     Update #: 333
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1275,6 +1275,10 @@ void MainFrame::PrintRegisters()
       if(strcmp(dig->boardInfo->ModelName, "DT5730") == 0)
 	{
 	  if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
+	  CAEN_DGTZ_WriteRegister(0, 0x8004, 17);
+	  if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
+
+	  
 	  if(MajorNumber == STANDARD_FW_CODE) Read_DGTZ_Register_725_730_STD_Revision00(board->GetHandle(),board->GetChannels());
 	  if(MajorNumber == V1730_DPP_PHA_CODE)  Read_DGTZ_Register_725_730_DPP_PHA_Revision00(board->GetHandle(),board->GetChannels());
 	}
@@ -1398,7 +1402,9 @@ void MainFrame::RunReadData()
 		case 0://Single
 		  OnlineCanvas->cd();
 		  // board->GetSingleWaveform()->Print();
-		  board->GetSingleWaveform()->Draw("APL");//DrawCopy("hist");
+		  board->GetSingleWaveform()->SetLineColor(kRed);
+		  board->GetSingleWaveform()->Draw("AL");//DrawCopy("hist");
+		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();
 		  break;
@@ -1406,26 +1412,43 @@ void MainFrame::RunReadData()
 		case 1://Multi
 		  OnlineCanvas->cd();
 		  board->GetMultiWaveform()->Draw("AP");
+		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();
 		  break;
 
 		case 2:
 		  OnlineCanvas->cd();
+		  // board->GetEnergySpectrum()->SetLineColor(kRed);
 		  board->GetEnergySpectrum()->Draw("AP");
+		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();
 		  break;
 
 		case 3:
 		  OnlineCanvas->cd();
-		  board->GetSingleFFT()->Draw("APL");
-		  board->GetSingleFFT()->GetXaxis()->SetTitle("MHz");
-		  board->GetSingleFFT()->GetYaxis()->SetTitle("dB");
+		  board->GetSingleFFTCAEN()->SetLineColor(kRed);
+		  board->GetSingleFFTCAEN()->Draw("AL");
+		  board->GetSingleFFTCAEN()->GetXaxis()->SetTitle("MHz");
+		  board->GetSingleFFTCAEN()->GetYaxis()->SetTitle("dB");
+		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();
 		  break;
 
+		case 4:
+		  OnlineCanvas->cd();
+		  board->GetSingleFFTXIA()->SetLineColor(kRed);
+		  board->GetSingleFFTXIA()->Draw("AL");
+		  // board->GetSingleFFTXIA()->GetXaxis()->SetTitle("MHz");
+		  // board->GetSingleFFTXIA()->GetYaxis()->SetTitle("dB");
+		  OnlineCanvas->SetLogy(1);
+		  OnlineCanvas->Modified();
+		  OnlineCanvas->Update();
+		  break;
+
+		  
 		default:
 		  break;
 		}
@@ -1794,6 +1817,7 @@ void MainFrame::MakeFoldPanelOnline(TGCompositeFrame *TabPanel)
   MonitorTypeBox->AddEntry("MultiWave",1);
   MonitorTypeBox->AddEntry("Energy",2);
   MonitorTypeBox->AddEntry("FFT(CAEN)",3);
+  MonitorTypeBox->AddEntry("complexFFT(XIA)",4);
   MonitorTypeBox->Select(0);
 
 

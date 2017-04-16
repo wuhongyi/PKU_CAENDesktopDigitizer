@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 六 4月 15 15:22:41 2017 (+0800)
+// Last-Updated: 日 4月 16 18:42:09 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 77
+//     Update #: 79
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -72,8 +72,9 @@ public:
   TGraph *GetSingleWaveform() {return SingleWaveform;}
   TGraph *GetMultiWaveform() {return MultiWaveform;}
   TGraph *GetEnergySpectrum() {return EnergySpectrum;}
-  TGraph *GetSingleFFT() {return SingleFFT;}
-
+  TGraph *GetSingleFFTCAEN() {return SingleFFTCAEN;}
+  TGraph *GetSingleFFTXIA() {return SingleFFTXIA;}
+  
   int GetMonitorChannel() {return MonitorChannel;}
   void SetMonitorChannel(int ch) {MonitorChannel = ch;}
   void SetUpdateSingleWaveform() {flagupdatesinglewaveform = false;}
@@ -91,7 +92,8 @@ protected:
   TGraph *SingleWaveform;
   TGraph *MultiWaveform;
   TGraph *EnergySpectrum;
-  TGraph *SingleFFT;
+  TGraph *SingleFFTCAEN;
+  TGraph *SingleFFTXIA;
   
   int CountPointMultiWaveform;
   bool flagupdatesinglewaveform;// 0-需要刷新  1-已刷新

@@ -4,16 +4,16 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 4月 15 13:10:20 2017 (+0800)
-// Last-Updated: 六 4月 15 13:16:26 2017 (+0800)
+// Last-Updated: 日 4月 16 17:03:16 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 1
+//     Update #: 2
 // URL: http://wuhongyi.cn 
 
 #ifndef _ANALYSIS_H_
 #define _ANALYSIS_H_
 
 // source from www.caen.it
-
+// source from www.xia.com
 
 #define FFT_BASELINE  0.0000001  // Baseline for low clipping (-140dB)
 #define NORM_FACTOR   4096       // Normalize the amplitide (12bit ADC)
@@ -23,6 +23,15 @@
 #define HAMMING_FFT_WINDOW    1
 #define BLACKMAN_FFT_WINDOW   2
 #define RECT_FFT_WINDOW       3
+
+
+#ifndef PI
+	#define PI	3.14159265358979
+#endif
+
+#ifndef PI2
+	#define PI2	6.28318530717959
+#endif
 
 
 
@@ -53,6 +62,8 @@
 // Number of pointf of the output vector fft
 int FFT(unsigned short *wave, double *fft, int ns, int WindowType);
 
+
+int Pixie16complexFFT(double *data, unsigned int length);
 
 #endif /* _ANALYSIS_H_ */
 // 

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 六 4月 15 15:22:41 2017 (+0800)
+// Last-Updated: 日 4月 16 19:43:08 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 71
+//     Update #: 81
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -258,7 +258,7 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 			  
 			  for (int point = 0; point < SizeFFT; ++point)
 			    {
-			      SingleFFT->SetPoint(point,point,BufferFFT[point]);
+			      SingleFFTCAEN->SetPoint(point,point,BufferFFT[point]);
 			    }
 			  
 			  flagupdatesinglefft = true;
@@ -267,6 +267,29 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 		    }
 		  break;
 
+		case 4:
+		  // SingleFFT(XIA)
+		  if(ch == MonitorChannel)
+		    {
+		      if(!flagupdatesinglefft)
+			{
+			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns); ++point)
+			    {
+			      BufferFFT[2*point+1] = 0;
+			      BufferFFT[2*point] = double(WaveLine[point]);
+			    }
+			  
+			  Pixie16complexFFT(BufferFFT, dpppsdwaveforms->Ns);
+
+			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns)/2; ++point)
+			    {
+			      SingleFFTXIA->SetPoint(point,double(point),std::sqrt(BufferFFT[2*point]*BufferFFT[2*point]+BufferFFT[2*point+1]*BufferFFT[2*point+1]));
+			    }
+			  
+			  flagupdatesinglefft = true;
+			}
+		    }
+		  break;
 
 		default:
 		  break;

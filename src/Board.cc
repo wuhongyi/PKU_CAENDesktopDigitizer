@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 六 4月 15 14:01:23 2017 (+0800)
+// Last-Updated: 日 4月 16 18:39:57 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 36
+//     Update #: 37
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -55,7 +55,8 @@ Board::Board(Digitizer* dig,const char *name)
   SingleWaveform = NULL;
   MultiWaveform = NULL;
   EnergySpectrum = NULL;
-  SingleFFT = NULL;
+  SingleFFTCAEN = NULL;
+  SingleFFTXIA = NULL;
   flagupdatesinglewaveform = false;
   flagupdatesinglefft  = false;
   MonitorChannel = -1;
@@ -80,10 +81,15 @@ Board::~Board()
       delete EnergySpectrum;
       EnergySpectrum = NULL;
     }
-  if(SingleFFT != NULL)
+  if(SingleFFTCAEN != NULL)
     {
-      delete SingleFFT;
-      SingleFFT = NULL;
+      delete SingleFFTCAEN;
+      SingleFFTCAEN = NULL;
+    }
+    if(SingleFFTXIA != NULL)
+    {
+      delete SingleFFTXIA;
+      SingleFFTXIA = NULL;
     }  
 }
 
@@ -127,17 +133,23 @@ void Board::InitMonitorGraph()
       delete EnergySpectrum;
       EnergySpectrum = NULL;
     }
-  if(SingleFFT != NULL)
+  if(SingleFFTCAEN != NULL)
     {
-      delete SingleFFT;
-      SingleFFT = NULL;
+      delete SingleFFTCAEN;
+      SingleFFTCAEN = NULL;
     }
+    if(SingleFFTXIA != NULL)
+    {
+      delete SingleFFTXIA;
+      SingleFFTXIA = NULL;
+    }  
   
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
   EnergySpectrum = new TGraph();
-  SingleFFT = new TGraph();
+  SingleFFTCAEN = new TGraph();
+  SingleFFTXIA = new TGraph();
 }
 
 void Board::ClearMonitorGraph()
@@ -157,17 +169,23 @@ void Board::ClearMonitorGraph()
       delete EnergySpectrum;
       EnergySpectrum = NULL;
     }
-  if(SingleFFT != NULL)
+  if(SingleFFTCAEN != NULL)
     {
-      delete SingleFFT;
-      SingleFFT = NULL;
+      delete SingleFFTCAEN;
+      SingleFFTCAEN = NULL;
     }
+    if(SingleFFTXIA != NULL)
+    {
+      delete SingleFFTXIA;
+      SingleFFTXIA = NULL;
+    }  
   
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
   EnergySpectrum = new TGraph();
-  SingleFFT = new TGraph();
+  SingleFFTCAEN = new TGraph();
+  SingleFFTXIA = new TGraph();
 }
 
 bool Board::OpenFile(const char *filename)

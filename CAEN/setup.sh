@@ -22,8 +22,8 @@ cd ..
 
 
 
-tar -xvzf CAENDigitizer_2.7.6_20161014.tgz
-cd CAENDigitizer_2.7.6
+tar -xvzf CAENDigitizer_2.7.9_20170310.tgz
+cd CAENDigitizer_2.7.9
 sh install_64
 cd ..
 

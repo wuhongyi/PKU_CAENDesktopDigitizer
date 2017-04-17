@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 日 4月 16 20:44:29 2017 (+0800)
+// Last-Updated: 一 4月 17 22:23:02 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 333
+//     Update #: 353
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1275,8 +1275,27 @@ void MainFrame::PrintRegisters()
       if(strcmp(dig->boardInfo->ModelName, "DT5730") == 0)
 	{
 	  if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
-	  CAEN_DGTZ_WriteRegister(0, 0x8004, 17);
-	  if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
+	  
+	  // uint32_t Data;
+	  // CAEN_DGTZ_ReadRegister(board->GetHandle(), 0x1080, &Data);
+	  // Data = SetBit_32(6,Data);
+	  // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x1080, Data);
+
+	  // CAEN_DGTZ_ReadRegister(board->GetHandle(), 0x103C, &Data);
+	  // Data = ClrBit_32(0,Data);
+	  // Data = ClrBit_32(1,Data);
+	  // Data = ClrBit_32(2,Data);
+	  // Data = SetBit_32(0,Data);
+	  // // Data = ClrBit_32(8,Data);
+	  // // Data = ClrBit_32(9,Data);
+	  // // Data = SetBit_32(8,Data);
+	  // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x103C, Data);
+	  
+	  // CAEN_DGTZ_ReadRegister(board->GetHandle(), 0x8000, &Data);
+	  // Data = SetBit_32(17,Data);
+	  // Data = SetBit_32(12,Data);
+	  // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x8000, Data);
+	  // if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
 
 	  
 	  if(MajorNumber == STANDARD_FW_CODE) Read_DGTZ_Register_725_730_STD_Revision00(board->GetHandle(),board->GetChannels());

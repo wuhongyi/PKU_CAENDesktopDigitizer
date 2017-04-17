@@ -4,12 +4,13 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 12月  3 09:58:01 2016 (+0800)
-// Last-Updated: 六 4月 15 15:22:41 2017 (+0800)
+// Last-Updated: 一 4月 17 15:33:01 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 12
+//     Update #: 17
 // URL: http://wuhongyi.cn 
 
 #include "DT_PHA.hh"
+#include "Analysis.hh"
 
 #include <cstdlib>
 #include <cstdio>
@@ -161,8 +162,9 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 
 	  if(monitor)
 	    {
-	      if(type == 0)
+	      switch(type)
 		{
+		case 0:
 		  // Single
 		  if(ch == MonitorChannel)
 		    {
@@ -176,31 +178,80 @@ void DT_PHA::GetWaveform(bool monitor,int type)
 			  flagupdatesinglewaveform = true;
 			}
 		    }
-		}
-	      else
-		{
-		  if(type == 1)
+		  break;
+
+		  
+		case 1:
+		  // Mutli
+		  if(ch == MonitorChannel)
 		    {
-		      // Mutli
-		      if(ch == MonitorChannel)
+		      for (int point = 0; point < (int)(dppphawaveforms->Ns); ++point)
+			{
+			  MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
+			}
+		    }
+		  break;
+
+
+		case 2:
+		  // Energy
+
+		  
+		  break;
+
+		case 3:
+		  // SingleFFT(CAEN)
+		  if(ch == MonitorChannel)
+		    {
+		      if(!flagupdatesinglefft)
+			{
+			  int SizeFFT = FFT((unsigned short*)WaveLine, BufferFFT, (int)(dppphawaveforms->Ns), 0);
+			  
+			  for (int point = 0; point < SizeFFT; ++point)
+			    {
+			      SingleFFTCAEN->SetPoint(point,point,BufferFFT[point]);
+			    }
+			  
+			  flagupdatesinglefft = true;
+			}
+
+		    }
+		  break;
+
+		case 4:
+		  // SingleFFT(XIA)
+		  if(ch == MonitorChannel)
+		    {
+		      if(!flagupdatesinglefft)
 			{
 			  for (int point = 0; point < (int)(dppphawaveforms->Ns); ++point)
 			    {
-			      MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(WaveLine[point]));
+			      BufferFFT[2*point+1] = 0;
+			      BufferFFT[2*point] = double(WaveLine[point]);
 			    }
+
+			  unsigned int sizecomplexfft;
+			  int power2 = 1;
+			  while((1<<power2) < (int)(dppphawaveforms->Ns)) power2++;
+			  if((1<<power2) == (int)(dppphawaveforms->Ns)) sizecomplexfft = (unsigned int)(1<<power2);
+			  else sizecomplexfft = (unsigned int)(1<<(power2-1));
+			  Pixie16complexFFT(BufferFFT, sizecomplexfft);
+
+			  for (int point = 0; point < (int)(sizecomplexfft)/2; ++point)
+			    {
+			      SingleFFTXIA->SetPoint(point,double(point),std::sqrt(BufferFFT[2*point]*BufferFFT[2*point]+BufferFFT[2*point+1]*BufferFFT[2*point+1]));
+			    }
+			  
+			  flagupdatesinglefft = true;
 			}
-		      
+		    }
+		  break;
 
-		    }// type =1
-		  else
-		    {
-
-
-		    } // type >1
-		}// type > 0
+		default:
+		  break;
+		}
 	    }// monitor
 
-	  
 	  
 	}// loop on events
     }// loop on channels

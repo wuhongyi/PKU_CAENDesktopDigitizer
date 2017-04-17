@@ -4,12 +4,13 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:28:50 2016 (+0800)
-// Last-Updated: 一 12月 12 10:36:04 2016 (+0800)
+// Last-Updated: 一 4月 17 15:33:01 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 37
+//     Update #: 58
 // URL: http://wuhongyi.cn 
 
 #include "DT_Standard.hh"
+#include "Analysis.hh"
 
 #include <cstdlib>
 #include <cstdio>
@@ -154,150 +155,199 @@ int DT_Standard::GetEvent()
 void DT_Standard::GetWaveform(bool monitor,int type)
 {
   for (int i = 0; i < (int)numEvents; ++i)
-  {
-    // Get one event from the readout buffer
-    CAEN_DGTZ_GetEventInfo(handle, readoutBuffer, bufferSize, i, &EventInfo, &EventPtr);
-    // printf("EventSize: %d   BoardId: %d   Pattern: %d   ChannelMask: %d   EventCounter: %d   TriggerTimeTag: %d\n",EventInfo.EventSize,EventInfo.BoardId,EventInfo.Pattern,EventInfo.ChannelMask,EventInfo.EventCounter,EventInfo.TriggerTimeTag);
+    {
+      // Get one event from the readout buffer
+      CAEN_DGTZ_GetEventInfo(handle, readoutBuffer, bufferSize, i, &EventInfo, &EventPtr);
+      // printf("EventSize: %d   BoardId: %d   Pattern: %d   ChannelMask: %d   EventCounter: %d   TriggerTimeTag: %d\n",EventInfo.EventSize,EventInfo.BoardId,EventInfo.Pattern,EventInfo.ChannelMask,EventInfo.EventCounter,EventInfo.TriggerTimeTag);
 
-    // decode the event 
-    if (NBits == 8)
-      {
-        CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event8);
-	for (int ch = 0; ch < Nch; ++ch)
-	  {
-	    if (!(EventInfo.ChannelMask & (1<<ch))) continue;
-	    Ne[ch]++;
+      // decode the event 
+      if (NBits == 8)
+	{
+	  CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event8);
+	  for (int ch = 0; ch < Nch; ++ch)
+	    {
+	      if (!(EventInfo.ChannelMask & (1<<ch))) continue;
+	      Ne[ch]++;
 
 
-	    if(monitor)
-	      {
-		if(type == 0)
-		  {
-		    // Single
-		    if(ch == MonitorChannel)
-		      {
-			if(!flagupdatesinglewaveform)
-			  {
-			    for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
-			      {
-				SingleWaveform->SetPoint(point,point,int(Event16->DataChannel[ch][point]));
-			      }
-			    flagupdatesinglewaveform = true;
-			  }
-		      }
-		  }//type=0
-		else
-		  {
-		    if(type == 1)
-		      {
-			// Mutli
-			if(ch == MonitorChannel)
-			  {
-			    for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
-			      {
-				MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event16->DataChannel[ch][point]));
-			      }
-			  }
+	      if(monitor)
+		{
+		  if(type == 0)
+		    {
+		      // Single
+		      if(ch == MonitorChannel)
+			{
+			  if(!flagupdatesinglewaveform)
+			    {
+			      for (int point = 0; point < (int)(Event8->ChSize[ch]); ++point)
+				{
+				  SingleWaveform->SetPoint(point,point,int(Event8->DataChannel[ch][point]));
+				}
+			      flagupdatesinglewaveform = true;
+			    }
+			}
+		    }//type=0
+		  else
+		    {
+		      if(type == 1)
+			{
+			  // Mutli
+			  if(ch == MonitorChannel)
+			    {
+			      for (int point = 0; point < (int)(Event8->ChSize[ch]); ++point)
+				{
+				  MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event8->DataChannel[ch][point]));
+				}
+			    }
 		      
 
-		      }// type=1
-		    else
-		      {
+			}// type=1
+		      else
+			{
 
 
-		      }
-		  }// type>0
-	      }//monitor
+			}
+		    }// type>0
+		}//monitor
 
-	  }// channel
-      }//NBits == 8
-    else
-      {
-	if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
-	  {
-	    CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
-	    for (int ch = 0; ch < Nch; ++ch)
-	      {
-		if (!(EventInfo.ChannelMask & (1<<ch))) continue;
-		Ne[ch]++;
+	    }// channel
+	}//NBits == 8
+      else
+	{
+	  if (FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
+	    {
+	      CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event16);
+	      for (int ch = 0; ch < Nch; ++ch)
+		{
+		  if (!(EventInfo.ChannelMask & (1<<ch))) continue;
+		  Ne[ch]++;
 
-		HeaderSTD[0] = ch;
-		HeaderSTD[1] = EventInfo.TriggerTimeTag;
-		HeaderSTD[2] = EventInfo.EventCounter;
-		HeaderSTD[3] = EventInfo.Pattern;
-		HeaderSTD[4] = Event16->ChSize[ch];
+		  HeaderSTD[0] = ch;
+		  HeaderSTD[1] = EventInfo.TriggerTimeTag;
+		  HeaderSTD[2] = EventInfo.EventCounter;
+		  HeaderSTD[3] = EventInfo.Pattern;
+		  HeaderSTD[4] = Event16->ChSize[ch];
 		
-		if(writedata)
-		  {
-		    if((buffid+HEADERSTD*4+HeaderSTD[4]*2) > BUFFLENGTH) SaveToFile();
-		    memcpy(&buff[buffid],HeaderSTD,HEADERSTD*4);
-		    memcpy(&buff[buffid+HEADERSTD*4],Event16->DataChannel[ch],HeaderSTD[4]*2);
-		    buffid = buffid+HEADERSTD*4+HeaderSTD[4]*2;
-		  }
+		  if(writedata)
+		    {
+		      if((buffid+HEADERSTD*4+HeaderSTD[4]*2) > BUFFLENGTH) SaveToFile();
+		      memcpy(&buff[buffid],HeaderSTD,HEADERSTD*4);
+		      memcpy(&buff[buffid+HEADERSTD*4],Event16->DataChannel[ch],HeaderSTD[4]*2);
+		      buffid = buffid+HEADERSTD*4+HeaderSTD[4]*2;
+		    }
 
 
-		if(monitor)
-		  {
-		    if(type == 0)
-		      {
-			// Single
-			if(ch == MonitorChannel)
-			  {
-			    if(!flagupdatesinglewaveform)
-			      {
-				for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
-				  {
-				    SingleWaveform->SetPoint(point,point,int(Event16->DataChannel[ch][point]));
-				  }
-				flagupdatesinglewaveform = true;
-			      }
-			  }
-		      }//type=0
-		    else
-		      {
-			if(type == 1)
-			  {
-			    // Mutli
-			    if(ch == MonitorChannel)
-			      {
-				for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
-				  {
-				    MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event16->DataChannel[ch][point]));
-				  }
-			      }
-		      
+		  if(monitor)
+		    {
+		      switch(type)
+			{
+			case 0:
+			  // Single
+			  if(ch == MonitorChannel)
+			    {
+			      if(!flagupdatesinglewaveform)
+				{
+				  for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+				    {
+				      SingleWaveform->SetPoint(point,point,int(Event16->DataChannel[ch][point]));
+				    }
+				  flagupdatesinglewaveform = true;
+				}
+			    }
+			  break;
 
-			  }// type=1
-			else
-			  {
+			case 1:
+			  // Mutli
+			  if(ch == MonitorChannel)
+			    {
+			      for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+				{
+				  MultiWaveform->SetPoint(CountPointMultiWaveform++,point,int(Event16->DataChannel[ch][point]));
+				}
+			    }
+			  break;
+
+			case 2:
+			  // Energy
+			
+			  break;
+
+			case 3:
+			  // SingleFFT(CAEN)
+			  if(ch == MonitorChannel)
+			    {
+			      if(!flagupdatesinglefft)
+				{
+				  int SizeFFT = FFT(Event16->DataChannel[ch], BufferFFT, (int)(Event16->ChSize[ch]), 0);
+			  
+				  for (int point = 0; point < SizeFFT; ++point)
+				    {
+				      SingleFFTCAEN->SetPoint(point,point,BufferFFT[point]);
+				    }
+			  
+				  flagupdatesinglefft = true;
+				}
+			    }
+			  break;
+
+			case 4:
+			  // SingleFFT(XIA)
+			  if(ch == MonitorChannel)
+			    {
+			      if(!flagupdatesinglefft)
+				{
+				  for (int point = 0; point < (int)(Event16->ChSize[ch]); ++point)
+				    {
+				      BufferFFT[2*point+1] = 0;
+				      BufferFFT[2*point] = double(Event16->DataChannel[ch][point]);
+				    }
+
+				  unsigned int sizecomplexfft;
+				  int power2 = 1;
+				  while((1<<power2) < (int)(Event16->ChSize[ch])) power2++;
+				  if((1<<power2) == (int)(Event16->ChSize[ch])) sizecomplexfft = (unsigned int)(1<<power2);
+				  else sizecomplexfft = (unsigned int)(1<<(power2-1));
+				  Pixie16complexFFT(BufferFFT, sizecomplexfft);
+				  
+				  for (int point = 0; point < (int)(sizecomplexfft)/2; ++point)
+				    {
+				      SingleFFTXIA->SetPoint(point,double(point),std::sqrt(BufferFFT[2*point]*BufferFFT[2*point]+BufferFFT[2*point+1]*BufferFFT[2*point+1]));
+				    }
+
+				  flagupdatesinglefft = true;
+				}
+			    }
+			  break;
+
+			default:
+			  break;
+			}
 
 
-			  }
-		      }// type>0
-		  }//monitor
+		    }//monitor
 		
 		
 		
-	      }
+		}
 	    
-	  }
-	else
-	  {
-	    CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event742);
-	    // if (WDcfg.useCorrections != -1)
-	    //   { // if manual corrections
-	    // 	uint32_t gr;
-	    // 	for (gr = 0; gr < MaxGroupNumber; gr++)
-	    // 	  {
-	    // 	    if ( ((par_enablemask >> gr) & 0x1) == 0)
-	    // 	      continue;
-	    // 	    ApplyDataCorrection( &(X742Tables[gr]), WDcfg.DRS4Frequency, WDcfg.useCorrections, &(Event742->DataGroup[gr]));
-	    // 	  }
-	    //   }
-	  } // x742
-      }// NBits > 8
+	    }
+	  else
+	    {
+	      CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void**)&Event742);
+	      // if (WDcfg.useCorrections != -1)
+	      //   { // if manual corrections
+	      // 	uint32_t gr;
+	      // 	for (gr = 0; gr < MaxGroupNumber; gr++)
+	      // 	  {
+	      // 	    if ( ((par_enablemask >> gr) & 0x1) == 0)
+	      // 	      continue;
+	      // 	    ApplyDataCorrection( &(X742Tables[gr]), WDcfg.DRS4Frequency, WDcfg.useCorrections, &(Event742->DataGroup[gr]));
+	      // 	  }
+	      //   }
+	    } // x742
+	}// NBits > 8
 
-  }// numEvents
+    }// numEvents
 
 }
 

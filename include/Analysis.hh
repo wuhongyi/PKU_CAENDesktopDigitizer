@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 4月 15 13:10:20 2017 (+0800)
-// Last-Updated: 日 4月 16 17:03:16 2017 (+0800)
+// Last-Updated: 一 4月 17 15:28:48 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 2
+//     Update #: 3
 // URL: http://wuhongyi.cn 
 
 #ifndef _ANALYSIS_H_
@@ -62,7 +62,7 @@
 // Number of pointf of the output vector fft
 int FFT(unsigned short *wave, double *fft, int ns, int WindowType);
 
-
+// length must be a power of 2
 int Pixie16complexFFT(double *data, unsigned int length);
 
 #endif /* _ANALYSIS_H_ */

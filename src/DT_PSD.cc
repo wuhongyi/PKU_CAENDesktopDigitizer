@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 日 4月 16 19:43:08 2017 (+0800)
+// Last-Updated: 一 4月 17 15:33:01 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 81
+//     Update #: 82
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -278,10 +278,16 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 			      BufferFFT[2*point+1] = 0;
 			      BufferFFT[2*point] = double(WaveLine[point]);
 			    }
-			  
-			  Pixie16complexFFT(BufferFFT, dpppsdwaveforms->Ns);
 
-			  for (int point = 0; point < (int)(dpppsdwaveforms->Ns)/2; ++point)
+
+			  unsigned int sizecomplexfft;
+			  int power2 = 1;
+			  while((1<<power2) < (int)(dpppsdwaveforms->Ns)) power2++;
+			  if((1<<power2) == (int)(dpppsdwaveforms->Ns)) sizecomplexfft = (unsigned int)(1<<power2);
+			  else sizecomplexfft = (unsigned int)(1<<(power2-1));
+			  Pixie16complexFFT(BufferFFT, sizecomplexfft);
+
+			  for (int point = 0; point < (int)(sizecomplexfft)/2; ++point)
 			    {
 			      SingleFFTXIA->SetPoint(point,double(point),std::sqrt(BufferFFT[2*point]*BufferFFT[2*point]+BufferFFT[2*point+1]*BufferFFT[2*point+1]));
 			    }

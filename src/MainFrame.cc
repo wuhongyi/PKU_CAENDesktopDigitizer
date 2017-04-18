@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 4月 17 22:23:02 2017 (+0800)
+// Last-Updated: 二 4月 18 21:25:51 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 353
+//     Update #: 358
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1295,6 +1295,8 @@ void MainFrame::PrintRegisters()
 	  // Data = SetBit_32(17,Data);
 	  // Data = SetBit_32(12,Data);
 	  // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x8000, Data);
+	  // // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x8004, 0x1000);
+	  // // CAEN_DGTZ_WriteRegister(board->GetHandle(), 0x8004, 0x20000);
 	  // if(MajorNumber == V1730_DPP_PSD_CODE) Read_DGTZ_Register_725_730_DPP_PSD_Revision03(board->GetHandle(),board->GetChannels());
 
 	  

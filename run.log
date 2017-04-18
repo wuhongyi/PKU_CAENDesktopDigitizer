@@ -279,3 +279,45 @@ FileNumber: 0077
 =====WriteStop   20170417221931
 time: 20170417222248
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170418120225
+=====WriteStart   20170418120457
+FileNumber: 0078
+=====WriteStop   20170418120505
+=====WriteStart   20170418120514
+FileNumber: 0079
+=====WriteStop   20170418120600
+=====WriteStart   20170418120726
+FileNumber: 0080
+=====WriteStop   20170418120818
+time: 20170418120914
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170418120919
+time: 20170418121123
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170418121151
+time: 20170418121342
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170418142920
+=====WriteStart   20170418145950
+FileNumber: 0081
+=====WriteStop   20170418151734
+time: 20170418153359
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170418153410
+time: 20170418162911
+##########CloseSoftware##########

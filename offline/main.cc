@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 日 2月 12 21:03:56 2017 (+0800)
+// Last-Updated: 四 5月 18 10:59:59 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 203
+//     Update #: 204
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
 
-  TH1I *energy = new TH1I("energy","",2048,0,32768);//2048,0,32768
+  TH1I *energy = new TH1I("energy","",4096,0,16384);//2048,0,32768
   energy->GetXaxis()->SetTitle("Energy[ch]");
   TH1I *time = new TH1I("time","",2000,0,2000);
   time->GetXaxis()->SetTitle("RiseTime[ns]");

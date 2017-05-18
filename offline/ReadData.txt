@@ -4,119 +4,18 @@
 ## Author: Hongyi Wu(吴鸿毅)
 ## Email: wuhongyi@qq.com 
 ## Created: 五 4月 18 18:16:22 2014 (+0800)
-## Last-Updated: 日 2月 12 21:06:37 2017 (+0800)
+## Last-Updated: 四 5月 18 11:06:51 2017 (+0800)
 ##           By: Hongyi Wu(吴鸿毅)
-##     Update #: 355
+##     Update #: 362
 ## URL: http://wuhongyi.cn 
 
 
 ##要处理文件路径及文件名，可采用通配符*
 
-AddFileNumber 1
+AddFileNumber 2
 
-## 50V
-# 65MeV Be9
-# InputFileName_0 ../*0073.root
-# InputFileName_1 ../*0074.root
-# InputFileName_2 ../*0075.root
-# InputFileName_3 ../*0076.root
-# InputFileName_4 ../*0077.root
-# 65MeV 金靶(20)
-# InputFileName_0 ../*0078.root
-# alpha刻度
-# InputFileName_0 ../*0086.root
-# InputFileName_1 ../*0087.root
-
-## 40V
-# 35MeV 金靶
-# InputFileName_0 ../*0001.root
-# InputFileName_1 ../*0002.root
-# InputFileName_2 ../*0003.root
-# InputFileName_3 ../*0004.root
-# InputFileName_4 ../*0005.root
-# 65MeV Be9
-# InputFileName_0 ../*0008.root
-# InputFileName_1 ../*0009.root
-# InputFileName_2 ../*0010.root
-# InputFileName_3 ../*0011.root
-# InputFileName_4 ../*0012.root
-# InputFileName_5 ../*0013.root
-# InputFileName_6 ../*0014.root
-# InputFileName_7 ../*0015.root
-# InputFileName_8 ../*0016.root
-# InputFileName_9 ../*0079.root
-# InputFileName_10 ../*0080.root
-# InputFileName_11 ../*0081.root
-# InputFileName_12 ../*0082.root
-# InputFileName_13 ../*0083.root
-# InputFileName_14 ../*0084.root
-# 65MeV 金靶
-# InputFileName_0 ../*0017.root
-# alpha刻度
-# InputFileName_0 ../*0088.root
-
-## 30V
-# 65MeV Be9
-# InputFileName_0 ../*0018.root
-# InputFileName_1 ../*0019.root
-# InputFileName_2 ../*0020.root
-# InputFileName_3 ../*0021.root
-# InputFileName_4 ../*0022.root
-# InputFileName_5 ../*0023.root
-# InputFileName_6 ../*0024.root
-# InputFileName_7 ../*0025.root
-# InputFileName_8 ../*0026.root
-# InputFileName_9 ../*0027.root
-# InputFileName_10 ../*0028.root
-# InputFileName_11 ../*0036.root
-# InputFileName_12 ../*0037.root
-# InputFileName_13 ../*0038.root
-# InputFileName_14 ../*0039.root
-# InputFileName_15 ../*0040.root
-# InputFileName_16 ../*0041.root
-# InputFileName_17 ../*0042.root
-# InputFileName_18 ../*0043.root
-# InputFileName_19 ../*0044.root
-# InputFileName_20 ../*0045.root
-# InputFileName_21 ../*0046.root
-# InputFileName_22 ../*0047.root
-# 65MeV 金靶
-# InputFileName_0 ../*0034.root
-# InputFileName_1 ../*0035.root
-# InputFileName_2 ../*0048.root
-# alpha刻度
-# InputFileName_0 ../*0089.root
-
-## 20V
-# 65MeV Be9
-# InputFileName_0 ../*0049.root
-# InputFileName_1 ../*0050.root
-# InputFileName_2 ../*0051.root
-# InputFileName_3 ../*0052.root
-# InputFileName_4 ../*0053.root
-# InputFileName_5 ../*0054.root
-# InputFileName_6 ../*0055.root
-# InputFileName_7 ../*0056.root
-# InputFileName_8 ../*0057.root
-# InputFileName_9 ../*0058.root
-# InputFileName_10 ../*0059.root
-# InputFileName_11 ../*0060.root
-# InputFileName_12 ../*0062.root
-# InputFileName_13 ../*0063.root
-# InputFileName_14 ../*0064.root
-# InputFileName_15 ../*0065.root
-# InputFileName_16 ../*0066.root
-# InputFileName_17 ../*0067.root
-# InputFileName_18 ../*0068.root
-# InputFileName_19 ../*0069.root
-# InputFileName_20 ../*0070.root
-# InputFileName_21 ../*0071.root
-# InputFileName_22 ../*0072.root
-# 65MeV 金靶
-# InputFileName_0 ../*0061.root
-# alpha刻度
-InputFileName_0 ../*0090.root
-
+InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0083.root
+InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0084.root
 
 
 
@@ -125,28 +24,28 @@ InputFileName_0 ../*0090.root
 OutputFileName  test.root
 
 
-SelectChannel 4
-VotoChannel 6
+SelectChannel 3
+VotoChannel -1
 VotoTime   100
 
 # 脉冲极性 1-正信号 0-负信号
 PulsePolarity 0
 
 # 采样率 100/250/500
-ADCMSPS 500
+ADCMSPS 250
 
 CalculateVertexPoint 20
-CalculateBaselinePoint 800
+CalculateBaselinePoint 300
 CalculateRiseTimeType 2
 
 FastFilterFL 0.1
 FastFilterFG 0.1
 FastFilterThre 30
 
-SlowFilterSL 40.0
-SlowFilterSG 40.0
-SlowFilterRange 6
-PreampTau 700
+SlowFilterSL 3.2
+SlowFilterSG 0.48
+SlowFilterRange 2
+PreampTau 5
 
 #f 2.4 0.5 2
 #b 3.0 3.5 3

@@ -1,0 +1,129 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+-----------------------------------------------------------------------------
+
+
+  CAEN digitizers house two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the motherboard FPGA for communication and trigger handling
+    - AMC FPGA is the mezzanine FPGA for ADC, DPP and channel memory management
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+===============================================================================
+Release 131.11 (13 October 2016)
+===============================================================================
+- added extended time stamp (46 bits). When bit 7 of the AlgCtrl register at 0x1n80 
+  is set, bits from 31 to 45 are saved in the event data in place of the baseline 
+  (also bit 17 of the CtrlReg at 0x8000 must be set).
+  Bit 22 of the format word (see event data format) is 1 when the extended time 
+  stamp is enabled.
+- Added MemFullFlag (bit 31 of baseline or extended time stamp word): this bit is 
+  set in the 1st event after the memory of one channel goes full 
+- reviewed the trigger inhibit logic:
+    1) fixed bug: the inhibit was not activated correctly during the integration gate
+    2) added the busy condition (= memory full); 
+    NOTE: when bit 5 of AlgCtrl register (0x1n80) is set, the trigger inhibit is 
+          disabled and the trgout signal from the channel to the mother board is 
+          generated for each input pulse (also within the gate or with memory full).
+          This may cause mismatch in the coincidence between channels.
+- fixed bug in the pile-up rejection: failure in the identification of the 
+  peak-valley-peak condition
+
+NOTE: starting from this version, the FPGA EP1C4 is no longer supported, not even
+      in the evaluation mode with half channels
+
+
+===============================================================================
+Release 131.9 (11 July 2014)
+===============================================================================
+- fixed bug in the internal to external clock switching (desktop and NIM models only)
+- fixed timing violations in the ADC data capture that caused "digital spikes"
+  in the wabevorms.
+- modified some internal communication protocols between mother board and mezzanine
+  cards (these modifications are transparent to the user).
+
+
+===============================================================================
+Release 4.1_131.8 (31 January 2014)
+===============================================================================
+
+- added PSD cut option: PSD threshold register at address 0x1n78; range 0 to 
+  1023; 
+  Bit 27@0x1n80 = enable cut of gamma, Bit 28@0x1n80 = enable cut of neutrons
+- modified some internal signals for compatibility with new firmware
+  of the mother-board
+
+
+===============================================================================
+Release 4.1_131.7 (06 August 2013)
+===============================================================================
+
+- added internal digital test pulse: B-A*exp(t/Tau), B=3000, A=2000, Tau=10ns
+  Bit[8] of DPPCtrl (0x1n80) to enable it
+  Bit[10:9] of DPPCtrl (0x1n80) to set the frequency:
+    "00" = 1KHz, "01" = 10KHz, "10" = 100KHz, "11" = 1MHz
+- reviewed timing constraint (possible fix to occasional spikes on the waveforms)
+- fixed bug: re-trigger of leading edge when running in oscilloscope mode
+
+
+===============================================================================
+Release 4.1_131.6 (29 March 2013)
+===============================================================================
+
+- Added option to enable/disable retriggering within gate
+- Added 32 ns protection time after overth. trailing edge to avoid
+  retriggering due to noise on 2nd edge of the pulses
+- Reviewed digital probes
+- Added option for Baseline Num Samples 
+- synchronized individual triggers in order to have exact number of 
+  events in coincidences between different channels
+- fixed bug in pile-up detection 
+- removed occasional spikes in the input signal (digital noise)
+- fixed bug in the Desktop version with 2 channels only (communication error
+  when reading the board without data)
+- Keep Baseline frozen during trigger hold-off
+- Waveform mode reproducing real signals (baseline, digital controls) also
+  for the pulses after the 1st one
+- preserve signal polarity in oscilloscope mode
+
+
+===============================================================================
+Release 4.0_131.5
+===============================================================================
+
+--------------------------------------------------
+New features:
+--------------------------------------------------
+- Baseline internally calculated with floating point (1/8 LSB)
+- Coincidence and Anti coincidence between channels
+- Optional charge offset (fixed pedestal)
+- Trigger Hold Off
+
+--------------------------------------------------
+Bug fixes:
+--------------------------------------------------
+- Jumps in time stamps
+
+--------------------------------------------------
+Possible incompabilities with previous version:
+--------------------------------------------------
+- Different options for Baseline Num Samples
+- Different digital virtual probes
+- Address of PurGap register moved from 0x1n74 to 0x1n7C
+  (0x1n74 is now ised for trg Hold Off)
+- Size of Gate Width Regs (Long=14 bit, Short=10bit)
+- Size of Coinc Window and trgoout width (both = 10 bit)
+- Trigger Mode (edge/peak) discontinued)
+- Baseline threshold (0x1n64) now used for fixed abs. baseline
+- Baseline timeout removed (0x1n68)
+      
+===============================================================================
+Release 3.4_131.3
+===============================================================================
+
+First version officially released on the web site (some previous versions 
+have been distributed to beta testers and they are not documented here)

@@ -321,3 +321,90 @@ time: 20170418153359
 time: 20170418153410
 time: 20170418162911
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518085824
+
+##########OpenSoftware##########
+time: 20170518090154
+time: 20170518090239
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518090243
+time: 20170518090334
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518090348
+time: 20170518090658
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518090715
+time: 20170518091127
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518091747
+=====WriteStart   20170518092029
+FileNumber: 0082
+=====WriteStop   20170518092037
+time: 20170518093056
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518093347
+time: 20170518093420
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518101824
+=====WriteStart   20170518102838
+FileNumber: 0083
+=====WriteStop   20170518104050
+=====WriteStart   20170518104051
+FileNumber: 0084
+=====WriteStop   20170518110417
+=====WriteStart   20170518110418
+FileNumber: 0085
+=====WriteStop   20170518110957
+=====WriteStart   20170518112141
+FileNumber: 0086
+=====WriteStop   20170518112528
+=====WriteStart   20170518113226
+FileNumber: 0087
+=====WriteStop   20170518113701
+=====WriteStart   20170518115538
+FileNumber: 0088
+=====WriteStop   20170518125438
+time: 20170518125730
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518141350
+time: 20170518141638
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518144208
+time: 20170518144402
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518160530
+=====WriteStart   20170518160813
+FileNumber: 0089
+=====WriteStop   20170518161649
+time: 20170518161847
+##########CloseSoftware##########

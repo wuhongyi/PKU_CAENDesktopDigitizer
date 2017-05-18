@@ -35,7 +35,7 @@ make
 make install
 cd ..
 
-rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.0 CAENDigitizer_2.7.6 CAENUSBdrvB-1.5.1
+rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.0 CAENDigitizer_2.7.9 CAENUSBdrvB-1.5.1
 
 echo "Install all software done !"
 

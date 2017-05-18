@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 二 4月 18 21:25:51 2017 (+0800)
+// Last-Updated: 四 5月 18 09:07:07 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 358
+//     Update #: 361
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1576,6 +1576,25 @@ int MainFrame::initDigitizer()
   
   switch(dig->boardInfo->Model)
     {
+    case CAEN_DGTZ_DT5720:
+      if(strcmp(dig->boardInfo->ModelName, "DT5720") == 0)
+	{
+	  if(MajorNumber == V1720_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5720_PSD");
+	  for (int i = 0; i < 4; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5720_STD");
+	  for (int i = 0; i < 4; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	}
+
+      if(strcmp(dig->boardInfo->ModelName, "DT5720B") == 0)
+	{
+	  if(MajorNumber == V1720_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"DT5720B_PSD");
+	  for (int i = 0; i < 4; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5720B_STD");
+	  for (int i = 0; i < 4; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	}      
+      break;
+
+      
     case CAEN_DGTZ_DT5724:
       if(strcmp(dig->boardInfo->ModelName, "DT5724") == 0)
 	{

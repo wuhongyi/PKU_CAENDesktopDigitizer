@@ -4,9 +4,9 @@
 ;; Author: Hongyi Wu(吴鸿毅)
 ;; Email: wuhongyi@qq.com 
 ;; Created: 六 11月 26 16:41:07 2016 (+0800)
-;; Last-Updated: 日 4月 16 21:49:33 2017 (+0800)
+;; Last-Updated: 四 5月 18 16:25:29 2017 (+0800)
 ;;           By: Hongyi Wu(吴鸿毅)
-;;     Update #: 15
+;;     Update #: 16
 ;; URL: http://wuhongyi.cn -->
 
 # README
@@ -24,6 +24,7 @@ Email: wuhongyi@qq.com
 
 - DT5730  固件：Standard、DPP-PSD (已完成)
 - DT5724A 固件：Standard（已完成）、DPP-PHA（待开发）
+- DT5720B 固件：Standard（已完成）、DPP-PSD（已完成）
 - DT5742B 固件：Standard（待开发）
 
 方便括展支持所有插件。

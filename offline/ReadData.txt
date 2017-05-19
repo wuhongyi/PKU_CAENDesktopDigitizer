@@ -4,17 +4,17 @@
 ## Author: Hongyi Wu(吴鸿毅)
 ## Email: wuhongyi@qq.com 
 ## Created: 五 4月 18 18:16:22 2014 (+0800)
-## Last-Updated: 四 5月 18 11:06:51 2017 (+0800)
+## Last-Updated: 五 5月 19 16:44:44 2017 (+0800)
 ##           By: Hongyi Wu(吴鸿毅)
-##     Update #: 362
+##     Update #: 369
 ## URL: http://wuhongyi.cn 
 
 
 ##要处理文件路径及文件名，可采用通配符*
 
-AddFileNumber 2
+AddFileNumber 1
 
-InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0083.root
+InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0089.root
 InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0084.root
 
 
@@ -35,17 +35,17 @@ PulsePolarity 0
 ADCMSPS 250
 
 CalculateVertexPoint 20
-CalculateBaselinePoint 300
-CalculateRiseTimeType 2
+CalculateBaselinePoint 100
+CalculateRiseTimeType 0
 
-FastFilterFL 0.1
-FastFilterFG 0.1
-FastFilterThre 30
+FastFilterFL 1.0
+FastFilterFG 0.27
+FastFilterThre 5
 
-SlowFilterSL 3.2
-SlowFilterSG 0.48
-SlowFilterRange 2
-PreampTau 5
+SlowFilterSL 5.04
+SlowFilterSG 3.04
+SlowFilterRange 3
+PreampTau 20
 
 #f 2.4 0.5 2
 #b 3.0 3.5 3

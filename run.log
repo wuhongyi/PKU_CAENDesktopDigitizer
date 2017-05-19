@@ -408,3 +408,39 @@ FileNumber: 0089
 =====WriteStop   20170518161649
 time: 20170518161847
 ##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518172105
+=====WriteStart   20170518172325
+FileNumber: 0090
+=====WriteStop   20170518172931
+=====WriteStart   20170518172933
+FileNumber: 0091
+=====WriteStop   20170518182335
+=====WriteStart   20170518182337
+FileNumber: 0092
+=====WriteStop   20170518183157
+=====WriteStart   20170518183159
+FileNumber: 0093
+=====WriteStop   20170518184123
+=====WriteStart   20170518184124
+FileNumber: 0094
+=====WriteStop   20170518185159
+=====WriteStart   20170518185201
+FileNumber: 0095
+=====WriteStop   20170518185936
+=====WriteStart   20170518185937
+FileNumber: 0096
+=====WriteStop   20170518190726
+=====WriteStart   20170518190727
+FileNumber: 0097
+=====WriteStop   20170518191729
+time: 20170518192028
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170518203405
+=====WriteStart   20170518203927
+FileNumber: 0098

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 二 1月 17 20:26:57 2017 (+0800)
+// Last-Updated: 五 5月 19 16:12:09 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 96
+//     Update #: 97
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -596,6 +596,21 @@ int offline::GetEnergy()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int offline::GetWaveSum(int begin,int end)
+{
+  int sumtemp = 0;
+  if(end >= Size) std::cout<<"GetWaveSum error. end >= wave size "<<std::endl;
+
+  for (int i = begin; i < end; ++i)
+    {
+      sumtemp += Data[i];
+    }
+  
+  return sumtemp;
+}
+
+
 
 
 

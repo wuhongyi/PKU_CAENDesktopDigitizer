@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 日 2月 12 20:51:48 2017 (+0800)
+// Last-Updated: 五 5月 19 16:12:08 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 35
+//     Update #: 36
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -80,7 +80,8 @@ public:
   int GetEnergy();// <0 error  >0 energy
   // 获取该事件波形高度
   int GetWaveHigh();
-
+  // 获取该波形begin-end之间点的积分
+  int GetWaveSum(int begin,int end);
   
 private:
   void DataPrimaryProcess();//将数据转为基线为0的正脉冲

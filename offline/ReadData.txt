@@ -4,9 +4,9 @@
 ## Author: Hongyi Wu(吴鸿毅)
 ## Email: wuhongyi@qq.com 
 ## Created: 五 4月 18 18:16:22 2014 (+0800)
-## Last-Updated: 五 5月 19 16:44:44 2017 (+0800)
+## Last-Updated: 三 6月  7 16:27:02 2017 (+0800)
 ##           By: Hongyi Wu(吴鸿毅)
-##     Update #: 369
+##     Update #: 397
 ## URL: http://wuhongyi.cn 
 
 
@@ -14,8 +14,8 @@
 
 AddFileNumber 1
 
-InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0089.root
-InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0084.root
+InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer/data/data_R0106.root
+InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer/data/data_R0084.root
 
 
 
@@ -24,7 +24,7 @@ InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/data_R0084.
 OutputFileName  test.root
 
 
-SelectChannel 3
+SelectChannel 7
 VotoChannel -1
 VotoTime   100
 
@@ -32,20 +32,20 @@ VotoTime   100
 PulsePolarity 0
 
 # 采样率 100/250/500
-ADCMSPS 250
+ADCMSPS 500
 
 CalculateVertexPoint 20
-CalculateBaselinePoint 100
+CalculateBaselinePoint 800
 CalculateRiseTimeType 0
 
-FastFilterFL 1.0
-FastFilterFG 0.27
-FastFilterThre 5
+FastFilterFL 0.02
+FastFilterFG 0.01
+FastFilterThre 20
 
-SlowFilterSL 5.04
-SlowFilterSG 3.04
-SlowFilterRange 3
-PreampTau 20
+SlowFilterSL 0.1
+SlowFilterSG 0.05
+SlowFilterRange 1
+PreampTau 0.06
 
 #f 2.4 0.5 2
 #b 3.0 3.5 3

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 五 5月 19 16:12:08 2017 (+0800)
+// Last-Updated: 三 6月  7 14:04:12 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 36
+//     Update #: 37
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
@@ -78,6 +78,7 @@ public:
   double GetRiseTime();
   // 获取该事件的能量
   int GetEnergy();// <0 error  >0 energy
+  int GetQEnergy(int preTrigger,int sumPoint);
   // 获取该事件波形高度
   int GetWaveHigh();
   // 获取该波形begin-end之间点的积分

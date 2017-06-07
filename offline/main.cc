@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 四 5月 18 10:59:59 2017 (+0800)
+// Last-Updated: 三 6月  7 16:26:12 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 204
+//     Update #: 210
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
 
-  TH1I *energy = new TH1I("energy","",4096,0,16384);//2048,0,32768
+  TH1I *energy = new TH1I("energy","",4096,0,4096);//2048,0,32768
   energy->GetXaxis()->SetTitle("Energy[ch]");
   TH1I *time = new TH1I("time","",2000,0,2000);
   time->GetXaxis()->SetTitle("RiseTime[ns]");
@@ -204,6 +204,10 @@ int main(int argc, char *argv[])
   TH2I *deltaEE = new TH2I("DeltaE-E","",2048,0,32768,2048,0,32768);//2048,0,32768,2048,0,32728
   deltaEE->GetXaxis()->SetTitle("E[ch]");
   deltaEE->GetYaxis()->SetTitle("DeltaE[ch]");
+
+  TH1I *energyQ = new TH1I("energyQ","",16384,0,65536);//2048,0,32768
+  energyQ->GetXaxis()->SetTitle("Energy[ch]");
+
   
   TGraph *filter = new TGraph();
 
@@ -255,8 +259,8 @@ int main(int argc, char *argv[])
 	    }
 	  if(voteflag)
 	    {
-	      tempenergy = off->GetEnergy();
-	      // tempenergy = off->GetWaveHigh();
+	      // tempenergy = off->GetEnergy();
+	      tempenergy = off->GetWaveHigh();
 	      off->SetEventData(size, data);
 	      tempenergyvote = off->GetEnergy();
 	      // tempenergyvote = off->GetWaveHigh();
@@ -493,7 +497,24 @@ int main(int argc, char *argv[])
 	  c1->Update();
 	}
 
+      if(argv[1][0] == 'E' || argv[1][0] == 'e')
+	{
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
 
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      int tempenergy = off->GetQEnergy(20,120);
+	      if(tempenergy > 0) energyQ->Fill(tempenergy);
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  energyQ->Draw();
+	  c1->Update();
+	}
       
       gBenchmark->Show("tree");//计时结束并输出时间
     }

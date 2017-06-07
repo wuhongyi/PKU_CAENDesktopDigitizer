@@ -444,3 +444,45 @@ time: 20170518192028
 time: 20170518203405
 =====WriteStart   20170518203927
 FileNumber: 0098
+=====WriteStop   20170520115305
+=====WriteStart   20170520120020
+FileNumber: 0099
+=====WriteStop   20170520120409
+=====WriteStart   20170520120431
+FileNumber: 0100
+=====WriteStop   20170520121547
+time: 20170520121554
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170606152038
+=====WriteStart   20170606153411
+FileNumber: 0101
+=====WriteStop   20170606153446
+=====WriteStart   20170606154152
+FileNumber: 0102
+=====WriteStop   20170606154443
+=====WriteStart   20170606154459
+FileNumber: 0103
+=====WriteStop   20170606154540
+=====WriteStart   20170606154711
+FileNumber: 0104
+=====WriteStop   20170606160150
+=====WriteStart   20170606160653
+FileNumber: 0105
+=====WriteStop   20170607153858
+time: 20170607154106
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170607154355
+=====WriteStart   20170607154519
+FileNumber: 0106
+=====WriteStop   20170607154606
+=====WriteStart   20170607155340
+FileNumber: 0107
+=====WriteStop   20170607155426
+time: 20170607161455
+##########CloseSoftware##########

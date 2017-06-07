@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 五 5月 19 16:12:09 2017 (+0800)
+// Last-Updated: 三 6月  7 14:31:48 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 97
+//     Update #: 101
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -504,6 +504,54 @@ double offline::GetRiseTime()
   // std::cout<<"=90 :"<<spline3->Eval(percent90)<<std::endl;
   // return (spline3->Eval(percent90)-spline3->Eval(percent10))*(1000.0/Module_ADCMSPS);
   return -1;
+}
+
+int offline::GetQEnergy(int preTrigger,int sumPoint)
+{
+  if(Module_ADCMSPS == 100)
+    Threshold = (double)FastThresh / (double)FL;
+  else if(Module_ADCMSPS == 250)
+    Threshold = (double)FastThresh / ((double)FL * 2.0);
+  else if(Module_ADCMSPS == 500)
+    Threshold = (double)FastThresh / ((double)FL * 5.0);
+	
+  FastLen = FL * (unsigned int)std::pow(2.0, (double)FastFilterRange);
+  FastGap = FG * (unsigned int)std::pow(2.0, (double)FastFilterRange);
+
+  offset = 2*FastLen + FastGap - 1;
+  for(x = offset; x < Size; x++)
+    {
+      fsum0 = 0;
+      for(y = (x-offset); y < (x-offset+FastLen); y++)
+	{
+	  fsum0 += Data[y];
+	}
+      fsum1 = 0;
+      for(y = (x-offset+FastLen+FastGap); y < (x-offset+2*FastLen+FastGap); y++)
+	{
+	  fsum1 += Data[y];
+	}
+      fastfilter = ((double)fsum1 - (double)fsum0)/(double)FastLen;
+
+      if(fastfilter >= Threshold) break;
+      if(x == Size-1)
+	{
+	  // std::cout<<"Under Threshold ..."<<std::endl;
+	  return -1;
+	}
+    }
+  
+  int startpoint = x-preTrigger;
+  if((startpoint < 0) || (startpoint+sumPoint >= Size))
+    {
+      return -1;
+    }
+  int tempsum = 0;
+  for (int i = startpoint; i < sumPoint+startpoint; ++i)
+    {
+      tempsum += Data[i];
+    }
+  return tempsum;
 }
 
 int offline::GetEnergy()

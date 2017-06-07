@@ -2,3 +2,4 @@ build/
 /Test/
 /data/*.bin
 /data/*.root
+/offline/*.root

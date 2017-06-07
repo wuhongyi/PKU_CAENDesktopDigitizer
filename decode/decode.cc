@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:25:21 2016 (+0800)
-// Last-Updated: 五 4月 14 22:39:32 2017 (+0800)
+// Last-Updated: 二 6月  6 15:35:26 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 12
+//     Update #: 13
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
       return 0;
     }
 
-  TString rawfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/";// 必须以 '/' 结尾
-  TString rootfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer20170227/data/";// 必须以 '/' 结尾
+  TString rawfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer/data/";// 必须以 '/' 结尾
+  TString rootfilepath = "/home/wuhongyi/PKU_CAENDesktopDigitizer/data/";// 必须以 '/' 结尾
 
   TString filename(argv[1]);
   TString RunNumber(argv[2]);

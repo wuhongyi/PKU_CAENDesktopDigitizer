@@ -4,9 +4,9 @@
 ## Author: Hongyi Wu(吴鸿毅)
 ## Email: wuhongyi@qq.com 
 ## Created: 五 4月 18 18:16:22 2014 (+0800)
-## Last-Updated: 三 6月  7 16:27:02 2017 (+0800)
+## Last-Updated: 日 6月 11 19:47:09 2017 (+0800)
 ##           By: Hongyi Wu(吴鸿毅)
-##     Update #: 397
+##     Update #: 448
 ## URL: http://wuhongyi.cn 
 
 
@@ -14,7 +14,7 @@
 
 AddFileNumber 1
 
-InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer/data/data_R0106.root
+InputFileName_0 /home/wuhongyi/PKU_CAENDesktopDigitizer/data/data_R0140*.root
 InputFileName_1 /home/wuhongyi/PKU_CAENDesktopDigitizer/data/data_R0084.root
 
 
@@ -35,25 +35,19 @@ PulsePolarity 0
 ADCMSPS 500
 
 CalculateVertexPoint 20
-CalculateBaselinePoint 800
+CalculateBaselinePoint 200
 CalculateRiseTimeType 0
 
 FastFilterFL 0.02
 FastFilterFG 0.01
-FastFilterThre 20
+FastFilterThre 50
 
-SlowFilterSL 0.1
-SlowFilterSG 0.05
+SlowFilterSL 1.0
+SlowFilterSG 0.24
 SlowFilterRange 1
 PreampTau 0.06
 
-#f 2.4 0.5 2
-#b 3.0 3.5 3
-
-#30b 25.0 15.0 5
-
-#20f 2.4 1.4 2
-#20b 20.0 50.0 6
-# 60.0 50.0 7
+#s 1.0 0.24 1 0.06
+#s 1.0 0.3 2 0.06
 
 ######################################################################

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 三 6月  7 16:26:12 2017 (+0800)
+// Last-Updated: 日 6月 11 19:40:18 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 210
+//     Update #: 220
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
   // c1->SetLogx();//SetLogy(); SetLogz();
   // c1->SetName("");
 
-  TH1I *energy = new TH1I("energy","",4096,0,4096);//2048,0,32768
+  TH1I *energy = new TH1I("energy","",65536,0,65536);//2048,0,32768
   energy->GetXaxis()->SetTitle("Energy[ch]");
   TH1I *time = new TH1I("time","",2000,0,2000);
   time->GetXaxis()->SetTitle("RiseTime[ns]");
@@ -205,12 +205,15 @@ int main(int argc, char *argv[])
   deltaEE->GetXaxis()->SetTitle("E[ch]");
   deltaEE->GetYaxis()->SetTitle("DeltaE[ch]");
 
-  TH1I *energyQ = new TH1I("energyQ","",16384,0,65536);//2048,0,32768
+  TH1I *energyQ = new TH1I("energyQ","",163840,0,655360);//2048,0,32768
   energyQ->GetXaxis()->SetTitle("Energy[ch]");
+
+  TH2D *energypsd = new TH2D("energypsd","",6000,0,6000,1000,0,1);
 
   
   TGraph *filter = new TGraph();
 
+  
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   if(argc == 1)
@@ -515,6 +518,34 @@ int main(int argc, char *argv[])
 	  energyQ->Draw();
 	  c1->Update();
 	}
+
+      if(argv[1][0] == 'P' || argv[1][0] == 'p')
+	{
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      int tempshort = off->GetQEnergy(20,70);
+	      int tempenergy = off->GetQEnergy(20,120);
+	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
+
+
+	      // 0.0283828  3.16749
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  energypsd->GetXaxis()->SetTitle("keV");
+	  energypsd->GetYaxis()->SetTitle("short/long");
+	  energypsd->Draw("colz");
+	  c1->Update();
+	}
+
+
+
       
       gBenchmark->Show("tree");//计时结束并输出时间
     }

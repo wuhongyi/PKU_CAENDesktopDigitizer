@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 六 4月 15 15:39:35 2017 (+0800)
+// Last-Updated: 二 6月 13 21:17:30 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 29
+//     Update #: 31
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -25,6 +25,9 @@
 
 r2root::r2root(TString rawfilepath,TString rootfilepath,TString fn,int runnumber,int argc,int start,int stop)
 {
+  headerlength = 16;
+
+  
   benchmark = new TBenchmark;
   nevt = 0;
   flag = -1;
@@ -71,7 +74,10 @@ void r2root::Process()
       return;
     }
 
-  size_t n = read(fd,&header,16);
+  filesize = lseek(fd,0,SEEK_END);
+  lseek(fd, 0, SEEK_SET);
+  
+  size_t n = read(fd,&header,headerlength);
   if(n <= 0) return;
   for (int i = 0; i < 16; ++i)
     {
@@ -144,6 +150,10 @@ void r2root::Process()
       t->Branch("nevt",&nevt,"nevt/I");       
       break;
     }
+
+  GetEventLength();
+  
+
   
   while(ReadEvent())
     {
@@ -224,6 +234,32 @@ bool r2root::ReadEvent()
     }
   
   return true;
+}
+
+void r2root::GetEventLength()
+{
+  off_t n = lseek(fd, 0, SEEK_CUR);
+  eventlength = 0;
+  switch(flag)
+    {
+    case 0:
+      eventlength = read(fd,&HeaderSTD,4*HEADERSTD);
+      size = HeaderSTD[4];
+      break;
+
+    case 1:
+      eventlength = read(fd,&HeaderPHA,4*HEADERPHA);
+      size = HeaderPHA[4];
+      break;
+
+    case 2:
+      eventlength = read(fd,&HeaderPSD,4*HEADERPSD);
+      size = HeaderPSD[5];
+      break;
+    }
+
+  eventlength += size*2;
+  lseek(fd, n, SEEK_SET);
 }
 
 

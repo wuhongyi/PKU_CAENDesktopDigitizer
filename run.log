@@ -594,3 +594,21 @@ FileNumber: 0139
 =====WriteStop   20170611165239
 =====WriteStart   20170611165735
 FileNumber: 0140
+=====WriteStop   20170612090726
+time: 20170612090734
+##########CloseSoftware##########
+
+
+##########OpenSoftware##########
+time: 20170612092748
+=====WriteStart   20170612092850
+FileNumber: 0141
+=====WriteStop   20170612094423
+=====WriteStart   20170612094450
+FileNumber: 0142
+=====WriteStop   20170612094831
+=====WriteStart   20170612102150
+FileNumber: 0143
+=====WriteStop   20170613181712
+=====WriteStart   20170613181714
+FileNumber: 0144

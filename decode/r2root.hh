@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:33:48 2016 (+0800)
-// Last-Updated: 六 4月 15 15:39:35 2017 (+0800)
+// Last-Updated: 二 6月 13 21:17:30 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 16
+//     Update #: 18
 // URL: http://wuhongyi.cn 
 
 #ifndef _R2ROOT_H_
@@ -39,12 +39,15 @@ public:
 private:
   bool IsFileExists(const char *name);//判断文件是否存在
   bool ReadEvent();
-
+  void GetEventLength();
   
 private:
+  off_t filesize;
   int fd; // File descripter
   int flag;// 0-STD 1-PHA 2-PSD 3-x742
   char header[16];
+  int headerlength;//header length
+  int eventlength;
   unsigned int HeaderSTD[HEADERSTD];// 0-ch 1-TimeTag 2-EventCounter 3-Pattern 4-size
   unsigned int HeaderPSD[HEADERPSD];// 0-ch 1-TimeTag 2-chargeshort 3-chargelong 4-baseline 5-size 6-Format 7-Format2 8-Extras 9-Pur
   unsigned int HeaderPHA[HEADERPHA];// 0-ch 1-TimeTagHigh 2-TimeTagLow 3-Energy 4-size 5-Format 6-Extras 7-Extras2

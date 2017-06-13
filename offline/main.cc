@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 日 6月 11 19:40:18 2017 (+0800)
+// Last-Updated: 二 6月 13 15:11:03 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 220
+//     Update #: 235
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -208,8 +208,8 @@ int main(int argc, char *argv[])
   TH1I *energyQ = new TH1I("energyQ","",163840,0,655360);//2048,0,32768
   energyQ->GetXaxis()->SetTitle("Energy[ch]");
 
-  TH2D *energypsd = new TH2D("energypsd","",6000,0,6000,1000,0,1);
-
+  // TH2D *energypsd = new TH2D("energypsd","",5000,0,10000,1000,0,1);
+  TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
   
   TGraph *filter = new TGraph();
 
@@ -528,13 +528,18 @@ int main(int argc, char *argv[])
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
 
-	      int tempshort = off->GetQEnergy(20,70);
-	      int tempenergy = off->GetQEnergy(20,120);
-	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
+	      // int tempshort = off->GetQEnergy(0,40);
+	      // int tempenergy = off->GetQEnergy(20,120);
+	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
+	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0426472-3.81777,double(tempshort)/double(tempenergy));
 
+	      int tempshort = off->GetQEnergy(0,40);
+	      int tempenergy = off->GetQEnergy(-40,80);
+	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy,tempshort);
 
-	      // 0.0283828  3.16749
 	      
+	      // 0.0283828  3.16749
+	      // 0.0426472  -3.81777
 	    }//循环处理到这里结束
 
 	  c1->cd();

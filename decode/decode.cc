@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:25:21 2016 (+0800)
-// Last-Updated: 二 6月  6 15:35:26 2017 (+0800)
+// Last-Updated: 三 6月 14 21:14:19 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 13
+//     Update #: 14
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -16,6 +16,8 @@
 #include <cstdio>
 #include <cstdlib>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+// 应该改成shell脚本来同时转一个文件，加快速度！！！
 
 int main(int argc, char *argv[])
 {

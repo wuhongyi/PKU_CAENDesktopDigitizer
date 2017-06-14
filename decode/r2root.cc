@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 二 6月 13 21:17:30 2017 (+0800)
+// Last-Updated: 三 6月 14 21:00:28 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 31
+//     Update #: 34
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -75,6 +75,7 @@ void r2root::Process()
     }
 
   filesize = lseek(fd,0,SEEK_END);
+  // std::cout<<"FileSize:"<<filesize<<std::endl;
   lseek(fd, 0, SEEK_SET);
   
   size_t n = read(fd,&header,headerlength);
@@ -152,26 +153,31 @@ void r2root::Process()
     }
 
   GetEventLength();
-  
 
-  
-  while(ReadEvent())
+  if(ARGC == 5)
     {
-      if(ARGC == 5)
+      nevt = StartEvent;
+      off_t n = lseek(fd, 0, SEEK_CUR);
+      n += StartEvent*eventlength;
+      lseek(fd, n, SEEK_SET);
+
+      while(ReadEvent())
 	{
 	  if(nevt >= StartEvent && nevt < StopEvent) t->Fill();
 	  if(nevt == StopEvent-1) break;
+
+	  nevt++;
+	  if(nevt%10000 == 0) std::cout<<"nevt: "<<nevt<<std::endl;
 	}
-      else
-	{
-	  t->Fill();
-	}
-      
+    }
+  else
+    {
+      while(ReadEvent())
+	t->Fill();
+
       nevt++;
       if(nevt%10000 == 0) std::cout<<"nevt: "<<nevt<<std::endl;
     }
-
-
 
   
   file->cd();
@@ -259,6 +265,8 @@ void r2root::GetEventLength()
     }
 
   eventlength += size*2;
+  // std::cout<<"EventLength:"<<eventlength<<std::endl;
+  totaleventnumber = filesize/eventlength;
   lseek(fd, n, SEEK_SET);
 }
 

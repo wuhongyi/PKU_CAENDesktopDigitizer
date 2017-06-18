@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:47 2016 (+0800)
-// Last-Updated: 三 6月  7 14:31:48 2017 (+0800)
+// Last-Updated: 日 6月 18 22:09:52 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 101
+//     Update #: 102
 // URL: http://wuhongyi.cn 
 
 #include "offline.hh"
@@ -505,6 +505,34 @@ double offline::GetRiseTime()
   // return (spline3->Eval(percent90)-spline3->Eval(percent10))*(1000.0/Module_ADCMSPS);
   return -1;
 }
+
+int offline::GetQEnergyTriggerPeak(int prePeak,int sumPoint)
+{
+  int tempintdata = INT_MIN;
+  int tempflag = -1;
+ 
+  for (int i = 0; i < Size; ++i)
+    {
+      if(Data[i] > tempintdata)
+	{
+	  tempflag = i;
+	  tempintdata = Data[i];
+	}
+    }
+
+  int startpoint = tempflag-prePeak;
+  if((startpoint < 0) || (startpoint+sumPoint >= Size))
+    {
+      return -1;
+    }
+  int tempsum = 0;
+  for (int i = startpoint; i < sumPoint+startpoint; ++i)
+    {
+      tempsum += Data[i];
+    }
+  return tempsum;
+}
+
 
 int offline::GetQEnergy(int preTrigger,int sumPoint)
 {

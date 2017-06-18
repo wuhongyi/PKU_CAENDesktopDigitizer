@@ -4,15 +4,16 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 二 6月 13 15:11:03 2017 (+0800)
+// Last-Updated: 日 6月 18 22:53:56 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 235
+//     Update #: 269
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
 #include "offline.hh"
 
 #include <iostream>
+#include <climits>
 
 #include "RVersion.h"//版本判断
 #include "TApplication.h"
@@ -208,11 +209,14 @@ int main(int argc, char *argv[])
   TH1I *energyQ = new TH1I("energyQ","",163840,0,655360);//2048,0,32768
   energyQ->GetXaxis()->SetTitle("Energy[ch]");
 
-  // TH2D *energypsd = new TH2D("energypsd","",5000,0,10000,1000,0,1);
-  TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
+  TH2D *energypsd = new TH2D("energypsd","",5000,0,10000,1000,0,1);
+  // TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
   
   TGraph *filter = new TGraph();
-
+  TMultiGraph *gggabc = new TMultiGraph();gggabc->SetName("gggabc");
+  TGraph *ggga = new TGraph();ggga->SetName("ggga");
+  TGraph *gggb = new TGraph();gggb->SetName("gggb");
+  TGraph *gggc = new TGraph();gggc->SetName("gggc");
   
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -528,14 +532,16 @@ int main(int argc, char *argv[])
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
 
-	      // int tempshort = off->GetQEnergy(0,40);
+	      // int tempshort = off->GetQEnergy(0,30);
 	      // int tempenergy = off->GetQEnergy(20,120);
+	      int tempshort = off->GetQEnergyTriggerPeak(10,30);
+	      int tempenergy = off->GetQEnergyTriggerPeak(30,130);
 	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
-	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0426472-3.81777,double(tempshort)/double(tempenergy));
+	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0426472-3.81777,double(tempshort)/double(tempenergy));
 
-	      int tempshort = off->GetQEnergy(0,40);
-	      int tempenergy = off->GetQEnergy(-40,80);
-	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy,tempshort);
+	      // int tempshort = off->GetQEnergy(0,40);
+	      // int tempenergy = off->GetQEnergy(-40,80);
+	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy,tempshort);
 
 	      
 	      // 0.0283828  3.16749
@@ -549,8 +555,176 @@ int main(int argc, char *argv[])
 	  c1->Update();
 	}
 
+      if(argv[1][0] == 'B' || argv[1][0] == 'b')
+	{
+	  int aaa = 0;
+	  int bbb = 0;
+	  double dataa[10240] = {0};
+	  double datab[10240] = {0};
+	  double tempdata[10240];
+	  int DataData[10240];
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+	      if(aaa>=2000 && bbb>=2000) continue;
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      int tempshort = off->GetQEnergy(0,30);
+	      int tempenergy = off->GetQEnergy(20,120);
+
+	      // alpha
+	      if(aaa < 2000 && tempenergy*0.0426472-3.81777 > 3000 && tempenergy*0.0426472-3.81777 < 4000 && double(tempshort)/double(tempenergy) > 0.62 && double(tempshort)/double(tempenergy) < 0.64)
+		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  off->GetWaveData(DataData);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdata[i] = 0;
+		      if(DataData[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = DataData[i];
+			}
+		    }
+		  // std::cout<<tempint<<" ";
+		  if(tempint < 150)
+		    {
+		      for (int i = (150-tempint); i < size; ++i)
+			{
+			  tempdata[i] = double(DataData[i-(150-tempint)]);
+			}
+		    }
+		  else
+		    {
+		      for (int i = 0; i < size-(tempint-150); ++i)
+			{
+			  tempdata[i] = double(DataData[i+(tempint-150)]);
+			}
+		    }
+
+		  double tempdouble = 0;
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdouble += tempdata[i];
+		    }
+
+		  for (int i = 0; i < size; ++i)
+		    {
+		      dataa[i] += tempdata[i]/tempdouble;
+		    }
+		  
+		  aaa++;
+		}
+
+	      // gamma
+	      if(bbb < 2000 && tempenergy*0.0426472-3.81777 > 6000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.54 && double(tempshort)/double(tempenergy) < .58)
+		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  off->GetWaveData(DataData);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdata[i] = 0;
+		      if(DataData[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = DataData[i];
+			}
+		    }
+		  if(tempint < 150)
+		    {
+		      for (int i = (150-tempint); i < size; ++i)
+			{
+			  tempdata[i] = double(DataData[i-(150-tempint)]);
+			}
+		    }
+		  else
+		    {
+		      for (int i = 0; i < size-(tempint-150); ++i)
+			{
+			  tempdata[i] = double(DataData[i+(tempint-150)]);
+			}
+		    }
+
+		  double tempdouble = 0;
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdouble += tempdata[i];
+		    }
+
+		  for (int i = 0; i < size; ++i)
+		    {
+		      datab[i] += tempdata[i]/tempdouble;
+		    }
+
+		  bbb++;
+		}
+
+	    }//循环处理到这里结束
 
 
+	  for (int i = 0; i < size; ++i)
+	    {
+	      ggga->SetPoint(i,i,dataa[i]/2000.0);
+	      gggb->SetPoint(i,i,datab[i]/2000.0);
+	      gggc->SetPoint(i,i,(dataa[i]-datab[i])/2000.0);
+	    }
+	  ggga->SetLineColor(1);
+	  gggb->SetLineColor(2);
+	  gggc->SetLineColor(3);
+	  gggabc->Add(ggga);
+	  gggabc->Add(gggb);
+	  gggabc->Add(gggc);
+	  c1->cd();
+	  gggabc->Draw("AC");
+	  // gggb->Draw("AC");
+	  
+	  c1->Update();
+	}
+
+
+      if(argv[1][0] == 'D' || argv[1][0] == 'd')
+	{
+	  int DataData[10240];
+	  int writenumber = 0;
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      
+	      int tempshort = off->GetQEnergyTriggerPeak(10,30);
+	      int tempenergy = off->GetQEnergyTriggerPeak(30,130);
+
+	      if(tempenergy*0.0426472-3.81777 > 7000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.69 && double(tempshort)/double(tempenergy) < 0.70) 
+	      {
+		off->GetWaveData(DataData);
+		writenumber++;
+
+		if(writenumber == 130)
+		  {
+		    for (int i = 0; i < size; ++i)
+		      {
+			filter->SetPoint(CountPoint++,i,DataData[i]);
+		      }
+		    break;
+		  }
+	      }
+
+	       
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  filter->Draw("AP*");
+	  c1->Update();
+	}
+
+      
       
       gBenchmark->Show("tree");//计时结束并输出时间
     }

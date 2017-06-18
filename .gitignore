@@ -3,3 +3,4 @@ build/
 /data/*.bin
 /data/*.root
 /offline/*.root
+/offline/*.png

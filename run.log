@@ -612,3 +612,29 @@ FileNumber: 0143
 =====WriteStop   20170613181712
 =====WriteStart   20170613181714
 FileNumber: 0144
+=====WriteStop   20170615114755
+=====WriteStart   20170615115310
+FileNumber: 0145
+=====WriteStop   20170615115606
+=====WriteStart   20170615115822
+FileNumber: 0146
+=====WriteStop   20170615120040
+=====WriteStart   20170615120138
+FileNumber: 0147
+=====WriteStop   20170615120650
+=====WriteStart   20170615120827
+FileNumber: 0148
+=====WriteStop   20170615121236
+=====WriteStart   20170615121414
+FileNumber: 0149
+=====WriteStop   20170616114459
+=====WriteStart   20170616114546
+FileNumber: 0150
+=====WriteStop   20170618183506
+=====WriteStart   20170618183507
+FileNumber: 0151
+
+##########OpenSoftware##########
+time: 20170618191725
+=====WriteStart   20170618192459
+FileNumber: 0151

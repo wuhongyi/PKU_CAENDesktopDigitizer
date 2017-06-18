@@ -4,15 +4,16 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:25:34 2016 (+0800)
-// Last-Updated: 三 6月  7 14:04:12 2017 (+0800)
+// Last-Updated: 日 6月 18 22:09:52 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 37
+//     Update #: 38
 // URL: http://wuhongyi.cn 
 
 #ifndef _OFFLINE_H_
 #define _OFFLINE_H_
 
 #include <cmath>
+#include <climits>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #define EVENTLENGTH 65535
@@ -78,7 +79,8 @@ public:
   double GetRiseTime();
   // 获取该事件的能量
   int GetEnergy();// <0 error  >0 energy
-  int GetQEnergy(int preTrigger,int sumPoint);
+  int GetQEnergy(int preTrigger,int sumPoint);//trigger from xia fast filter
+  int GetQEnergyTriggerPeak(int prePeak,int sumPoint);
   // 获取该事件波形高度
   int GetWaveHigh();
   // 获取该波形begin-end之间点的积分

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 日 6月 18 22:53:56 2017 (+0800)
+// Last-Updated: 二 6月 20 11:49:29 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 269
+//     Update #: 270
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -535,7 +535,7 @@ int main(int argc, char *argv[])
 	      // int tempshort = off->GetQEnergy(0,30);
 	      // int tempenergy = off->GetQEnergy(20,120);
 	      int tempshort = off->GetQEnergyTriggerPeak(10,30);
-	      int tempenergy = off->GetQEnergyTriggerPeak(30,130);
+	      int tempenergy = off->GetQEnergyTriggerPeak(30,180);
 	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
 	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0426472-3.81777,double(tempshort)/double(tempenergy));
 

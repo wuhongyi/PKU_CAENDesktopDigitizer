@@ -4,13 +4,14 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 二 6月 20 11:49:29 2017 (+0800)
+// Last-Updated: 四 6月 22 19:00:05 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 270
+//     Update #: 312
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
 #include "offline.hh"
+#include "pkuFFTW.hh"
 
 #include <iostream>
 #include <climits>
@@ -211,6 +212,8 @@ int main(int argc, char *argv[])
 
   TH2D *energypsd = new TH2D("energypsd","",5000,0,10000,1000,0,1);
   // TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
+  TH2D *fftpsd = new TH2D("fftpsd","",5000,0,10000,3000,0,300);
+
   
   TGraph *filter = new TGraph();
   TMultiGraph *gggabc = new TMultiGraph();gggabc->SetName("gggabc");
@@ -535,7 +538,7 @@ int main(int argc, char *argv[])
 	      // int tempshort = off->GetQEnergy(0,30);
 	      // int tempenergy = off->GetQEnergy(20,120);
 	      int tempshort = off->GetQEnergyTriggerPeak(10,30);
-	      int tempenergy = off->GetQEnergyTriggerPeak(30,180);
+	      int tempenergy = off->GetQEnergyTriggerPeak(30,1000);
 	      // if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0283828+3.16749,double(tempshort)/double(tempenergy));
 	      if(tempshort> 0 && tempenergy > 0) energypsd->Fill(tempenergy*0.0426472-3.81777,double(tempshort)/double(tempenergy));
 
@@ -714,8 +717,6 @@ int main(int argc, char *argv[])
 		    break;
 		  }
 	      }
-
-	       
 	      
 	    }//循环处理到这里结束
 
@@ -724,12 +725,342 @@ int main(int argc, char *argv[])
 	  c1->Update();
 	}
 
+
+
+
       
+      if(argv[1][0] == 'v' || argv[1][0] == 'V')
+	{
+	  int aaa = 0;
+	  int bbb = 0;
+	  double dataa[10240] = {0};
+	  double datab[10240] = {0};
+	  double tempdata[10240];
+	  int DataData[10240];
+	  int apoint = 300;
+	  int aevent = 500;
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+	      if(aaa>=aevent && bbb>=aevent) continue;
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      int tempshort = off->GetQEnergy(0,30);
+	      int tempenergy = off->GetQEnergy(20,120);
+
+	      // alpha
+	      if(aaa < aevent && tempenergy*0.0426472-3.81777 > 3000 && tempenergy*0.0426472-3.81777 < 4000 && double(tempshort)/double(tempenergy) > 0.62 && double(tempshort)/double(tempenergy) < 0.64)
+		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  off->GetWaveData(DataData);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdata[i] = 0;
+		      if(DataData[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = DataData[i];
+			}
+		    }
+		  // std::cout<<tempint<<" ";
+		  if(tempint < apoint)
+		    {
+		      for (int i = (apoint-tempint); i < size; ++i)
+			{
+			  tempdata[i] = double(DataData[i-(apoint-tempint)]);
+			}
+		    }
+		  else
+		    {
+		      for (int i = 0; i < size-(tempint-apoint); ++i)
+			{
+			  tempdata[i] = double(DataData[i+(tempint-apoint)]);
+			}
+		    }
+
+		  for (int i = 0; i < size; ++i)
+		    {
+		      dataa[i] += tempdata[i]/tempflag;
+		    }
+		  
+		  aaa++;
+		}
+
+	      // gamma
+	      if(bbb < aevent && tempenergy*0.0426472-3.81777 > 6000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.54 && double(tempshort)/double(tempenergy) < .58)
+		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  off->GetWaveData(DataData);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      tempdata[i] = 0;
+		      if(DataData[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = DataData[i];
+			}
+		    }
+		  if(tempint < apoint)
+		    {
+		      for (int i = (apoint-tempint); i < size; ++i)
+			{
+			  tempdata[i] = double(DataData[i-(apoint-tempint)]);
+			}
+		    }
+		  else
+		    {
+		      for (int i = 0; i < size-(tempint-apoint); ++i)
+			{
+			  tempdata[i] = double(DataData[i+(tempint-apoint)]);
+			}
+		    }
+
+		  for (int i = 0; i < size; ++i)
+		    {
+		      datab[i] += tempdata[i]/tempflag;
+		    }
+
+		  bbb++;
+		}
+
+	    }//循环处理到这里结束
+
+
+	  for (int i = 0; i < size; ++i)
+	    {
+	      ggga->SetPoint(i,i,dataa[i]/aevent);
+	      gggb->SetPoint(i,i,datab[i]/aevent);
+	      gggc->SetPoint(i,i,(dataa[i]-datab[i])/aevent);
+	    }
+	  ggga->SetLineColor(1);
+	  gggb->SetLineColor(2);
+	  gggc->SetLineColor(3);
+	  gggabc->Add(ggga);
+	  gggabc->Add(gggb);
+	  // gggabc->Add(gggc);
+	  c1->cd();
+	  gggabc->Draw("AC");
+	  // gggb->Draw("AC");
+	  
+	  c1->Update();
+	}
+
+
+
+
+      if(argv[1][0] == 'W' || argv[1][0] == 'w')
+	{
+	  int aaa = 0;
+	  int bbb = 0;
+	  double dataa[10240] = {0};
+	  double datab[10240] = {0};
+	  int aevent = 51;
+	  
+	  fftw_complex *in;
+	  double *out;
+	  fftw1d *fft1d;
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+	      if(entry == 0)
+		{
+		  in = Malloc_fftw_complex(int(size));
+		  out = Malloc_fftw_real(int(size));
+		  fft1d = new fftw1d(int(size),-1);
+		}
+
+	      if(aaa>=aevent && bbb>=aevent) break;
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      
+	      // int tempshort = off->GetQEnergyTriggerPeak(10,30);
+	      // int tempenergy = off->GetQEnergyTriggerPeak(30,130);
+	      int tempshort = off->GetQEnergy(0,30);
+	      int tempenergy = off->GetQEnergy(20,120);
+
+
+	      // alpha
+	      if(aaa < aevent && tempenergy*0.0426472-3.81777 > 3000 && tempenergy*0.0426472-3.81777 < 4000 && double(tempshort)/double(tempenergy) > 0.62 && double(tempshort)/double(tempenergy) < 0.64)
+		{
+		  for (int i = 0; i < size; ++i)
+		    {
+		      in[i][0] = data[i];
+		      in[i][1] = 0;
+		    }
+
+		  fft1d->ForwardGetAmplitude(in,out);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      dataa[i] += out[i];
+		    }
+
+
+		  aaa++;
+		}
+
+
+	      // gamma
+	      if(bbb < aevent && tempenergy*0.0426472-3.81777 > 6000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.54 && double(tempshort)/double(tempenergy) < .58)
+		{
+		  for (int i = 0; i < size; ++i)
+		    {
+		      in[i][0] = data[i];
+		      in[i][1] = 0;
+		    }
+
+		  fft1d->ForwardGetAmplitude(in,out);
+		  for (int i = 0; i < size; ++i)
+		    {
+		      datab[i] += out[i];
+		    }
+
+
+		  bbb++;
+
+		}
+
+	      
+	      
+	    }//循环处理到这里结束
+
+	  for (int i = 0; i < size; ++i)
+	    {
+	      ggga->SetPoint(i,i,dataa[i]/aevent);
+	      gggb->SetPoint(i,i,datab[i]/aevent);
+	      gggc->SetPoint(i,i,(dataa[i]-datab[i])/aevent);
+	    }
+	  ggga->SetLineColor(1);
+	  gggb->SetLineColor(2);
+	  gggc->SetLineColor(3);
+	  ggga->SetMarkerStyle(4);
+	  gggb->SetMarkerStyle(7);
+	  gggabc->Add(ggga);
+	  gggabc->Add(gggb);
+	  // gggabc->Add(gggc);
+	  c1->cd();
+	  gggabc->Draw("AP");
+	  // gggb->Draw("AC");
+	  
+	  c1->Update();
+	}
+
+
+
+      if(argv[1][0] == 'C' || argv[1][0] == 'c')
+	{
+	  fftw_complex *in;
+	  double *out;
+	  fftw1d *fft1d;
+	  TFile *t = new TFile("fft153.root","RECREATE");//"RECREATE" "READ"
+	  if(!t->IsOpen())
+	    {
+	      std::cout<<"Can't open root file"<<std::endl;
+	    }
+
+	  TTree *ttt = new TTree("t","Hongyi Wu Data");
+	  // TTree *ttt = (TTree*)rootfile->Get(""t"");
+	  int tempshort;
+	  int tempenergy;
+	  int mhit;
+	  double sample[10240];
+	  double hitdata[10240];
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+	      if(entry == 0)
+		{
+		  in = Malloc_fftw_complex(int(size));
+		  out = Malloc_fftw_real(int(size));
+		  fft1d = new fftw1d(int(size),-1);
+
+		  for (int i = 0; i < size; ++i)
+		    {
+		      sample[i] = i;
+		    }
+		  ttt->Branch("tempshort",&tempshort,"tempshort/I");
+		  ttt->Branch("tempenergy",&tempenergy,"tempenergy/I");
+		  ttt->Branch("mhit",&mhit,"mhit/I");
+		  ttt->Branch("sample",&sample,"sample[mhit]/D");
+		  ttt->Branch("hitdata",&hitdata,"hitdata[mhit]/D");
+		}
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+
+	      tempshort = off->GetQEnergy(0,30);
+	      tempenergy = off->GetQEnergy(20,120);
+
+	      if(tempenergy > 0) 
+	      {
+		for (int i = 0; i < size; ++i)
+		  {
+		    in[i][0] = data[i];
+		    in[i][1] = 0;
+		  }
+
+		fft1d->ForwardGetAmplitude(in,out);
+
+		mhit = size/2;
+		for (int i = 0; i < mhit; ++i)
+		  {
+		    hitdata[i] = out[i];
+		  }
+		fftpsd->Fill(tempenergy*0.0426472-3.81777,out[1]);
+
+		tempenergy = tempenergy*0.0426472-3.81777;
+		tempshort = tempshort*0.0426472-3.81777;
+		ttt->Fill();//loop
+	      }
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  fftpsd->Draw("colz");
+	  c1->Update();
+
+
+	  ttt->Write();
+	  // t->ls("");
+	  // TObject->Write();
+	  // TH1D *h = (TH1D*)t->Get("name");
+	  t->Close();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
       
       gBenchmark->Show("tree");//计时结束并输出时间
     }
-
-
   
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
   // and enter the event loop...

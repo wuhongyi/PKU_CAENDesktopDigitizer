@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 四 6月 22 19:00:05 2017 (+0800)
+// Last-Updated: 五 6月 23 18:20:51 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 312
+//     Update #: 325
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -738,7 +738,7 @@ int main(int argc, char *argv[])
 	  double tempdata[10240];
 	  int DataData[10240];
 	  int apoint = 300;
-	  int aevent = 500;
+	  int aevent = 1;
 	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	    {//循环处理从这里开始
 	      fChain->GetEvent(entry);
@@ -857,6 +857,7 @@ int main(int argc, char *argv[])
 	  int bbb = 0;
 	  double dataa[10240] = {0};
 	  double datab[10240] = {0};
+	  int wavedata[20480];
 	  int aevent = 51;
 	  
 	  fftw_complex *in;
@@ -875,7 +876,7 @@ int main(int argc, char *argv[])
 	      if(aaa>=aevent && bbb>=aevent) break;
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
-
+	      off->GetWaveData(wavedata);
 	      
 	      // int tempshort = off->GetQEnergyTriggerPeak(10,30);
 	      // int tempenergy = off->GetQEnergyTriggerPeak(30,130);
@@ -888,7 +889,7 @@ int main(int argc, char *argv[])
 		{
 		  for (int i = 0; i < size; ++i)
 		    {
-		      in[i][0] = data[i];
+		      in[i][0] = wavedata[i];
 		      in[i][1] = 0;
 		    }
 
@@ -908,7 +909,7 @@ int main(int argc, char *argv[])
 		{
 		  for (int i = 0; i < size; ++i)
 		    {
-		      in[i][0] = data[i];
+		      in[i][0] = wavedata[i];
 		      in[i][1] = 0;
 		    }
 
@@ -955,7 +956,7 @@ int main(int argc, char *argv[])
 	  fftw_complex *in;
 	  double *out;
 	  fftw1d *fft1d;
-	  TFile *t = new TFile("fft153.root","RECREATE");//"RECREATE" "READ"
+	  TFile *t = new TFile("fft157.root","RECREATE");//"RECREATE" "READ"
 	  if(!t->IsOpen())
 	    {
 	      std::cout<<"Can't open root file"<<std::endl;
@@ -966,8 +967,10 @@ int main(int argc, char *argv[])
 	  int tempshort;
 	  int tempenergy;
 	  int mhit;
+	  int wavedata[20480];
 	  double sample[10240];
 	  double hitdata[10240];
+	  double tene[10240],fene[10240];
 	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	    {//循环处理从这里开始
 	      fChain->GetEvent(entry);
@@ -986,10 +989,13 @@ int main(int argc, char *argv[])
 		  ttt->Branch("mhit",&mhit,"mhit/I");
 		  ttt->Branch("sample",&sample,"sample[mhit]/D");
 		  ttt->Branch("hitdata",&hitdata,"hitdata[mhit]/D");
+		  ttt->Branch("tene",&tene,"tene[mhit]/D");
+		  ttt->Branch("fene",&fene,"fene[mhit]/D");
 		}
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
-
+	      off->GetWaveData(wavedata);
+	      
 	      tempshort = off->GetQEnergy(0,30);
 	      tempenergy = off->GetQEnergy(20,120);
 
@@ -997,16 +1003,23 @@ int main(int argc, char *argv[])
 	      {
 		for (int i = 0; i < size; ++i)
 		  {
-		    in[i][0] = data[i];
+		    in[i][0] = wavedata[i];
 		    in[i][1] = 0;
 		  }
 
 		fft1d->ForwardGetAmplitude(in,out);
 
 		mhit = size/2;
+		double fsum=0;
+		double tsum = 0;
 		for (int i = 0; i < mhit; ++i)
 		  {
 		    hitdata[i] = out[i];
+
+		    fsum+=out[i];
+		    fene[i]=fsum;
+		    tsum+=wavedata[i];
+		    tene[i]=tsum;
 		  }
 		fftpsd->Fill(tempenergy*0.0426472-3.81777,out[1]);
 
@@ -1031,12 +1044,57 @@ int main(int argc, char *argv[])
 
 
 
+      if(argv[1][0] == 'Z' || argv[1][0] == 'z')
+	{
+	  fftw_complex *in;
+	  double *out;
+	  fftw1d *fft1d;
+	  int mhit;
+	  int tempenergy;
+
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+	      if(entry == 0)
+		{
+		  in = Malloc_fftw_complex(int(size));
+		  out = Malloc_fftw_real(int(size));
+		  fft1d = new fftw1d(int(size),-1);
+		}
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      off->GetWaveData(wavedata);
+
+	      tempenergy = off->GetQEnergy(20,120);
 
 
+	      if(tempenergy > 0) 
+		{
+		  for (int i = 0; i < size; ++i)
+		    {
+		      in[i][0] = wavedata[i];
+		      in[i][1] = 0;
+		    }
 
+		  fft1d->ForwardGetAmplitude(in,out);
 
+		  mhit = size/2;
+		  double fsum=0;
+		  for (int i = 0; i < mhit; ++i)
+		    {
+		      fsum+=out[i];
+		    }
+		  fftpsd->Fill(tempenergy*0.0426472-3.81777,fsum/out[0]);
+		}
 
+	    }//循环处理到这里结束
 
+	  c1->cd();
+	  fftpsd->Draw("colz");
+	  c1->Update();
+	      
+	}
 
 
 

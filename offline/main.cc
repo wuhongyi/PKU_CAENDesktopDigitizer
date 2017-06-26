@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 五 6月 23 18:20:51 2017 (+0800)
+// Last-Updated: 一 6月 26 21:21:40 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 325
+//     Update #: 358
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
   // TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
   TH2D *fftpsd = new TH2D("fftpsd","",5000,0,10000,3000,0,300);
 
+  TH2D *waveone = new TH2D("waveone","",4000,0,4000,2000,-4e-3,1e-2);
   
   TGraph *filter = new TGraph();
   TMultiGraph *gggabc = new TMultiGraph();gggabc->SetName("gggabc");
@@ -727,6 +728,82 @@ int main(int argc, char *argv[])
 
 
 
+      if(argv[1][0] == 'G' || argv[1][0] == 'g')
+	{
+	  int DataData[10240];
+	  int writenumber = 0;
+	  double tempdata[10240];
+	  double dataa[10240] = {0};
+	  int apoint = 300;
+	  int longpoint = 4000;
+	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
+	    {//循环处理从这里开始
+	      fChain->GetEvent(entry);
+
+	      if(ch != SelectChannel) continue;
+	      off->SetEventData(size, data);
+	      
+	      int tempenergy = off->GetQEnergy(20,120);
+
+	      if(tempenergy*0.0426472-3.81777 > 1400 && tempenergy*0.0426472-3.81777 < 4000) 
+	      {
+		off->GetWaveData(DataData);
+
+		int tempint = -1;
+		int tempflag = -1000;
+		for (int i = 0; i < size; ++i)
+		  {
+		    tempdata[i] = 0;
+		    if(DataData[i] > tempflag)
+		      {
+			tempint = i;
+			tempflag = DataData[i];
+		      }
+		  }
+
+		for (int i = 0; i < size; ++i)
+		  {
+		    dataa[i] = double(DataData[i])/DataData[tempint];
+		  }
+		
+		  // std::cout<<tempint<<" ";
+		  if(tempint < apoint)
+		    {
+		      for (int i = (apoint-tempint); i < size; ++i)
+			{
+			  tempdata[i] = double(dataa[i-(apoint-tempint)]);
+			}
+		    }
+		  else
+		    {
+		      for (int i = 0; i < size-(tempint-apoint); ++i)
+			{
+			  tempdata[i] = double(dataa[i+(tempint-apoint)]);
+			}
+		    }
+
+		  for (int i = 0; i < longpoint; ++i)
+		    {
+		      // dataa[i] = tempdata[i]/tempdouble;
+		      waveone->Fill(i,tempdata[i]);
+		    }
+
+
+		  
+		
+
+	      }
+	      
+	    }//循环处理到这里结束
+
+	  c1->cd();
+	  waveone->Draw("colz");
+	  c1->Update();
+	}
+
+
+      
+
 
       
       if(argv[1][0] == 'v' || argv[1][0] == 'V')
@@ -858,8 +935,8 @@ int main(int argc, char *argv[])
 	  double dataa[10240] = {0};
 	  double datab[10240] = {0};
 	  int wavedata[20480];
-	  int aevent = 51;
-	  
+	  int aevent = 1;
+	  int sized = 1024;
 	  fftw_complex *in;
 	  double *out;
 	  fftw1d *fft1d;
@@ -868,9 +945,9 @@ int main(int argc, char *argv[])
 	      fChain->GetEvent(entry);
 	      if(entry == 0)
 		{
-		  in = Malloc_fftw_complex(int(size));
-		  out = Malloc_fftw_real(int(size));
-		  fft1d = new fftw1d(int(size),-1);
+		  in = Malloc_fftw_complex(int(sized));
+		  out = Malloc_fftw_real(int(sized));
+		  fft1d = new fftw1d(int(sized),-1);
 		}
 
 	      if(aaa>=aevent && bbb>=aevent) break;
@@ -887,14 +964,14 @@ int main(int argc, char *argv[])
 	      // alpha
 	      if(aaa < aevent && tempenergy*0.0426472-3.81777 > 3000 && tempenergy*0.0426472-3.81777 < 4000 && double(tempshort)/double(tempenergy) > 0.62 && double(tempshort)/double(tempenergy) < 0.64)
 		{
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < sized; ++i)
 		    {
 		      in[i][0] = wavedata[i];
 		      in[i][1] = 0;
 		    }
 
 		  fft1d->ForwardGetAmplitude(in,out);
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < sized; ++i)
 		    {
 		      dataa[i] += out[i];
 		    }
@@ -907,14 +984,14 @@ int main(int argc, char *argv[])
 	      // gamma
 	      if(bbb < aevent && tempenergy*0.0426472-3.81777 > 6000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.54 && double(tempshort)/double(tempenergy) < .58)
 		{
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < sized; ++i)
 		    {
 		      in[i][0] = wavedata[i];
 		      in[i][1] = 0;
 		    }
 
 		  fft1d->ForwardGetAmplitude(in,out);
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < sized; ++i)
 		    {
 		      datab[i] += out[i];
 		    }
@@ -928,7 +1005,7 @@ int main(int argc, char *argv[])
 	      
 	    }//循环处理到这里结束
 
-	  for (int i = 0; i < size; ++i)
+	  for (int i = 0; i < sized; ++i)
 	    {
 	      ggga->SetPoint(i,i,dataa[i]/aevent);
 	      gggb->SetPoint(i,i,datab[i]/aevent);
@@ -956,7 +1033,7 @@ int main(int argc, char *argv[])
 	  fftw_complex *in;
 	  double *out;
 	  fftw1d *fft1d;
-	  TFile *t = new TFile("fft157.root","RECREATE");//"RECREATE" "READ"
+	  TFile *t = new TFile("ffts156.root","RECREATE");//"RECREATE" "READ"
 	  if(!t->IsOpen())
 	    {
 	      std::cout<<"Can't open root file"<<std::endl;
@@ -970,17 +1047,18 @@ int main(int argc, char *argv[])
 	  int wavedata[20480];
 	  double sample[10240];
 	  double hitdata[10240];
-	  double tene[10240],fene[10240];
+	  double tene[10240],fene[10240],sfene[10240];
+	  int sized = 2048;
 	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	    {//循环处理从这里开始
 	      fChain->GetEvent(entry);
 	      if(entry == 0)
 		{
-		  in = Malloc_fftw_complex(int(size));
-		  out = Malloc_fftw_real(int(size));
-		  fft1d = new fftw1d(int(size),-1);
+		  in = Malloc_fftw_complex(int(sized));
+		  out = Malloc_fftw_real(int(sized));
+		  fft1d = new fftw1d(int(sized),-1);
 
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < sized; ++i)
 		    {
 		      sample[i] = i;
 		    }
@@ -991,6 +1069,7 @@ int main(int argc, char *argv[])
 		  ttt->Branch("hitdata",&hitdata,"hitdata[mhit]/D");
 		  ttt->Branch("tene",&tene,"tene[mhit]/D");
 		  ttt->Branch("fene",&fene,"fene[mhit]/D");
+		  ttt->Branch("sfene",&sfene,"sfene[mhit]/D");
 		}
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
@@ -1001,7 +1080,7 @@ int main(int argc, char *argv[])
 
 	      if(tempenergy > 0) 
 	      {
-		for (int i = 0; i < size; ++i)
+		for (int i = 0; i < sized; ++i)
 		  {
 		    in[i][0] = wavedata[i];
 		    in[i][1] = 0;
@@ -1009,15 +1088,18 @@ int main(int argc, char *argv[])
 
 		fft1d->ForwardGetAmplitude(in,out);
 
-		mhit = size/2;
+		mhit = sized/2;
 		double fsum=0;
+	        double sfsum=0;
 		double tsum = 0;
 		for (int i = 0; i < mhit; ++i)
 		  {
 		    hitdata[i] = out[i];
 
 		    fsum+=out[i];
+		    sfsum+=out[i]*out[i];
 		    fene[i]=fsum;
+		    sfene[i]=sfsum;
 		    tsum+=wavedata[i];
 		    tene[i]=tsum;
 		  }
@@ -1051,16 +1133,17 @@ int main(int argc, char *argv[])
 	  fftw1d *fft1d;
 	  int mhit;
 	  int tempenergy;
-
+	  
 	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	    {//循环处理从这里开始
 	      fChain->GetEvent(entry);
 	      if(entry == 0)
 		{
-		  in = Malloc_fftw_complex(int(size));
-		  out = Malloc_fftw_real(int(size));
-		  fft1d = new fftw1d(int(size),-1);
+		  in = Malloc_fftw_complex(int(size/2));
+		  out = Malloc_fftw_real(int(size/2));
+		  fft1d = new fftw1d(int(size/2),-1);
 		}
+	      if(entry%10000==0) std::cout<<entry<<std::endl;
 
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
@@ -1071,15 +1154,15 @@ int main(int argc, char *argv[])
 
 	      if(tempenergy > 0) 
 		{
-		  for (int i = 0; i < size; ++i)
+		  for (int i = 0; i < size/2; ++i)
 		    {
-		      in[i][0] = wavedata[i];
+		      in[i][0] = wavedata[i+size/2];
 		      in[i][1] = 0;
 		    }
 
 		  fft1d->ForwardGetAmplitude(in,out);
 
-		  mhit = size/2;
+		  mhit = size/4;
 		  double fsum=0;
 		  for (int i = 0; i < mhit; ++i)
 		    {

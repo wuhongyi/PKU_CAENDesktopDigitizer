@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 三 6月 14 21:00:28 2017 (+0800)
+// Last-Updated: 四 7月  6 20:06:19 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 34
+//     Update #: 35
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -173,10 +173,12 @@ void r2root::Process()
   else
     {
       while(ReadEvent())
-	t->Fill();
+	{
+	  t->Fill();
 
-      nevt++;
-      if(nevt%10000 == 0) std::cout<<"nevt: "<<nevt<<std::endl;
+	  nevt++;
+	  if(nevt%10000 == 0) std::cout<<"nevt: "<<nevt<<std::endl;
+	}
     }
 
   

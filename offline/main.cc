@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 一 6月 26 21:21:40 2017 (+0800)
+// Last-Updated: 四 7月  6 18:49:52 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 358
+//     Update #: 369
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 
   TH2D *energypsd = new TH2D("energypsd","",5000,0,10000,1000,0,1);
   // TH2D *energypsd = new TH2D("energypsd","",5000,0,200000,5000,0,200000);
-  TH2D *fftpsd = new TH2D("fftpsd","",5000,0,10000,3000,0,300);
+  TH2D *fftpsd = new TH2D("fftpsd","",5000,0,10000,5000,0,500);
 
   TH2D *waveone = new TH2D("waveone","",4000,0,4000,2000,-4e-3,1e-2);
   
@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
 
-	      int tempenergy = off->GetQEnergy(20,120);
+	      int tempenergy = off->GetQEnergyTriggerPeak(20,120);
 	      if(tempenergy > 0) energyQ->Fill(tempenergy);
 	      
 	    }//循环处理到这里结束
@@ -788,10 +788,6 @@ int main(int argc, char *argv[])
 		      waveone->Fill(i,tempdata[i]);
 		    }
 
-
-		  
-		
-
 	      }
 	      
 	    }//循环处理到这里结束
@@ -936,7 +932,7 @@ int main(int argc, char *argv[])
 	  double datab[10240] = {0};
 	  int wavedata[20480];
 	  int aevent = 1;
-	  int sized = 1024;
+	  int sized = 2048;
 	  fftw_complex *in;
 	  double *out;
 	  fftw1d *fft1d;
@@ -964,9 +960,20 @@ int main(int argc, char *argv[])
 	      // alpha
 	      if(aaa < aevent && tempenergy*0.0426472-3.81777 > 3000 && tempenergy*0.0426472-3.81777 < 4000 && double(tempshort)/double(tempenergy) > 0.62 && double(tempshort)/double(tempenergy) < 0.64)
 		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  for (int i = 0; i < size; ++i)
+		    {
+		      if(wavedata[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = wavedata[i];
+			}
+		    }
+		  
 		  for (int i = 0; i < sized; ++i)
 		    {
-		      in[i][0] = wavedata[i];
+		      in[i][0] = wavedata[i+tempint];
 		      in[i][1] = 0;
 		    }
 
@@ -984,9 +991,21 @@ int main(int argc, char *argv[])
 	      // gamma
 	      if(bbb < aevent && tempenergy*0.0426472-3.81777 > 6000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.54 && double(tempshort)/double(tempenergy) < .58)
 		{
+		  int tempint = -1;
+		  int tempflag = -1000;
+		  for (int i = 0; i < size; ++i)
+		    {
+		      if(wavedata[i] > tempflag)
+			{
+			  tempint = i;
+			  tempflag = wavedata[i];
+			}
+		    }
+
+		  
 		  for (int i = 0; i < sized; ++i)
 		    {
-		      in[i][0] = wavedata[i];
+		      in[i][0] = wavedata[i+tempint];
 		      in[i][1] = 0;
 		    }
 
@@ -1133,15 +1152,15 @@ int main(int argc, char *argv[])
 	  fftw1d *fft1d;
 	  int mhit;
 	  int tempenergy;
-	  
+	  int sized = 2048;
 	  for (Long64_t entry = 0; entry < TotalEntry; ++entry)
 	    {//循环处理从这里开始
 	      fChain->GetEvent(entry);
 	      if(entry == 0)
 		{
-		  in = Malloc_fftw_complex(int(size/2));
-		  out = Malloc_fftw_real(int(size/2));
-		  fft1d = new fftw1d(int(size/2),-1);
+		  in = Malloc_fftw_complex(int(size));
+		  out = Malloc_fftw_real(int(size));
+		  fft1d = new fftw1d(int(size),-1);
 		}
 	      if(entry%10000==0) std::cout<<entry<<std::endl;
 
@@ -1149,26 +1168,27 @@ int main(int argc, char *argv[])
 	      off->SetEventData(size, data);
 	      off->GetWaveData(wavedata);
 
-	      tempenergy = off->GetQEnergy(20,120);
-
+	      // tempenergy = off->GetQEnergy(20,120);
+	      tempenergy = off->GetQEnergyTriggerPeak(20,120);
 
 	      if(tempenergy > 0) 
 		{
-		  for (int i = 0; i < size/2; ++i)
+		  for (int i = 0; i < size; ++i)
 		    {
-		      in[i][0] = wavedata[i+size/2];
+		      in[i][0] = wavedata[i];
 		      in[i][1] = 0;
 		    }
 
 		  fft1d->ForwardGetAmplitude(in,out);
 
-		  mhit = size/4;
+		  mhit = size/2;
 		  double fsum=0;
 		  for (int i = 0; i < mhit; ++i)
 		    {
 		      fsum+=out[i];
 		    }
-		  fftpsd->Fill(tempenergy*0.0426472-3.81777,fsum/out[0]);
+		  // fftpsd->Fill(tempenergy*0.0426472-3.81777,fsum/out[0]);
+		  fftpsd->Fill(tempenergy*0.0263754-23.2883,fsum/out[0]);
 		}
 
 	    }//循环处理到这里结束

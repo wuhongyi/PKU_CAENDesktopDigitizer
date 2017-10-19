@@ -1,0 +1,171 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x724 FPGA firmware revision history.
+  x724 digitizer board houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+===============================================================================
+Release 4.16_0.14
+===============================================================================
+New Features / Changes      :
+
+* ROC: (VME ONLY) Added feature to use VetoIn LVDS to disable TRGOUT generation,
+  selectable by register  
+
+===============================================================================
+Release 4.14_0.14
+===============================================================================
+New Features / Changes      :
+
+* ROC: Added a feature for syncronization debug, TRG-OUT (LEMO) can propagate 
+  out either the RUN command or the actual acquisition start delayRUN
+  delayed for syncronization (only VME modules affected)
+* ROC: Added an automatic control of the fan speed (only DT modules affected)
+* ROC: Added automatic reload of PLL after a change of the clock source (ext/int)
+  (only DT modules affected)
+* ROC: Added "Board Fail" bit in Event Header and Error Monitor register 0x8178
+* ROC: Added gain option to be applied to the Buffer Occupancy voltage level 
+	       of MON/Sigma (only VME modules affected)
+* ROC: Added LVDS I/O nTrigger outuput selection (nBusy/nVeto Mode): 
+	     LVDS_TRGOUT can be a copy of the Global Trigger or a copy of TRG-OUT
+       (only VME modules affected)
+* ROC: FW for PCB rev >=4: added or modified Sync signal for new DC/DC Converters 
+       (only VME modules affected)
+* ROC: Added Force Reboot to VME digitizers (only VME modules affected)
+* ROC: Added "Extended Trigger Time Tag" or "Event Trigger Source" options in
+	     word 2 of the Event Header ("Pattern" filed in case of VME modules) 
+* ROC: Added option to propagate the Busy onto TRG-OUT/GPO
+* ROC: Added suport for model DT and NIM 724B, 724C, 724F, 724G
+* ROC: Added AND option for global trigger (0x810C) between channel triggers and
+       other trigger sources but the SW trigger
+* ROC: The Board Ready flag (0x8104) is now set when the motherboard and the
+       mezzanines are ready
+* ROC/AMC: Added Decimation option and relevant register 0x8044
+* AMC: Improved SW_reset, now the acqusition of RAMP TestWaves is syncronized 
+	     after a reset
+* AMC: Re-sampling sync now indipendent from SW_reset
+* AMC: The trigger polarity (positive or negative) can now be set for each 
+	     indivitual channel  
+			
+Bug fix                      :
+  
+* ROC: Optimized timing on LVDS I/O (only VME modules affected)
+* ROC: Fixed a bug on USB communication (only DT modules affected)
+* ROC: Corrected an error after the Clear command
+* ROC/AMC: Fixed issue in case of single channel register access during BLT
+* ROC: Fixed error in reporting FULL Status (BUSY LED and FULL flag) when the 
+	     board is not in run
+* ROC: Fixed problem in case of single access on LB during BLT
+* ROC: Modified TRG-OUT/GPO logic generation.
+* AMC: Fixed clear command bugs
+
+===============================================================================
+
+INTERMEDIATE REVISIONS NOT PRESENT HERE ARE TO BE INTENDED FOR INTERNAL USE
+AND THEIR NOTES ARE APPENDED TO THE LATEST OFFICIAL REVISION
+
+===============================================================================
+Release 4.1_0.12
+===============================================================================
+New Features / Changes        :
+
+* ROC: Added a new management of front panel LVDS I/Os
+* ROC: Added Busy/Veto IN/Out; by default, the old LVDS I/O setting is kept
+     	 for compatibility with previous versions
+* ROC: Added support for new models (x743, DT5720D/DT5720E/N6720D/N6720E/V1720F/
+	     V1720G)
+* ROC: Modified some timig constraint	
+* ROC: Modified default value for the Trgout Mask at power ON
+* ROC: Modified usage of S-IN input (new modes for board synchronization)
+* ROC: Added disable bit for the External Trigger input (bit 0x817C[0])
+* ROC: Added dedicated clock synchronization command (write at 0x813C) to ensure proper
+       synchronization of a multi-board system with daisy-chained clock propagation scheme 
+* ROC: Added option to propagate S-IN to TRGOUT (bit[17:16] at 0x811C = "11")
+* ROC: Added register 0x816C (set level for almost full output on LVDS I/O)
+* ROC: Added registers 0x8180-0x819C (one per channel) to mask individual trigger validations
+* ROC: Added option to send trigger clock onto TRGOUT (used to check synchronization)
+* AMC: Implemented compatibility with FW Rev 3.4 (or higher) of the mother board
+
+Bug fix     	                :
+  
+* ROC: Firmware not working for 2 channel versions of the desktop/NIM digitizers
+* ROC: Occasional communication error when restarting after an anomalous program
+       interruption (e.g. process killed); added an internal timeout to recover
+* ROC: External trigger Mask not working
+* ROC: Occasional data readout error
+* ROC: Busy output on the LVDS I/Os not working with DPP firmware
+* ROC: PLL lock flag (0x8104[7]) not reporting current status of lock
+* ROC: Interrupts through optical link not working properly
+* ROC: DES mode not supported for model V1751C
+* ROC: Interrupts propagation on a daisy-chained optical link
+* ROC: Occasional readout failure when performing acquisition start/stop
+  
+===============================================================================
+
+  INTERMEDIATE REVISIONS ARE CONSIDERED AS BETAs AND ARE NOT DOCUMENTED HERE
+  
+===============================================================================
+Release 3.2_0.11
+===============================================================================
+
+New Features / Changes      	:
+
+* New syncronous start for multiboard configuration with TRG-OUT/TRG-IN
+  configuration fully implemented. Added possibility to start acquisition
+  with a software trigger to the first board in the chain.
+     
+Bug fix     	                :
+  
+* Fixed issue on optical link state machine.
+
+===============================================================================
+Release 3.1_0.11
+===============================================================================
+     
+Bug fix     	                :
+  
+* Fixed a major bug in VME interface that could generate misalignement 
+  on event readout.
+* Fixed issue on acquisition start/stop: data readout could not 
+  restart after a stop/start acquisition sequence.  
+  
+===============================================================================
+Release 3.0_0.11
+===============================================================================
+
+New Features / Changes	      :
+
+* Optical link interface protocol upgraded to CONET2:
+        CONET2 is NOT back compatible with previous CONET1 protocol.
+        Check migration instructions on CAEN website or 
+        contact support.nuclear@caen.it.
+* Changed run mode configuration bit usage(bit[1:0] of 0x8100 register):
+        Mode "00" unchanged.
+        Other modes changed to support improved multiboard run synchronization.
+* Downsampling feature discontinued.
+      
+Bug fix     	                :
+
+* Minor bug fixing 
+  
+===============================================================================
+
+NOTE:
+
+Older releases removed from current release notes.
+For informations releated to older firmware versions,
+please contact CAEN at:
+support.nuclear@caen.it
+      

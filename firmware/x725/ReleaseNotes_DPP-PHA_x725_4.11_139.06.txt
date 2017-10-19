@@ -1,0 +1,36 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x725 DPP-PHA FPGA firmware revision history.
+  These digitizer boards houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+  
+===============================================================================
+Release 4.11_139.06
+===============================================================================
+New Features / Changes	:
+		* Added option to decide whether "bad events" (i.e. unmatched coincidence, 
+			vetoed, ect...) are discarded or tagged
+   		  bit[19] of DppCtrl2 @ 0x1nA0: 0=discard, 1=tag with flag[7] = bit 23 of the energy word
+
+
+Bug Fix			:
+
+		* Bug Fix: energy cat at half range when NsPeak = 2 (num of samples for the peaking average)
+		* Bug Fix: time stamp error at the roll-over of the 31 bit  
+      
+===============================================================================
+Release 4.11_139.05
+===============================================================================
+
+  First release

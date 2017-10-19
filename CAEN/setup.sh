@@ -13,8 +13,8 @@ sh install_x64
 cd ../../
 
 
-tar -xvzf CAENUpgrader-1.6.0-build20161104.tgz
-cd CAENUpgrader-1.6.0
+tar -xvzf CAENUpgrader-1.6.3-build20170511.tgz
+cd CAENUpgrader-1.6.3
 ./configure
 make -j2
 make install
@@ -22,8 +22,8 @@ cd ..
 
 
 
-tar -xvzf CAENDigitizer_2.7.9_20170310.tgz
-cd CAENDigitizer_2.7.9
+tar -xvzf CAENDigitizer_2.9.1_20170707.tgz 
+cd CAENDigitizer_2.9.1
 sh install_64
 cd ..
 
@@ -35,7 +35,7 @@ make
 make install
 cd ..
 
-rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.0 CAENDigitizer_2.7.9 CAENUSBdrvB-1.5.1
+rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.3 CAENDigitizer_2.9.1 CAENUSBdrvB-1.5.1
 
 echo "Install all software done !"
 

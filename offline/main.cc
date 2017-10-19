@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 四 12月  8 19:21:20 2016 (+0800)
-// Last-Updated: 四 7月  6 18:49:52 2017 (+0800)
+// Last-Updated: 五 9月 22 15:08:10 2017 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 369
+//     Update #: 376
 // URL: http://wuhongyi.cn 
 
 #include "wuReadData.hh"
@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
 	      if(ch != SelectChannel) continue;
 	      off->SetEventData(size, data);
 
-	      int tempenergy = off->GetQEnergyTriggerPeak(20,120);
+	      int tempenergy = off->GetQEnergyTriggerPeak(20,80);
 	      if(tempenergy > 0) energyQ->Fill(tempenergy);
 	      
 	    }//循环处理到这里结束
@@ -702,14 +702,14 @@ int main(int argc, char *argv[])
 
 	      
 	      int tempshort = off->GetQEnergyTriggerPeak(10,30);
-	      int tempenergy = off->GetQEnergyTriggerPeak(30,130);
+	      int tempenergy = off->GetQEnergyTriggerPeak(20,120);
 
-	      if(tempenergy*0.0426472-3.81777 > 7000 && tempenergy*0.0426472-3.81777 < 8000 && double(tempshort)/double(tempenergy) > 0.69 && double(tempshort)/double(tempenergy) < 0.70) 
+	      if(tempenergy*0.0199666-16.2758 > 7000) 
 	      {
 		off->GetWaveData(DataData);
 		writenumber++;
 
-		if(writenumber == 130)
+		if(writenumber == 1)
 		  {
 		    for (int i = 0; i < size; ++i)
 		      {
@@ -1188,7 +1188,10 @@ int main(int argc, char *argv[])
 		      fsum+=out[i];
 		    }
 		  // fftpsd->Fill(tempenergy*0.0426472-3.81777,fsum/out[0]);
-		  fftpsd->Fill(tempenergy*0.0263754-23.2883,fsum/out[0]);
+		  // fftpsd->Fill(tempenergy*0.0429339-4.17171,fsum/out[0]);
+		  // fftpsd->Fill(tempenergy*0.0199666-16.2758,fsum/out[0]);
+		  // fftpsd->Fill(tempenergy*0.0413389-16.6516,fsum/out[0]);
+		  fftpsd->Fill(tempenergy*0.0193298-18.2671,fsum/out[0]);
 		}
 
 	    }//循环处理到这里结束

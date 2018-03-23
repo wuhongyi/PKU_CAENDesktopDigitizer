@@ -4,14 +4,14 @@
 ;; Author: Hongyi Wu(吴鸿毅)
 ;; Email: wuhongyi@qq.com 
 ;; Created: 六 11月 26 16:41:07 2016 (+0800)
-;; Last-Updated: 四 5月 18 16:25:29 2017 (+0800)
+;; Last-Updated: 五 3月 23 18:48:18 2018 (+0800)
 ;;           By: Hongyi Wu(吴鸿毅)
-;;     Update #: 16
+;;     Update #: 17
 ;; URL: http://wuhongyi.cn -->
 
 # README
 
-本程序专为 CAEN 桌面版 Digitizer 开发。
+本程序专为 CAEN 桌面版 Digitizer 开发。也支持VME/NIM机箱版本，仅适用于一个插件的小规模测试。
 
 Author: **Hongyi Wu(吴鸿毅)**
 Email: wuhongyi@qq.com 

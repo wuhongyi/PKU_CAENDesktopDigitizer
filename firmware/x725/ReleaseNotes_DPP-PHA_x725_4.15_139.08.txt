@@ -1,0 +1,63 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x725 DPP-PHA FPGA firmware revision history.
+  These digitizer boards houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+
+===============================================================================
+Release 4.15_139.08
+===============================================================================
+New Features / Changes	:
+
+		* Reviewed feature for tagging uncorrelated/vetoed events (see 4.11_139.06): 
+		when bit[19]@0x1nA0 is set, unwanted events are saved with a tag (instead of discarded): 
+		flag[7] = bit 23 of the energy word => the event was vetoed 
+		flag[8] = bit 24 of the energy word => the event didn't match 
+		the coincidence criteria (uncorrelated)
+		* Modified behaviour of the programmable VETO window: it starts 
+		with the leading edge of the external veto (from TRGIN) and lasts 
+		for the programmed time (when 0, lasts as long as the input is active). 
+		* Added a feature for syncronization debug, TRG-OUT (LEMO) can 
+		propagate out either the RUN command or the actual acquisition 
+		start delayRUN delayed for syncronization (VME only)
+
+Bug Fix			:
+
+		* Bug Fix: fake events (time stamp roll over) were not inhibited 
+		in the disabled channels.
+		* Bug Fix: Tuned trapezoid delay and peaking time
+		* Bug Fix: RC-CR2 signal was divided by 2 in case of smoothing=8
+		* Fixed a bug on USB communication (DT/NIM form factors)
+		* Optimized timing for LVDS I/O signals (VME only)
+  
+===============================================================================
+Release 4.11_139.06
+===============================================================================
+New Features / Changes	:
+		* Added option to decide whether "bad events" (i.e. unmatched coincidence, 
+			vetoed, ect...) are discarded or tagged
+   		  bit[19] of DppCtrl2 @ 0x1nA0: 0=discard, 1=tag with flag[7] = bit 23 of the energy word
+
+
+Bug Fix			:
+
+		* Bug Fix: energy cat at half range when NsPeak = 2 (num of samples for the peaking average)
+		* Bug Fix: time stamp error at the roll-over of the 31 bit  
+      
+===============================================================================
+Release 4.11_139.05
+===============================================================================
+
+  First release

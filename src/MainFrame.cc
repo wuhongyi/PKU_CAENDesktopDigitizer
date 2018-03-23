@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 四 5月 18 09:07:07 2017 (+0800)
+// Last-Updated: 六 3月 17 10:57:53 2018 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 361
+//     Update #: 375
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1552,6 +1552,7 @@ int MainFrame::initDigitizer()
       CheckLicense(dig);
     }
 
+  
   // Get Number of Channels, Number of bits, Number of Groups of the board
   if(MajorNumber == STANDARD_FW_CODE)
     {
@@ -1562,8 +1563,8 @@ int MainFrame::initDigitizer()
 
     }
 
-
   
+  // CAEN_DGTZ_Reset(dig->boardHandle);
   ret |= CAEN_DGTZ_Reset(dig->boardHandle);
   if (ret != 0)
     {
@@ -1573,7 +1574,6 @@ int MainFrame::initDigitizer()
     }
 
 
-  
   switch(dig->boardInfo->Model)
     {
     case CAEN_DGTZ_DT5720:
@@ -1594,6 +1594,16 @@ int MainFrame::initDigitizer()
 	}      
       break;
 
+    case CAEN_DGTZ_V1724:
+      if(strcmp(dig->boardInfo->ModelName, "V1724") == 0)
+	{
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"V1724_STD");
+	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == V1724_DPP_PHA_CODE) board = new DT_PHA(dig,(char*)"V1724_PHA");
+	  for (int i = 0; i < 8; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	}
+      break;
+
       
     case CAEN_DGTZ_DT5724:
       if(strcmp(dig->boardInfo->ModelName, "DT5724") == 0)
@@ -1606,6 +1616,18 @@ int MainFrame::initDigitizer()
 	{
 	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"DT5724A_STD");
 	  for (int i = 0; i < 2; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	}
+      break;
+
+    case CAEN_DGTZ_V1730:
+      if(strcmp(dig->boardInfo->ModelName, "V1730") == 0)
+	{
+	  if(MajorNumber == V1730_DPP_PSD_CODE) board = new DT_PSD(dig,(char*)"V1730_PSD");
+	  for (int i = 0; i < 16; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == STANDARD_FW_CODE) board = new DT_Standard(dig,(char*)"V1730_STD");
+	  for (int i = 0; i < 16; ++i) ChannelsCheckButton[i]->SetEnabled(1);
+	  if(MajorNumber == V1730_DPP_PHA_CODE) board = new DT_PHA(dig,(char*)"V1730_PHA");
+	  for (int i = 0; i < 16; ++i) ChannelsCheckButton[i]->SetEnabled(1);
 	}
       break;
       

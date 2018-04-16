@@ -1,0 +1,103 @@
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Computing Systems Division --- 
+
+  -----------------------------------------------------------------------------
+
+  CAENDPP Library Release Notes
+
+  -----------------------------------------------------------------------------
+  Rel. 1.7.2  - Jul 2017
+
+  -----------------------------------------------------------------------------
+ 
+
+  Description
+  -----------
+
+  This document is updated for every official release of the CAENDPP Library 
+  and it contains various information specific to this software which can not
+  be found in the User's Manual, available together with the software or on 
+  the CAEN web site: www.caen.it.
+
+
+ System Requirements
+ -------------------
+ 
+  - CAEN Digitizer card with DPP firmware
+
+      What's New in Rel. 1.7.2
+  --------------------------
+    - Bugfixes related to DemoDPPLib compilation
+    - Added ReleaseNotes and Readme files to Linux package
+  
+      What's New in Rel. 1.7.1
+  --------------------------
+    - Minor bugfixes
+    - Initial support to hexagon rev. 1
+  
+      What's New in Rel. 1.7.0
+  --------------------------
+    - Hexagon support improvements
+    - Various bugfixes
+    - Changes in header binary interface
+    - Fixed temporary loss of HV at connect in DT5780 boards
+  
+      What's New in Rel. 1.6.4
+  --------------------------
+    - Various bugfixes for DT5770
+    - Improvements in CAENDPP_GetWaveform() function for low rate applications
+  
+    What's New in Rel. 1.6.3
+  --------------------------
+    - Fixed crash if no command is issued in a 30s time range
+  
+    What's New in Rel. 1.6.2
+  --------------------------
+    - Fixed deadlock for very long acquisitions
+    - Fixed support to X770 for Linux
+  
+    What's New in Rel. 1.6.1
+  --------------------------
+    - Initial Hexagon support
+  
+    What's New in Rel. 1.5.2
+  --------------------------
+    - Implemented online list readout for savemode memory
+  
+    What's New in Rel. 1.5.1
+  --------------------------
+    - Various bugfix
+  
+    What's New in Rel. 1.5.0
+  --------------------------
+    - Improved support to GammaStream boards
+    - Improved support to X770 boards
+    - Added support to X780 firmwares >= 128.64
+    - Preliminary support to X725 DPP-PHA boards
+    - Improved management of HV parameters ranges
+  
+    What's New in Rel. 1.4.6
+  --------------------------
+    - Added preliminary support to following boards:
+      - X781
+      - X780SD
+      - X770
+      - X730 DPP-PHA
+      - GammaStream
+    - Various bugfixes
+  
+    What's New in Rel. 1.4.5
+  --------------------------
+    - Various bugfixes
+  
+    What's New in Rel. 1.4.4
+  --------------------------
+    - First Release
+
+  New Features and Important Notes
+  --------------------------------
+    - First Release              
+
+
+

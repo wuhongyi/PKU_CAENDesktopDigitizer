@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 六 3月 17 10:57:53 2018 (+0800)
+// Last-Updated: 日 4月 15 20:09:46 2018 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 375
+//     Update #: 376
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1451,7 +1451,7 @@ void MainFrame::RunReadData()
 		  OnlineCanvas->cd();
 		  board->GetSingleFFTCAEN()->SetLineColor(kRed);
 		  board->GetSingleFFTCAEN()->Draw("AL");
-		  board->GetSingleFFTCAEN()->GetXaxis()->SetTitle("MHz");
+		  // board->GetSingleFFTCAEN()->GetXaxis()->SetTitle("MHz");
 		  board->GetSingleFFTCAEN()->GetYaxis()->SetTitle("dB");
 		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();

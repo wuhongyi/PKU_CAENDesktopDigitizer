@@ -1,0 +1,59 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x743 FPGA firmware revision history.
+  x743 digitizer board houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+
+===============================================================================
+Release 4.9_2.20
+===============================================================================
+  New Features / Changes    :
+  
+  * Added multi-step digital gain optionally applicable to the Buffer Occupancy
+    voltage level provided on MON/Sigma front panel output connector (VME only)
+  * Added clear of the Trigger Time Stamps at the start of acquisition  
+  * Added reset of the Trigger Time Stamps when acquisition is running through 
+    the external S-IN signal (VME boards) or GPI signal (Desktop and NIM boards)
+  * Added Veto Gate Window for the Trigger Rate Counter (after pulses rejection)
+  * Number of events in the event buffers is now sizable with respect to the 
+    number of samples of the waveform programmed to be read
+  * Modified Board Fake bit time-out information
+			
+  Bug fix                   :
+  
+  * Fixed synchronization between channels (especially for the VME boards)
+  * Fixed timing problem affecting digitizers motherboard
+  * Fixed bug in BUSY management at power-on 
+  * Fixed Buffer Occupancy signal available on MON/Singma output connector   
+	 
+===============================================================================
+
+INTERMEDIATE REVISIONS NOT PRESENT HERE ARE TO BE INTENDED FOR INTERNAL USE
+AND THEIR NOTES ARE APPENDED TO THE LATEST OFFICIAL REVISION.
+ 
+===============================================================================
+Release 4.6_2.17
+===============================================================================
+     
+  First official release.
+     
+NOTE:
+
+Older releases not present in current release notes must be intended for 
+development purposes.
+For informations releated to older firmware versions,
+please contact CAEN (support.nuclear@caen.it).
+      

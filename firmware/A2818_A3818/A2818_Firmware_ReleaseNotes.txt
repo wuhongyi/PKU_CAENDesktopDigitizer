@@ -1,0 +1,71 @@
+###############################################################################
+C.A.E.N. S.p.A.  -  Viareggio
+
+This file describes the revision history of the FPGA codes (firmware) for the 
+CAEN's VME Optical Controller A2818
+
+
+
+###############################################################################
+PCI Board A2818
+File name : a2818pcb_RevX.Y.rbf   (where X.Y is the revision number)
+###############################################################################
+NOTE: revisions before 0.2 are not traced since used only for prototypes debug 
+purposes.
+
+
+Rev 0.2 (26/07/04)
+-------------------------------------------------------------------------------
+
+Rev 0.3 (27/09/04)
+-------------------------------------------------------------------------------
+1) Interrupt transfer from VME to PCI implemented at hardware level.
+2) Registers added for VME interrupts enable/disable.
+3) Implemented access in BitSet/BitClear mode for register IOCTL.
+
+Rev 0.4 (20/10/04)
+-------------------------------------------------------------------------------
+1) Local SRAM memory buffer implemented. This optimizes the data transfer from 
+   V2718 to A2818 because it reduces the overhead due to the PCI readout 
+   interrupt latency.
+   NOTE: this FW release can be only installed in the A2818 that houses the two 
+         SRAM chips U2 and U5
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The revision 0.4 and older are only compatible with the software release 1.2 
+and older. 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+Rev 0.5 (27/10/04)
+-------------------------------------------------------------------------------
+1) The data transfer protocol between the A2818 and PCI has been changed in 
+   order to optimize the packet dispatch in the PC memory.
+
+Rev 0.6 (22/11/04)
+-------------------------------------------------------------------------------
+1) Timing constraints added in the FPGA in order to reduce some critical path
+   and have more safety margin in the data transfer from V2718 to A2818.
+   This release doesn't introduce any change from the functional point of view.
+
+Rev 0.7 (20/12/05)
+-------------------------------------------------------------------------------
+1) Fixed a bug in the data transfer from A2818 to V2718 with BLT Write, Multi 
+   Read and Multi Write cycles when using the daisy chain between more V2718s.
+
+Rev 0.8 (10/04/04)
+-------------------------------------------------------------------------------
+1) Changed the CONET protocol in order to make the A2818 able to understand 
+   that one V2718 has been powered up. This allows the CAENVME_Init function 
+   to know that the link must be restarted and manage the power cycles of the
+   VME crate correctly.
+
+
+Rev 1.0 (01/01/11)
+-------------------------------------------------------------------------------
+
+! CONET 2 Communication Protocol Installed
+	
+!!CONET 2 revisions are NOT backcompatible with CONET 1 previous revisions!!
+!!CONET 1 revisions won't be supported anymore!!

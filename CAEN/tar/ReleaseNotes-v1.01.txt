@@ -1,0 +1,47 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Computing R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+  CAENSCOPE Release Notes
+
+  -----------------------------------------------------------------------------
+  
+  Version 1.01 - June 2015
+
+  -----------------------------------------------------------------------------
+ 
+
+  Description
+  -----------
+
+  This file describes the revision history of CAENSCOPE Oscilloscope Software tool.
+
+  System Requirements
+  -------------------
+ 
+  - Linux, 32/64-bit; add. packages: Sharutils, libXft, libXss (specifically for
+    Debian derived distributions, e.g. Debian, Ubuntu, etc.), libXScrnSaver
+    (specifically for RedHat derived distributions, e.g. RHEL, Fedora, Centos, etc.)
+  - Windows Vista, 7, 8, 32/64-bit
+  
+   What's New in version 1.01
+  ---------------------------
+  - Fixed minor bug in right click handling for playback mode.
+    Now correctly provides information about regions of interest
+    for playback waveforms.
+  
+   What's New in version 1.00
+  ---------------------------
+  - First release              
+                        
+
+  How to get support
+  ------------------
+
+  Our Software Support Group is available for questions, support and any other 
+  software related issue concerning CAEN products; for software support, please
+  visit the page http://www.caen.it/csite/ProductSupport.jsp or
+  e-mail to: support.computing@caen.it

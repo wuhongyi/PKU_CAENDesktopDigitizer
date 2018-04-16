@@ -29,20 +29,34 @@ cd ..
 
 
 
-tar -xzvf CAENUSBdrvB-1.5.1.tgz
-cd CAENUSBdrvB-1.5.1
+tar -xzvf CAENUSBdrvB-1.5.2.tgz
+cd CAENUSBdrvB-1.5.2
 make
 make install
 cd ..
 
-rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.3 CAENDigitizer_2.9.1 CAENUSBdrvB-1.5.1
+
+tar -xzvf wavedump-3.8.2.tar.gz
+cd wavedump-3.8.2
+./configure
+make
+make install
+cd ..
+
+#tar -zxvf CoMPASS-1.0.3.tar.gz -C /opt
+#sh /opt/CoMPASS-1.0.3/install.sh
+
+
+
+
+rm -rf CAENVMELib-2.50 CAENComm-1.2 CAENUpgrader-1.6.3 CAENDigitizer_2.11.0 CAENUSBdrvB-1.5.2 wavedump-3.8.2
 
 echo "Install all software done !"
 
-# A2818Drv-1.19-build20150826.tgz
+# A2818Drv-1.20-build20161118.tgz
 #将该文件夹复制到 /opt 并安装在该位置
-#   cp -r A2818Drv-1.19 /opt
-#   cd /opt/A2818Drv-1.19
+#   cp -r A2818Drv-1.20 /opt
+#   cd /opt/A2818Drv-1.20
 #   cp ./Makefile.2.6-3.x Makefile
 #   make
 #设置开机自动执行该脚本

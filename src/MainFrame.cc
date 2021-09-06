@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 日 4月 15 20:09:46 2018 (+0800)
+// Last-Updated: 一 9月  6 11:42:30 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 376
+//     Update #: 377
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -168,7 +168,7 @@ Bool_t MainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 		}
 	      else
 		{
-		  dig->linkType = CAEN_DGTZ_PCI_OpticalLink;
+		  dig->linkType = CAEN_DGTZ_OpticalLink;
 		  dig->linkNum = 0;
 		  dig->conetNode = 0;
 		  dig->baseAddress = 0;

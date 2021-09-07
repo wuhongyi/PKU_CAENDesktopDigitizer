@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 一 4月 17 15:33:01 2017 (+0800)
+// Last-Updated: 二 9月  7 21:25:03 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 82
+//     Update #: 83
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -244,8 +244,10 @@ void DT_PSD::GetWaveform(bool monitor,int type)
 
 		case 2:
 		  // Energy
-
-		  
+		  if(ch == MonitorChannel)
+		    {
+		      EnergySpectrum->Fill((uint16_t)HeaderPSD[3]);
+		    }
 		  break;
 
 		case 3:

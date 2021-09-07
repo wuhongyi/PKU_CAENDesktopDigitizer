@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:44:44 2016 (+0800)
-// Last-Updated: 日 4月 16 18:42:09 2017 (+0800)
+// Last-Updated: 二 9月  7 21:25:31 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 79
+//     Update #: 81
 // URL: http://wuhongyi.cn 
 
 #ifndef _BOARD_H_
@@ -15,6 +15,7 @@
 #include "Global.hh"
 
 #include "TGraph.h"
+#include "TH1.h"
 // #include "TH2.h"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -71,7 +72,7 @@ public:
   void ClearMonitorGraph();
   TGraph *GetSingleWaveform() {return SingleWaveform;}
   TGraph *GetMultiWaveform() {return MultiWaveform;}
-  TGraph *GetEnergySpectrum() {return EnergySpectrum;}
+  TH1I *GetEnergySpectrum() {return EnergySpectrum;}
   TGraph *GetSingleFFTCAEN() {return SingleFFTCAEN;}
   TGraph *GetSingleFFTXIA() {return SingleFFTXIA;}
   
@@ -91,7 +92,7 @@ public:
 protected:
   TGraph *SingleWaveform;
   TGraph *MultiWaveform;
-  TGraph *EnergySpectrum;
+  TH1I *EnergySpectrum;
   TGraph *SingleFFTCAEN;
   TGraph *SingleFFTXIA;
   

@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 19:45:11 2016 (+0800)
-// Last-Updated: 日 4月 16 18:39:57 2017 (+0800)
+// Last-Updated: 二 9月  7 21:28:48 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 37
+//     Update #: 39
 // URL: http://wuhongyi.cn 
 
 #include "Board.hh"
@@ -147,7 +147,7 @@ void Board::InitMonitorGraph()
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
-  EnergySpectrum = new TGraph();
+  EnergySpectrum = new TH1I("Energy","",65535,0,65535);
   SingleFFTCAEN = new TGraph();
   SingleFFTXIA = new TGraph();
 }
@@ -183,7 +183,7 @@ void Board::ClearMonitorGraph()
   CountPointMultiWaveform = 0;
   SingleWaveform = new TGraph();
   MultiWaveform = new TGraph();
-  EnergySpectrum = new TGraph();
+  EnergySpectrum = new TH1I("Energy","",65535,0,65535);
   SingleFFTCAEN = new TGraph();
   SingleFFTXIA = new TGraph();
 }

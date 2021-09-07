@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 五 11月 25 18:54:13 2016 (+0800)
-// Last-Updated: 一 9月  6 11:42:30 2021 (+0800)
+// Last-Updated: 二 9月  7 21:26:58 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 377
+//     Update #: 378
 // URL: http://wuhongyi.cn 
 
 #include "MainFrame.hh"
@@ -1441,7 +1441,7 @@ void MainFrame::RunReadData()
 		case 2:
 		  OnlineCanvas->cd();
 		  // board->GetEnergySpectrum()->SetLineColor(kRed);
-		  board->GetEnergySpectrum()->Draw("AP");
+		  board->GetEnergySpectrum()->Draw("");
 		  OnlineCanvas->SetLogy(0);
 		  OnlineCanvas->Modified();
 		  OnlineCanvas->Update();

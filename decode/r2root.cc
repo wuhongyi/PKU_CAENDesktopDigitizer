@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 二 12月  6 19:34:10 2016 (+0800)
-// Last-Updated: 四 7月  6 20:06:19 2017 (+0800)
+// Last-Updated: 二 9月  7 20:41:36 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 35
+//     Update #: 36
 // URL: http://wuhongyi.cn 
 
 #include "r2root.hh"
@@ -139,8 +139,8 @@ void r2root::Process()
       t->Branch("ch",&ch,"ch/S");
       t->Branch("size",&size,"size/s");
       t->Branch("timestamp",&timestamp,"timestamp/i");
-      t->Branch("chargeshort",&chargeshort,"chargeshort/S");
-      t->Branch("chargelong",&chargelong,"chargelong/S");
+      t->Branch("chargeshort",&chargeshort,"chargeshort/s");
+      t->Branch("chargelong",&chargelong,"chargelong/s");
       t->Branch("baseline",&baseline,"baseline/S");
       t->Branch("format",&format,"format/i");
       t->Branch("format2",&format2,"format2/i");

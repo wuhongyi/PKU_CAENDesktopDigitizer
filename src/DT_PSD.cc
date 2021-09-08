@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 二 9月  7 21:25:03 2021 (+0800)
+// Last-Updated: 三 9月  8 22:10:20 2021 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 83
+//     Update #: 84
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -69,7 +69,7 @@ int DT_PSD::ProgramDigitizer()
     {
       dpppsdParams.thr[ch] = 0;// Trigger Threshold
       dpppsdParams.nsbl[ch] = 2;    // used to specifiy the number of samples for the baseline averaging
-      dpppsdParams.lgate[ch] = 32;    // Long Gate Width (N*4ns)
+      dpppsdParams.lgate[ch] = 50;    // Long Gate Width (N*4ns)
       dpppsdParams.sgate[ch] = 24;    // Short Gate Width (N*4ns)
       dpppsdParams.pgate[ch] = 8;     // Pre Gate Width (N*4ns)
       dpppsdParams.selft[ch] = 0;  // Self Trigger Mode: 0 -> Disabled 1 -> Enabled

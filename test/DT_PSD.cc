@@ -4,9 +4,9 @@
 // Author: Hongyi Wu(吴鸿毅)
 // Email: wuhongyi@qq.com 
 // Created: 六 11月 26 10:24:24 2016 (+0800)
-// Last-Updated: 四 9月  1 20:08:47 2022 (+0800)
+// Last-Updated: 四 9月 22 13:04:39 2022 (+0800)
 //           By: Hongyi Wu(吴鸿毅)
-//     Update #: 85
+//     Update #: 86
 // URL: http://wuhongyi.cn 
 
 #include "DT_PSD.hh"
@@ -81,14 +81,14 @@ int DT_PSD::ProgramDigitizer()
       dpppsdParams.csens[ch] = 0;// Charge sensibility: 0->40fc/LSB; 1->160fc/LSB; 2->640fc/LSB; 3->2,5pc/LSB
     }
 
-  dpppsdParams.lgate[0] = 150;
-  dpppsdParams.lgate[1] = 150;
-  dpppsdParams.lgate[2] = 150;
-  dpppsdParams.lgate[3] = 150;
-  dpppsdParams.lgate[4] = 1000;
-  dpppsdParams.lgate[5] = 1000;
-  dpppsdParams.lgate[6] = 1000;
-  dpppsdParams.lgate[7] = 1000;
+  // dpppsdParams.lgate[0] = 150;
+  // dpppsdParams.lgate[1] = 150;
+  // dpppsdParams.lgate[2] = 150;
+  // dpppsdParams.lgate[3] = 150;
+  // dpppsdParams.lgate[4] = 1000;
+  // dpppsdParams.lgate[5] = 1000;
+  // dpppsdParams.lgate[6] = 1000;
+  // dpppsdParams.lgate[7] = 1000;
 
 
   

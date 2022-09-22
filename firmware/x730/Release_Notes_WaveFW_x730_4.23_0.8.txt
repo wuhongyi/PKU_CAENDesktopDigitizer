@@ -1,0 +1,120 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x730 FPGA default firmware revision history.
+  Default firmware makes the board operate as a waveform recorder
+  x730 digitizer board houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+  
+*******************************************************************************
+
+===============================================================================
+Release 4.23_0.8
+===============================================================================
+Bug fix                 :
+    * Fixed bug on time stamp reset from S-IN/GPI connector 
+
+===============================================================================
+Release 4.22_0.8
+===============================================================================
+New Features / Changes	:
+    * Implemented Start Run on the rising edge of S-IN/GPI (bit[11]=1 at 0x8100)    
+    * Removed the internal timeout info (bit[3:0]) from 0x8178 register
+
+Bug fix                 :
+    * Improved timing on local bus between motherboard and mezzanines to fix 
+      a communication issue    
+    * (DT/NIM) Fixed bug on USB access to the digitizer when it is not ready
+    * (VME) Fixed bug affecting LVDS pin group [4:7]
+
+===============================================================================
+Release 4.16_0.7
+===============================================================================
+New Features / Changes	:
+    * (VME ONLY) Added feature to use VetoIn LVDS to disable TRGOUT generation, 
+      selectable by register
+    * (VME ONLY) Added Buffer Occupancy Gain Register (0x81B4): monitor has 1024 step, 
+      1 buffer = 2 exp(gain) steps. Default 0 (1 buffer -> 1 step)
+    * (VME ONLY) Added LVDS I/O nTrigger outuput selection (nBusy/nVeto Mode):
+      LVDS_TRGOUT can be a copy of the Global Trigger or a copy of TRG-OUT(LEMO)
+    * Channel Shutdown register 0x81C0 is now also individually accessible (0x1nC0)
+    * (VME ONLY) Added a feature for syncronization debug, TRG-OUT (LEMO) can propagate 
+      out either the RUN command or the actual acquisition start delayRUN
+      delayed for syncronization
+Bug fix                 :
+    * (DT/NIM ONLY) Fixed a bug on USB communication 
+    * (VME ONLY) Fixed bug on LVDS I/O propagation on TRG-OUT in nBusy/nVeto mode
+    * Fixed a timing problem seen on some V1730  
+    * (VME ONLY) Optimized timing on LVDS I/O
+    * Fixed bug causing unwanted trigger at each first run
+		      
+===============================================================================
+Release 4.8_0.5
+===============================================================================
+New Features / Changes	:
+    * FW adjustments to manage the DC/DC Converters in new PCB rev. >=4 (VME only) 
+      The firmware can however run also on previous PCB revsions   
+    * Added live forced reboot option to VME boards 
+    * Added automatic reload of PLL after a change of the clock source (ext/int)
+      (Desktop only)
+    * Added bit[20] of register 0x811c to have the PLL unlock probe
+    * Added option to have "UNLOCK" onto TRGOUT (used to trigger in PLL_LOCK_LOSS):
+      reg 0x811c : bit[20]='1', bit[19:18]="01" (main probe) bit [17:16]= "11" (BUSY_UNLOCK)
+    * Modified Board Fail bit: removed readout_timeout in generated "Board Fail"
+      and modified localbus_timeout
+    * Added option to have "Extended Trigger Time Tag" or "Event Trigger Source"
+      in the 2nd word of the Event Header (via bit[22:21] reg 0x811C)  
+		
+Bug fix                 :
+    * Corrected calibration management at power-on for compatibility with 725 family
+    * Corrected issue on reset of time stamp from S-IN (VME) or GPI (NIM/DT)
+    * Corrected bug in the local bus interface that gets stuck after a 
+      R/W access to a channel register that doesn't exist
+    * Corrected error in reporting FULL Status (BUSY LED and FULL flag) 
+      when the board is not in run
+    * Corrected an error after the Clear command
+    * Fixed issue in case of single channel register access during BLT
+				
+===============================================================================
+Release 4.5_0.3
+===============================================================================
+
+New Features / Changes  :
+
+    * Added automatic ADC turning off management in case of internal 
+      over-temperature. 
+    * Added Board Fail bit in header and Error Monitor Register 0x8178.	
+    * Added Pulse/OvThr selection for channel self-trigger and the 
+      Trigger Request Logic programmability.
+  
+===============================================================================  
+Release 4.4_0.2
+===============================================================================
+
+  First official release for DT5730 and N6730 modules
+  
+===============================================================================  
+Release 4.3_0.2
+===============================================================================
+
+  First official release for V1730 and VX1730 modules
+  
+===============================================================================
+
+How to get support:
+--------------------
+  Our Support Group is available for questions, support and any other
+  issue concerning CAEN products; for hardware/firmware support, visit 
+  the page https://www.caen.it/support-services/support-form or send an email 
+  to support.nuclear@caen.it 

@@ -1,0 +1,62 @@
+-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+-----------------------------------------------------------------------------
+
+
+  CAEN digitizers house two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the motherboard FPGA for communication and trigger handling
+    - AMC FPGA is the mezzanine FPGA for ADC, DPP and channel memory management
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+
+===============================================================================
+Release 4.23_136.135 
+===============================================================================
+
+Bug fix:
+	* Fixed a bug on time stamp reset from S-IN connector
+	* Fixed a bug causing occasional spikes on the waveform
+
+===============================================================================
+Release 4.22_139.133
+===============================================================================
+
+Bug fix:
+
+	* Bug correction on Temp ADC -> dummy-first-read to avoid unwanted error
+
+===============================================================================
+Release 4.22_139.130
+===============================================================================
+
+Bug fix:
+
+	* FAN temperature correction
+
+===============================================================================
+Release 4.22_139.129
+===============================================================================
+
+Bug fix:
+
+	* Fixed bug in data readout
+      
+===============================================================================
+Release 4.21_136.128
+===============================================================================
+
+First official revision of DPP-PSD firmware for x730S
+
+===============================================================================
+
+How to get support
+------------------
+
+CAEN makes available the technical support of its specialists for requests 
+concerning CAEN products. Use the support form available at the following link:
+https://www.caen.it/support-services/support-form

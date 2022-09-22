@@ -1,0 +1,51 @@
+
+  -----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+  -----------------------------------------------------------------------------
+
+
+  This file is x730S FPGA waveform recordign firmware revision history.
+  Wavefrom recording firmware makes the board operate as a waveform recorder
+  x730S digitizer board houses two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the mainboard FPGA for communication and trigger handling.
+    - AMC FPGA is the mezzanine FPGA for ADC and channel memory management:
+      there are eight of them, but they are loaded with the same firmware image.
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+  
+*******************************************************************************
+
+===============================================================================
+Release 4.23_0.2
+===============================================================================
+Bug fix                 :
+    * Fixed bug on time stamp reset from S-IN/GPI connector 
+    * Fixed a bug in the ADC temperature reading
+
+===============================================================================  
+Release 4.22_0.1
+===============================================================================
+New Features / Changes    :
+   * Implemented Start Run on the rising edge of S-IN/GPI (bit[11]=1 at 8100)
+   * Implemented higher thresholds for the over temperature protection (ADCs
+     turn off at 85° and turn on again at 75°)
+   * Implemented new registers 0x1nEC to read out the channel trigger rate (Hz)
+
+===============================================================================  
+Release 4.21_0.0
+===============================================================================
+
+  First official release for x730S modules
+  
+===============================================================================
+
+How to get support:
+--------------------
+  Our Support Group is available for questions, support and any other
+  issue concerning CAEN products; for hardware/firmware support, visit 
+  the page https://www.caen.it/support-services/support-form or send an email 
+  to support.nuclear@caen.it 

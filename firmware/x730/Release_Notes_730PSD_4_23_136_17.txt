@@ -1,0 +1,216 @@
+﻿-----------------------------------------------------------------------------
+
+                   --- CAEN SpA - Front End R&D Division --- 
+
+-----------------------------------------------------------------------------
+
+
+  CAEN digitizers house two kinds of FPGA devices that are 
+  configured with a single programming file:
+    - ROC FPGA is the motherboard FPGA for communication and trigger handling
+    - AMC FPGA is the mezzanine FPGA for ADC, DPP and channel memory management
+       
+  Release numbers are in the form X.X_Y.Y, where X.X is the motherboard 
+  FPGA release, while Y.Y is the channel mezzanine FPGA release.
+
+
+===============================================================================
+Release 4.23_136.17 
+===============================================================================
+
+Bug fix:
+	* Fixed bug on time stamp reset from S-IN connector
+	* Fixed a bug on trigger propagation from mother board to mezzanine (register 0x8180)
+
+===============================================================================
+Release 4.22_136.17 
+===============================================================================
+
+Bug fix:
+	* Improved timing on local bus between motherboard and mezzanines to fix a communication issue
+
+
+===============================================================================
+Release 4.17_136.16 
+===============================================================================
+
+New Features / Changes	:
+
+	* Added option to select the operating mode of the Veto signal (bit 27 of DppCtrl2 @ 0x1n84/0x8084):
+  	  0: the Veto is used after the charge integration to discard the event data (before saving to the
+      	  memory buffer). In this mode, the Veto can arrive also during the integration gate.
+   	  1: the Veto is used to inhibit the self-triggers. In this mode, the charge integration doesn't 
+      	  start when the Veto is active and there is no dead-time for vetoed triggers
+	* Added option (bit 28 of DppCtrl2 @ 0x1n84/0x8084) to reset the time stamp when the external veto 
+   	  (coming from TRG-IN) is active. The aim of this option is to create data spills synchronized
+   	  to an external signal. Each spill is separated in the data flow by the restarting of the time stamp.
+
+
+Bug fix:
+	* Charge pedestal was dependent of the charge sensitivity. Now it is always 2048 (over 64K)
+	* Bug Fix: board not triggering after the start of run. Because of a timing issue in the reset
+   	  of the internal state machines, the initialization process hangs and no data is coming from 
+   	  the board after the start of run
+
+
+===============================================================================
+Release 4.17_136.14 
+===============================================================================
+
+New Features / Changes	:
+
+		* Modified behaviour of the programmable VETO window: it starts 
+		with the leading edge of the external veto (from TRGIN) and lasts 
+		for the programmed time (when 0, lasts as long as the input is active). 
+		* Added option to force the baseline calculation to restart at 
+		the end of the long gate, regardless the signal over/under threshold. 
+		This option is useful in case of fast and short pulses (no tails) 
+		sitting over a fluctuating baseline. (bit [15] @ 0x10n80)
+		* Added options for trigger validation (coincidence/anti-coincidence):
+		  Bit[26:25] of DppCtrl2 @ 0x1n84: "00" as for bit[5:4]; 
+		  "01" val = twin channel AND signal from motherboard
+		  "10" val = twin channel OR signal from motherboard, "11" reserved
+		* Added a feature for syncronization debug, TRG-OUT (LEMO) can 
+		propagate out either the RUN command or the actual acquisition 
+		start delayRUN delayed for syncronization (VME only)
+
+Bug fix             :
+		* Can't read PurGap register (@0x1n7C)
+		* Bug fix on PSD cut
+		* Bug Fix: charge saturation not managed for lowest charge sensitivity 
+		  (option 5)
+		* Fixed a bug on USB communication (DT/NIM form factors)
+		* Optimized timing for LVDS I/O signals
+
+===============================================================================
+Release 4.11_136.11 
+===============================================================================
+
+Bug fix            :
+		* Data error occuring in coincidence mode with auto-flush option 
+
+
+===============================================================================
+Release 4.11_136.10 
+===============================================================================
+New Features / Changes	:
+
+		* Reduced dead time (minumum distance between triggers)
+		* Reduced the minimum size for the pre-trigger
+		* Increased default value of TVAW extra window from 7 to 9
+		* Baseline freeze for the whole over threshold duration
+		* Implemented timing interpolation also with Leading Edge Discriminator 
+    		  (before it was CFD only)
+		* Implemented flags in extras (option 1 and 2): bit[15]=lost_trg, 
+		  bit[14]=input saturation in the gate, bit[13]=1024 total triggers counted
+		  bit[12]=N lost triggers, where N is decided by bit[17:16] @ 0x1n84: 
+		  "00" = 1024, "01" = 128; "10" = 8192 (same as total trigger counter). 
+		  Default N=1024
+		* Preliminary version of the pile-up rejector
+		* Waveform changed: when bit[6]=0 @ 0x8000 (DiscrMode=Leading Edge), 
+		  the CFD trace represents the smoothed input used for the LED discriminator
+		* Added option to disable the digital traces in the waveform data (set bit 31 
+		  of CtrlReg @ 0x8000)
+		* Added option (bit[17:16]@0x1n84) to select trigger counter tick rate (ICR): 
+		  "00" = 1024, "01" = 128; "10" = 8192
+		* Implemented detection of negative triggers (opposite pulse polarity) to inhibit 
+		  zero crossing on CFD (set bit 31 @ 0x1n80 to disable this option)
+		* Baseline freeze activated on negative triggers (see above) and negative saturation
+		* Modified access to DppCtrl2 register @ 0x1n84: bits [7:0] are common to the couple 
+		  (writing to even channel writes also odd and viceversa); all other bits are individual 
+		  (different settings on odd and even are allowed)
+		* Modified trigger individual validation/propagation settings (bit[5:4] @ 0x1n84): 
+   		  "00": from other channel in the couple, "01": from other couples (mother-board), 
+		  "10": trg0 and trg1, "11": trg0 or trg1
+		* Added one more option for the Charge Sensitivity (now it can be set from 0 to 5, 
+		  instead of 0 to 4)
+		* Added register (bit[9:0] @ 0x1nD8, default=2) to set the time (in 8 ns steps) 
+		  before the gate to stop the baseline calculation
+		* Changed setting for the Veto Source: bit[19:18] @ 0x1n84: "00" = disabled, 
+		  "01" = gtrigin, "10" = itrgin, "11" = saturation and negative triggers
+   		  NOTE: bit[7] @ 0x1n84 discontinued (use bit[19:18]="10" for the same functionality)
+		* Added zero suppression based on charge: discard events with Qlong < Qthr. 
+		  Enabled by bit[25] @ 0x1n80; Qthr = bit[15:0] @ 0x1n44 (added register)
+		* Changed option (n. 4) for the extras: bit[15:0]=total trigger counter, 
+		  bit[31:16]=lost trigger counter
+		* Increased maximum record length from 32K to 128K samples 
+		  (14 bit in the relevant register @ 0x1n20)
+		* Implemented quad-range for the veto/gate window: VetoWidth register @1nD4: 
+		  bit[17:16]=step, bit[15:0]=width_set bit[17:16]: "00" step=8 ns; 
+		  "01" step=2 us; "10" step=524 us; "11" step=134 ms
+		* Added option (set bit 24 of DppCtr2 @ 0x1n84) to mark saturated pulses 
+		  (clipped) with pileup bit in the charges word.
+
+Bug fix             :
+		* Inverted polarity of the bit 5 (enable retrigger) of the DPP Ctrl Reg at 0x1n80
+		* Bug fix in the trigger propagation between the channels in the couple
+		* Bug fix: constant baseline (fixed value, no dynamic calculation) was inverted for positive signals
+		* Bug fix in memory management: event data corrupted (the waveform looks rolled over)
+		* Bug fix: extended time stamp (16 extra bit in the extras word) can be out of 
+		  sync for events accuring close to the 31 bit roll over 
+        	* Bug fix: actual PreGate value 8 clock cycles bigger than setting
+		* Fixed timing issue in the bsl_freeze visualization (digital probe)
+		
+		
+===============================================================================
+Release 4.7_136.05 
+===============================================================================
+New Features / Changes	:
+		* Added Local Trigger Validation as veto. Program bit[7] of register 0x1n84.
+		  It is possible to make the coincidence between channels of the same couple
+		  and the anti-coincidence (= veto) among different couples
+		* Extended trigger hold off register to 16 bits
+		* Fine time stamp (online interpolation) working also with 
+		  Leading Edge Discriminator
+		* Added interpolation points also for Leading Edge discriminator 
+		 (sample below and above the trigger threshold)
+		* Added condition on pre trigger setting in order to force it to a 
+		  proper value when too small for the pregate
+		* Added register to force buffer flush (address 0x1n40)
+		* Added individual channel SW trigger (write access to register 0x1nC0); 
+		  this trigger is not affected by the trg_validation.
+		* Inhibited shaped trigger for self-triggers that don't save events (busy). 
+		  Added bit[3] of register 0x1n84 to disable this inhibit 
+		  (shaped trigger generated for all self-triggers)
+		* Implemented automatic buffer flush of incomplete buffers after a fixed 
+		  timeout. Set bit[0] of register 0x8000) 
+		* Added flags in the EXTRAS word of the data readout format
+		* Added smoothing filter; enable it via bit [15:12] of register 0x1n84
+		* Reviewed CFD in case of lost triggers or bad trigger position with fast 
+		  signals (shorter than about 10ns)
+		* Added Board Fake bit in the "Board Aggregate" header format
+		* Added an automatic control of the fan speed (Desktop only)
+		* Added automatic reload of PLL after a change of the clock source 
+		  (ext/int) (Desktop only)
+		* Added automatic temperature control and automatic power down of ADCs 
+		  when the temperature exceeds 70 °C
+		* Added bit[20] of register 0x811c to have the PLL unlock probe. 
+		
+	Bug fix             :
+		* Fixed bug on sporadic data readout errors with auto-flush enabled
+		* Fixed bug on trigger and data produced also after the stop of run
+		* Fixed timing issues in trigger validation signals (for coincidences)
+		* Fixed bug for data errors in case of waveform length > 1000
+		* Fixed bug in the trigger time stamp (the distribution was not uniform 
+		  over the 2 less significant bits of the time stamp)
+		* Adjusted the relative position and duration of the gate respect to the 
+		  trigger
+		* Corrected issue on reset of time stamp from S-IN (VME) or GPI (NIM/DT)
+		* Corrected bug in the local bus interface that gets stuck after a 
+		  R/W access to a channel register that doesn't exist
+		* Corrected bug in the baseline calculation: after a large overshoot
+		  the baseline remained stuck to a wrong value, the self-trigger stopped
+		  working and that channel didn't give data anymore.
+		* Corrected error in reporting FULL Status (BUSY LED and FULL flag) 
+		  when the board is not in run
+		* Corrected an error after the Clear command
+		* Fixed issue of slow readout with DPP FW
+		* Fixed issue in case of single channel register access during BLT
+		* Modified TRGOUT (Front Panel) logic generation.
+
+      
+===============================================================================
+Release 4.3_136.02
+===============================================================================
+
+First official revision of DPP-PSD firmware for x730
